@@ -1,6 +1,7 @@
 import { getEnding, getNode, SISTER_OFFSTAGE_NODES, type BranchState } from './branch-story';
 import { getSceneDialogue, type SceneDialogueLine } from './scene-dialogue';
 import { getDreamEndingPresentation, getStayEndingPresentation } from './ending-content';
+import { getDreamEndingPresentation as legacyDream, getStayEndingPresentation as legacyStay } from './legacy-ending-content';
 
 export type ReadingBeat = {
   id: string;
@@ -18,13 +19,15 @@ export const MAX_SUBTITLE_CHARACTERS = 40;
 /** A node id or step count alone cannot distinguish converging branches. */
 export function storyPresentationKey(state: BranchState): string {
   const path = state.history.map(step => `${step.nodeId}:${step.choiceId}`).join('>');
-  return `v${state.version}${state.edition === 'short' ? '-short' : ''}-drama2-five|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
+  return `v${state.version}${state.edition === 'short' ? '-short' : ''}-r${state.storyRevision ?? 'legacy'}|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
 }
 
 /** Physical presence is separate from the long-term relationship stored by the engine. */
-export function getCompanionStatus(state: Pick<BranchState, 'nodeId' | 'endingId' | 'sister'> & { stats: Pick<BranchState['stats'], 'trust'> }): CompanionStatus {
+export function getCompanionStatus(state: Pick<BranchState, 'nodeId' | 'endingId' | 'sister' | 'storyRevision'> & { stats: Pick<BranchState['stats'], 'trust'> }): CompanionStatus {
   const injured = state.sister === 'injured';
   const tone = state.stats.trust <= 3 ? 'guarded' : state.stats.trust >= 7 ? 'warm' : 'neutral';
+  if (state.storyRevision === 5 && state.nodeId === 'n21') return { presence: 'present', label: '母亲拒绝强迫后，你已回到姐姐和舅舅的车旁。', speaker: '玛莉安', injured, tone };
+  if (state.storyRevision === 5 && state.sister === 'apart' && ['n22', 'n30'].includes(state.nodeId)) return { presence: 'apart', label: '姐姐、母亲与幼弟已随舅舅离城。你与莱拉留在封锁的另一边。', speaker: '姐姐临别的话', injured, tone };
   if (state.nodeId === 'n21' && !state.endingId) {
     return { presence: 'present', label: '镜头转向母亲与姐姐。努拉还没有回到这条街口。', speaker: '玛莉安', injured, tone };
   }
@@ -43,6 +46,7 @@ export function getCompanionStatus(state: Pick<BranchState, 'nodeId' | 'endingId
 
 export function getHeroDisplayName(state: BranchState): string {
   if (state.endingId?.startsWith('dream_')) return '成年的阿提什';
+  if (state.storyRevision === 5 && state.endingId === 'lantern' && state.flags.includes('guideGrown')) return '成年的阿提什';
   const publicScene = ['market', 'checkpoint', 'prison', 'road'].includes(getNode(state).scene);
   return publicScene && state.flags.includes('aliasAatish') ? '阿提什' : '努拉';
 }
@@ -65,9 +69,13 @@ function taleDialogue(state: BranchState): string[] {
 }
 
 function endingDialogue(state: BranchState): string[] {
+  if (state.storyRevision !== 5) {
+    if (state.endingId?.startsWith('dream_')) return legacyDream(state).dialogue;
+    if (state.endingId === 'lantern') return legacyStay(state).dialogue;
+  }
   switch (state.endingId) {
-    case 'reunited': return ['父亲：“努拉？”　“这次，我带你回家。”', state.sister === 'apart' ? '你把推车停在作坊后间，第一次主动开口请求帮手。' : '姐姐握住车把：“现在，可以松开手了。”'];
-    case 'caravan': return ['姐姐：“上这辆车，不等于答应那桩婚事。”', '“我知道。”你看向城门，“这条路，是我们选的。”'];
+    case 'reunited': return ['父亲躺在木车上：“努拉？”你握住车把：“这次，我带你回家。”', '姐姐接住另一边车把，母亲牵着萨米让开门槛。你重新数到五个人。'];
+    case 'caravan': return ['姐姐把你拉低，母亲护住萨米。露天货车越过最后的关口。', '你回望城门：“父亲还在里面。”姐姐没有许诺，只把你的手握紧。'];
     case 'dream_guardian':
     case 'dream_commons': return getDreamEndingPresentation(state).dialogue;
     default: return getStayEndingPresentation(state).dialogue;

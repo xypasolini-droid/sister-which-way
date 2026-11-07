@@ -67,8 +67,8 @@ describe('scene context for direct story branches', () => {
     expect(encounter.points.find(point => point.choiceId === 'find')?.speaker).toBe('母亲托来的话');
     expect(encounter.points.some(point => point.speaker === '母亲')).toBe(false);
     const concise = getSceneEncounter(shortAt('n18', { sister: 'apart' }));
-    expect(concise.goal).toContain('分住');
-    expect(concise.points.find(point => point.choiceId === 'rush')?.speaker).toBe('姐姐托来的话');
+    expect(concise.goal).toContain('封关');
+    expect(concise.points.every(point => point.speaker !== '母亲')).toBe(true);
     const together = choose(reach('n14'), 'hide')!.state;
     expect(getSceneEncounter(together).points.find(point => point.choiceId === 'find')?.speaker).toBe('母亲');
   });
@@ -107,20 +107,20 @@ describe('scene context for direct story branches', () => {
     expect(encounter).not.toHaveProperty('activity');
     expect(encounter.points.map(point => point.choiceId).sort()).toEqual(['find', 'plan', 'rush']);
     expect(getChoices(state).map(choice => choice.id).sort()).toEqual(['find', 'plan', 'rush']);
-    expect(encounter.points.find(point => point.choiceId === 'plan')?.response).toContain('阿明');
+    expect(encounter.points.find(point => point.choiceId === 'plan')?.response).toContain('救父');
     expect(encounter.points.find(point => point.choiceId === 'find')?.response).toContain('优素福');
-    expect(encounter.points.find(point => point.choiceId === 'rush')?.response).toContain('照护');
+    expect(encounter.points.find(point => point.choiceId === 'rush')?.response).toContain('莱拉');
   });
 
-  it('preserves the mother’s refusal and the invitation needed for one-night lodging', () => {
-    const encounter = getSceneEncounter(shortAt('n21'));
-    const response = (id: string) => encounter.points.find(point => point.choiceId === id)!.response;
-    expect(response('register')).toContain('优素福本人');
-    expect(response('register')).toContain('文书');
-    expect(response('child')).toContain('借住');
-    expect(response('search')).toContain('我不跟他走');
-    expect(response('search')).toContain('回去找她');
-    expect(getSceneEncounter(shortAt('n25')).points.find(point => point.choiceId === 'leave')?.response).toContain('夜宿');
+  it('makes the last vehicle decision about who departs, without a generic one-night shelter ending', () => {
+    const state = shortAt('n21');
+    const encounter = getSceneEncounter(state);
+    expect(encounter.points.map(point=>point.choiceId)).toEqual(['register','child']);
+    expect(encounter.points.find(point=>point.choiceId==='register')!.response).toContain('离城');
+    expect(encounter.points.find(point=>point.choiceId==='child')!.response).toContain('赶不上');
+    const nodeChoices=getChoices(state);
+    for(const choice of nodeChoices)expect(choice.effect!.add).toContain('marriageRefused');
+    expect(getSceneEncounter(shortAt('n25')).points.find(point=>point.choiceId==='leave')!.response).toContain('家人不要等');
   });
 
   it('does not describe the rescued father as still being awaited', () => {

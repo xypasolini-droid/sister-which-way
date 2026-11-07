@@ -1,4 +1,5 @@
-import { getShortNode } from './short-story';
+import { getShortNode, getShortFate } from './short-story';
+import { getLegacyShortNode } from './legacy-short-story';
 
 /** Original branching fiction; its political setting is fictional, not a statement about a faith. */
 export type SceneId = 'home' | 'market' | 'workshop' | 'courtyard' | 'clinic' | 'checkpoint' | 'prison' | 'road';
@@ -10,6 +11,7 @@ export type BranchState = {
   sister: 'beside' | 'apart' | 'injured'; father: 'missing' | 'located' | 'free';
   endingId: string | null; history: StoryHistory[];
   edition?: 'short';
+  storyRevision?: 5;
 };
 export type StoryState = BranchState;
 type Requirement = { stat?: keyof Stats; min?: number; max?: number; flag?: string; absent?: string; reason: string };
@@ -370,9 +372,13 @@ export const STAT_LABELS: Record<keyof Stats, string> = { food: '口粮', coins:
 export const ACT_TITLES = ['门后的家', '街上的名字', '分岔的路', '写给明天'];
 export { ENDINGS } from './ending-content';
 import { ENDINGS as ENDING_CONTENT, projectEnding } from './ending-content';
+import { ENDINGS as LEGACY_ENDINGS, projectEnding as projectLegacyEnding } from './legacy-ending-content';
 
 export function createInitialState(edition?: 'short'): BranchState {
-  return { version: 3, ...(edition ? { edition } : {}), nodeId: 'n01', stats: { food: 3, coins: 3, trust: 5, hope: 5, exposure: 1, health: 5 }, flags: ['book', 'ribbon'], outfit: 'cloak', scarf: 'worn', sister: 'beside', father: 'free', endingId: null, history: [] };
+  return createState(edition, edition === 'short');
+}
+function createState(edition?: 'short', current = false): BranchState {
+  return { version: 3, ...(edition ? { edition } : {}), ...(current ? { storyRevision: 5 as const } : {}), nodeId: 'n01', stats: { food: 3, coins: 3, trust: 5, hope: 5, exposure: 1, health: 5 }, flags: ['book', 'ribbon'], outfit: 'cloak', scarf: 'worn', sister: 'beside', father: 'free', endingId: null, history: [] };
 }
 const has = (s: BranchState, name: string) => s.flags.includes(name);
 
@@ -441,7 +447,7 @@ export function getNode(state: BranchState): StoryNode {
   }
   if (state.sister === 'apart' && !['n23', 'n29'].includes(state.nodeId)) node.sisterLine = '你记得姐姐留下的话：“把住处告诉我，难受也可以写。不必每一封信都说自己很好。”';
   else if (SISTER_OFFSTAGE_NODES.has(state.nodeId)) node.sisterLine = `你记着姐姐的叮嘱：“${node.sisterLine}”`;
-  return state.edition === 'short' ? getShortNode(node, state) : node;
+  return state.edition === 'short' ? state.storyRevision === 5 ? getShortNode(node, state) : getLegacyShortNode(node, state) : node;
 }
 
 function requirementFailure(state: BranchState, requirement: Requirement): string {
@@ -461,6 +467,7 @@ function choicesFor(state: BranchState, replayLegacy: boolean): AvailableChoice[
 
 /** The last page cannot undo a real rescue or a completed departure. */
 function endingFor(state: BranchState, finish: NonNullable<StoryChoice['finish']>): string {
+  if (state.storyRevision === 5) return getShortFate(state);
   if (finish === 'dream_guardian' || finish === 'dream_commons') return finish;
   if (state.father === 'free' && has(state, 'released')) return 'reunited';
   if (has(state, 'boarded')) return 'caravan';
@@ -486,6 +493,7 @@ export function mapLegacyEndingId(id: string): string | null {
 
 /** The consequence is kept in the journal; current facts are never overwritten. */
 function consequenceFor(state: BranchState, choice: StoryChoice): string {
+  if (state.storyRevision === 5) return choice.consequence;
   if (state.nodeId === 'n20' && choice.id === 'submit' && !has(state, 'guardBond')) return has(state, 'guardKnown')
     ? '阿明认出替他读信的孩子。接下来几次往来，你陪他练写妻子哈拉的名字，也慢慢说起父亲。他把你的另纸姓名收好，让你换岗时再来问；他仍没有保证能救人。'
     : '阿明请你读信。妻子哈拉乘坐的巴士触雷、重伤后去世，他沉默着，又请你念她的名字。你把信还给他。接下来的几次往来，你陪他认字，后来才另纸写下父亲的姓名。他让你换岗时再来问，仍没有保证能救人。';
@@ -524,13 +532,23 @@ function chooseWithHistory(state: BranchState, choiceId: string, replayLegacy = 
   if (effect.father && effect.father !== state.father) changes.push(effect.father === 'free' ? '父亲回到身边' : effect.father === 'missing' ? '父亲被带走' : '得知父亲去向');
   const consequence = consequenceFor(state, choice);
   next.history.push({ nodeId: state.nodeId, choiceId: choice.id, label: choice.label, consequence });
-  if (choice.finish) next.endingId = endingFor(next, choice.finish);
+  if (next.storyRevision === 5 && next.nodeId === 'n30') {
+    // The action already chosen is the ending. Never insert an eighth "next" click.
+    next.endingId = getShortFate(next);
+    if (next.endingId === 'lantern' && !next.flags.includes('guideGrown')) next.flags.push('guideGrown');
+  } else if (choice.finish) next.endingId = endingFor(next, choice.finish);
   return { state: next, consequence, changes };
 }
 
 export function choose(state: BranchState, choiceId: string) { return chooseWithHistory(state, choiceId); }
 
 export function getEnding(state: BranchState): Ending | null {
+  if (state.storyRevision !== 5 && state.endingId) {
+    const legacy = LEGACY_ENDINGS.find(item => item.id === state.endingId);
+    if (!legacy) return null;
+    const ending = projectLegacyEnding(state, legacy);
+    return { ...ending, title: `旧版结局 · ${ending.title}`, summary: `这是此前已完成的旧版路线，保留当时实际发生的事。${ending.summary}`, unlockedBy: '旧版存档保留；重新开始可体验七次决定、五种独立命运的新故事。' };
+  }
   const ending = ENDING_CONTENT.find(item => item.id === state.endingId);
   return ending ? projectEnding(state, ending) : null;
 }
@@ -564,7 +582,8 @@ export function validateBranchState(raw: unknown): BranchState | null {
   const input = raw as Partial<BranchState>;
   if (input.version !== 3 || !Array.isArray(input.history) || input.history.length > 35 || typeof input.nodeId !== 'string') return null;
   if (input.edition !== undefined && input.edition !== 'short') return null;
-  let replayed = createInitialState(input.edition);
+  if (input.storyRevision !== undefined && (input.storyRevision !== 5 || input.edition !== 'short')) return null;
+  let replayed = createState(input.edition, input.storyRevision === 5);
   for (const entry of input.history) {
     if (!entry || typeof entry !== 'object' || entry.nodeId !== replayed.nodeId || typeof entry.choiceId !== 'string') return null;
     const result = chooseWithHistory(replayed, entry.choiceId, true);
@@ -580,5 +599,22 @@ export function validateBranchState(raw: unknown): BranchState | null {
   const finish = last && NODES[last.nodeId]?.choices.find(choice => choice.id === last.choiceId)?.finish;
   const legacyEnding = Boolean(finish && input.endingId === previousEndingFor(replayed, finish));
   if (keys.some(key => !(key === 'father' && legacyArrestFrame) && !(key === 'endingId' && legacyEnding) && JSON.stringify(input[key]) !== JSON.stringify(replayed[key]))) return null;
-  return replayed;
+  if (replayed.storyRevision === 5) return replayed;
+  if (replayed.endingId) return replayed;
+  if (replayed.edition !== 'short') return replayed;
+  // First authenticate the old snapshot above. Then keep its actual legal prefix
+  // in the new graph; a removed late action returns to the real fork, never
+  // fabricates a rescue, departure or adult life that the player did not choose.
+  let migrated = createInitialState('short');
+  for (const step of replayed.history) {
+    // The old "stay" and "ask relatives" actions had different stakes. Their
+    // reused IDs must not silently consent to a new separation or adult dream.
+    if (migrated.nodeId === 'n18') break;
+    if (step.nodeId === 'n10' && step.choiceId === 'wage') break;
+    if (migrated.nodeId !== step.nodeId || migrated.endingId) break;
+    const moved = chooseWithHistory(migrated, step.choiceId);
+    if (!moved) break;
+    migrated = moved.state;
+  }
+  return migrated;
 }

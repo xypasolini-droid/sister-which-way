@@ -91,43 +91,45 @@ describe('performed scenes and a separate full journal',()=>{
     expect(storyPresentationKey(a)).not.toBe(storyPresentationKey(b));
     expect(storyPresentationKey(a)).toBe(storyPresentationKey(play(['work'])));
   });
-  it('shows different final moments on screen for shelter, waiting, classroom, separation and a failed rescue',()=>{
-    const prefix=['work','sew','buy','pact','care'];
-    const tails=[['find','child','live'],['rush','father','live'],['rush','school','live'],['rush','send','live'],['plan','letter','live']];
-    const screens=tails.map(tail=>{
-      const state=[...prefix,...tail].reduce((current,id)=>{
-        const result=choose(current,id);if(!result)throw new Error(`${current.nodeId}/${id}`);return result.state;
-      },createInitialState('short'));
+  it('performs exactly five fixed final scenes with different actions and family fates',()=>{
+    const routes=[
+      ['work','sew','buy','truth','courier','plan','release'],
+      ['work','sew','buy','pact','care','find','register'],
+      ['work','sew','buy','pact','care','find','child'],
+      ['work','sew','buy','pact','care','rush','father'],
+      ['neighbor','sew','buy','truth','courier','rush','school'],
+    ];
+    const screens=routes.map(route=>{
+      const state=route.reduce((current,id)=>choose(current,id)!.state,createInitialState('short'));
       const beats=buildReadingBeats(state);
-      expect(state.endingId).toBe('lantern');
       expect(beats).toHaveLength(2);
       expect(beats.every(beat=>beat.kind==='ending'&&beat.text.length<=40)).toBe(true);
       return beats.map(beat=>beat.text).join('');
     });
     expect(new Set(screens).size).toBe(5);
-    expect(screens[0]).toContain('只到明早');
-    expect(screens[1]).toContain('天亮仍得出门');
-    expect(screens[2]).toContain('粉笔');
-    expect(screens[3]).toContain('没有人应声');
-    expect(screens[4]).toContain('没能带他回来');
+    expect(screens[0]).toContain('车把');
+    expect(screens[0]).toContain('五个人');
+    expect(screens[1]).toContain('露天货车');
+    expect(screens[1]).toContain('父亲还在里面');
+    expect(screens[2]).toContain('几年后');
+    expect(screens[2]).toContain('石阶');
+    expect(screens[3]).toContain('女性卫队');
+    expect(screens[4]).toContain('议事庭');
   });
-  it('lets the dream coda remember the mother, the wife’s name, or the classroom without claiming a real liberation',()=>{
-    const routes=[
-      ['work','sew','buy','pact','care','rush','father','dream_guardian'],
-      ['work','sew','buy','truth','courier','rush','father','dream_commons'],
-      ['work','sew','buy','pact','care','rush','school','dream_commons'],
-    ];
-    const screens=routes.map(route=>{
-      const state=route.reduce((current,id)=>{const result=choose(current,id);if(!result)throw new Error(`${current.nodeId}/${id}`);return result.state},createInitialState('short'));
+  it('labels both adult fairy tales without making the real father free or the sister present',()=>{
+    for(const route of [
+      ['work','sew','buy','pact','care','rush','father'],
+      ['neighbor','sew','buy','truth','courier','rush','school'],
+    ]){
+      const state=route.reduce((current,id)=>choose(current,id)!.state,createInitialState('short'));
       const lines=buildReadingBeats(state);
       expect(lines).toHaveLength(2);
       expect(lines.every(line=>line.text.length<=40)).toBe(true);
+      expect(lines[0].text).toContain('成年童话');
       expect(state.father).not.toBe('free');
-      return lines.map(line=>line.text).join('');
-    });
-    expect(screens[0]).toMatch(/棍影|再打她/);
-    expect(screens[1]).toContain('哈拉');
-    expect(screens[2]).toContain('一小时的课');
+      expect(state.sister).toBe('apart');
+      expect(state.flags).toContain('familyDeparted');
+    }
   });
   it('remembers an earlier classroom without putting an absent sister in the heroine’s room',()=>{
     const separated={...createInitialState(),nodeId:'n30',endingId:'lantern',father:'located' as const,sister:'apart' as const,flags:['sustained']};

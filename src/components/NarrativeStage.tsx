@@ -16,6 +16,7 @@ export type NarrativeStageProps = {
   stats: { food: number; coins: number; trust: number; hope: number; exposure: number; health: number };
   flags: string[];
   nodeId: string;
+  storyRevision?: 5;
   actionLabel?: string;
   reducedMotion: boolean;
   ending?: string | null;
@@ -64,6 +65,8 @@ export function describeNarrativeChange(previous: NarrativeStageProps | null, ne
   if (previous?.nodeId === 'n02' && next.nodeId === 'n06') return '母亲寻父受伤，努拉买饼被拒后回家。姐姐打开亡兄的衣箱，家人需要新的办法。';
   if (next.nodeId === 'n03') return '母亲带努拉来到监所附近。姐姐与萨米留在家里，街上的拦阻让这段路无法顺利走完。';
   if (next.nodeId === 'n04') return '努拉独自来到市场找食物。母亲回家养伤，姐姐与萨米留在门内。';
+  if (next.storyRevision === 5 && next.nodeId === 'n21') return '努拉已和家人在亲舅舅的货车旁会合。莱拉被堵在街巷，封关正在逼近。';
+  if (next.storyRevision === 5 && next.nodeId === 'n22') return '家人的车已离开。努拉与莱拉留在侧门前，受困女孩需要她们接应。';
   if (next.nodeId === 'n21') return '这一幕转向母亲：努拉尚未回来，她拒绝让贾维德替全家决定。';
   const restoredLaterScene = previous?.nodeId === 'n01' && next.nodeId !== 'n02';
   if (!previous || restoredLaterScene) return `努拉穿着${nextCast.heroDescription}，停在${nextCast.locationName ?? SCENES[next.scene].name}。${nextCast.companion.label}`;
@@ -285,7 +288,7 @@ export default function NarrativeStage(props: NarrativeStageProps) {
     <figcaption className="narrative-scene-caption">
       <div className="narrative-action"><Footprints size={15} aria-hidden="true" /><span>{beat}</span></div>
       <div className="narrative-scene-facts">
-        <span><BookOpen size={12} aria-hidden="true" />{staging.isDream ? '梦境 · 成年的阿提什' : staging.womenInVehicle ? '家人 · 同在露天后斗' : nodeId === 'n21' ? '母亲 · 拒绝丢下女儿' : drama?.mother && !drama.sister ? '母亲与你在街上' : sisterAtHome ? '姐姐留在门内' : alone ? '你独自走在这一页' : sisterInjured ? '姐姐 · 受伤，需要照顾' : nodeId === 'n23' && sister === 'apart' ? '姐姐 · 当面把话说清楚' : '姐姐 · 同行'}</span>
+        <span><BookOpen size={12} aria-hidden="true" />{staging.isDream ? '梦境 · 成年的阿提什' : staging.womenInVehicle ? '家人 · 同在露天后斗' : nodeId === 'n21' ? props.storyRevision === 5 && !props.dramaShot ? '家人 · 舅舅的车旁' : '母亲 · 拒绝丢下女儿' : drama?.mother && !drama.sister ? '母亲与你在街上' : sisterAtHome ? '姐姐留在门内' : alone ? staging.showFriend ? '你与莱拉同行' : '你独自走在这一页' : sisterInjured ? '姐姐 · 受伤，需要照顾' : nodeId === 'n23' && sister === 'apart' ? '姐姐 · 当面把话说清楚' : '姐姐 · 同行'}</span>
       </div>
     </figcaption>
   </figure>;

@@ -6,7 +6,7 @@ The user-confirmed game father has **two complete legs, a limp, and a wooden und
 
 Amin's personal letter concerns his wife Hala and his grief and remembrance of her. The inspected film subtitles say she died after her bus hit a land mine on the way to her sister's wedding. Reading and learning her name precede the later relationship with the heroine; do not turn the death notice into an immediate price for rescuing her father. Amin keeps the letter. The heroine writes her father's details on separate paper. Preserve the difference between first acquaintance and repeated literacy visits.
 
-Retain the original hand-drawn PNG identities and natural anatomy. New poses must use those identities as references and be inspected in the running game. Do not mix the rejected geometric SVG character drafts into the active cast. Keep the five existing growth endings and single-click branch progression.
+Retain the original hand-drawn PNG identities and natural anatomy. New poses must use those identities as references and be inspected in the running game. Do not mix the rejected geometric SVG character drafts into the active cast. The current story revision has five fixed fates: rescue, four-person departure, separation and grown guide, adult guard fairy tale, adult commons fairy tale. No sub-endings beneath one ID. Earlier actions must cause these different fates. Keep single-click progression: seven decisions, the seventh ends immediately. Preserve old completed saves as explicitly labeled old records.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

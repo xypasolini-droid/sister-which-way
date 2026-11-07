@@ -119,6 +119,27 @@ describe('automatic scenes of coercion', () => {
     expect(unbonded.father).not.toBe('free');
   });
 
+  it('does not promise rescue after a late message misses the side-gate window', () => {
+    const late = shortRoute(['work', 'cut', 'buy', 'truth', 'courier', 'plan']);
+    expect(late.flags).toContain('guardBond');
+    expect(late.flags).not.toContain('pact');
+    const last = getOppressionShots(late).at(-1)!;
+    expect(last.line).toContain('已经换岗');
+    expect(last.caption).toContain('错过');
+    expect(`${last.line}${last.caption}`).not.toContain('进去找他');
+    expect(getChoices(late).find(choice => choice.id === 'release')!.enabled).toBe(false);
+    const old = { ...late, storyRevision: undefined };
+    expect(getOppressionShots(old).at(-1)!.line).toContain('进去找他');
+  });
+
+  it('labels the relative scene as earlier before the new truck-side reunion', () => {
+    const truck = shortRoute(['work', 'sew', 'buy', 'pact', 'care', 'find']);
+    expect(truck.nodeId).toBe('n21');
+    expect(getOppressionShots(truck).every(shot => shot.location.startsWith('此前 · '))).toBe(true);
+    expect(getOppressionShots({ ...truck, storyRevision: undefined }).every(shot => !shot.location.startsWith('此前 · '))).toBe(true);
+    expect(getNode(truck).paragraphs.join('')).toContain('与你会合');
+  });
+
   it('never mutates story state or leaves shared mutable shot templates', () => {
     const state = shortRoute(['work', 'sew']);
     const before = structuredClone(state);
@@ -136,7 +157,7 @@ describe('automatic scenes of coercion', () => {
     expect(state.history).toHaveLength(2);
   });
 
-  it('removes arithmetic from the short workshop decisions while retaining stored ids and effects', () => {
+  it('removes arithmetic and records physical protection or an authorised record', () => {
     const state = shortRoute(['work', 'sew', 'buy', 'hide']);
     expect(state.nodeId).toBe('n10');
     const choices = getNode(state).choices;
@@ -144,14 +165,16 @@ describe('automatic scenes of coercion', () => {
     const wage = choices.find(choice => choice.id === 'wage')!;
     expect(ledger.label).toMatch(/征求.*同意.*记录/);
     expect(`${ledger.label}${ledger.detail}${ledger.consequence}`).not.toMatch(/核算|核账|算出|乘|四件|八枚/);
-    expect(wage.label).toBe('带自己的报酬回家');
+    expect(wage.label).toContain('挡到女工身前');
+    expect(wage.effect!.add).toContain('protectedSomeone');
     for (const choice of [ledger, wage]) {
-      const source = NODES.n10.choices.find(item => item.id === choice.id)!;
-      expect(choice.effect).toEqual(source.effect);
-      expect(choice.requires).toEqual(source.requires);
+      expect(choice.requires).toEqual([]);
       expect(choice.next).toBe('n18');
       const result = choose(state, choice.id);
       expect(result?.state.nodeId).toBe('n18');
     }
+    expect(ledger.effect!.add).toContain('recordPractice');
+    expect(wage.effect!.add).not.toContain('paid');
+    expect(wage.effect!.stats!.coins).toBe(-1);
   });
 });

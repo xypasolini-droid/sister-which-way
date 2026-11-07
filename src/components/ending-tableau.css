@@ -1,0 +1,32 @@
+.ending-tableau{position:absolute;inset:0;margin:0;overflow:hidden;background:#101515;isolation:isolate}
+.ending-tableau-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center 42%;animation:ending-settle 1.2s ease-out both}
+.ending-tableau-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#080c105c,transparent 22%,transparent 54%,#080c10b8 100%)}
+.ending-tableau-time{position:absolute;top:calc(120px + env(safe-area-inset-top));left:6vw;letter-spacing:.16em;font:11px/1.7 var(--sans);color:#f0ece3;text-shadow:0 1px 6px #000}
+.ending-tableau--lantern .ending-tableau-image{object-position:center 35%}
+.ending-tableau--dream_commons .ending-tableau-shade{background:linear-gradient(180deg,#1c170e70,transparent 24%,transparent 52%,#100d08c4 100%)}
+.immersive-game.has-fate-tableau .story-dialogue--ending{max-height:34dvh;width:min(900px,calc(100% - 80px));padding:16px 24px 10px;background:rgb(13 15 15 / .76)}
+.has-fate-tableau .ending-scene{display:grid;grid-template-columns:1fr auto;column-gap:24px;align-items:center;padding:0}
+.has-fate-tableau .ending-scene>.eyebrow,.has-fate-tableau .ending-scene>h2,.has-fate-tableau .ending-scene>.ending-growth,.has-fate-tableau .ending-scene>.ending-fate{grid-column:1}
+.has-fate-tableau .ending-scene h2{font-size:26px;line-height:1.4;margin:5px 0}
+.has-fate-tableau .ending-scene>.ending-growth{font:13px/1.7 var(--serif);margin:2px 0 5px;color:#e9e7e1}
+.has-fate-tableau .ending-scene>.ending-fate{font:11px/1.7 var(--sans);color:#c5c6c3;margin:0;max-width:62ch}
+.has-fate-tableau .ending-actions{grid-column:2;grid-row:2 / 5;display:flex;flex-direction:column;align-items:stretch;gap:5px;margin:0}
+.has-fate-tableau .ending-actions button{min-height:40px;font-size:11px;justify-content:center;padding:8px 12px}
+.has-fate-tableau .ending-scene>.text-button{grid-column:1 / -1;font-size:10px;justify-self:start;min-height:30px;padding:7px 0}
+.has-fate-tableau .decision-feedback:empty{display:none}
+@keyframes ending-settle{from{opacity:.3;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
+@media(max-width:760px){
+ .ending-tableau-image{height:64dvh;object-fit:contain;object-position:center;animation:ending-settle 1s ease-out both}
+ .ending-tableau-time{top:calc(92px + env(safe-area-inset-top));left:22px;font-size:10px}
+ .ending-tableau-shade{background:linear-gradient(180deg,#080c1066,transparent 19%,transparent 45%,#101515 66%)}
+ .ending-tableau--dream_commons .ending-tableau-shade{background:linear-gradient(180deg,#1c170e66,transparent 20%,transparent 46%,#101515 66%)}
+ .immersive-game.has-fate-tableau .story-dialogue--ending{width:calc(100% - 28px);max-height:39dvh;padding:14px 16px 8px}
+ .has-fate-tableau .ending-scene{display:block}
+ .has-fate-tableau .ending-scene h2{font-size:22px}
+ .has-fate-tableau .ending-scene>.ending-growth{font-size:12px}
+ .has-fate-tableau .ending-scene>.ending-fate{font-size:10px}
+ .has-fate-tableau .ending-actions{flex-direction:row;margin-top:12px;gap:12px}
+ .has-fate-tableau .ending-actions button{min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){.ending-tableau-image{animation:none}}
+.ending-tableau--still .ending-tableau-image{animation:none}

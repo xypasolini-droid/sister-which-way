@@ -24,7 +24,7 @@ describe('direct single-choice story interface', () => {
     for (const state of states) {
       const html = render(state);
       const rows = [...html.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(match => match[1]);
-      const choices = getChoices(state).filter(choice => state.nodeId === 'n30' || !choice.id.startsWith('dream_'));
+      const choices = getChoices(state).filter(choice => state.storyRevision === 5 || state.nodeId === 'n30' || !choice.id.startsWith('dream_'));
       expect(rows.length, state.nodeId).toBe(choices.length);
       choices.forEach((choice, index) => {
         expect(rows[index], `${state.nodeId}/${choice.id}`).toContain(`<strong>${escape(choice.label)}</strong>`);
@@ -45,7 +45,7 @@ describe('direct single-choice story interface', () => {
       expect(html).toContain('重看这一幕');
       if (nodeId === 'n30') {
         expect(html).toContain('现实终章');
-        expect(html.match(/成年梦境/g)).toHaveLength(2);
+        expect(html.match(/成年童话/g)).toHaveLength(2);
         expect(html).not.toContain('做一个梦');
       } else expect(html).toContain('做一个梦');
     }
@@ -59,32 +59,42 @@ const play = (route: string[]) => route.reduce((state, id) => {
 }, createInitialState('short'));
 
 
-describe('the last decision shows the reality and adult dreams together', () => {
-  it('exposes both dreams as direct choices without a separate dream menu', () => {
-    const state = play(SHORT_ENDING_TEST_ROUTES.reunited.slice(0, -1));
-    const markup = render(state);
-    for (const choice of getChoices(state)) expect(markup).toContain(choice.label);
-    expect(markup.match(/成年梦境/g)).toHaveLength(2);
-    expect(markup).toContain('现实终章');
-    expect(markup).not.toContain('做一个梦');
-    expect(markup).not.toContain('选择下一步');
+describe('revision 5 uses decisive actions rather than an ending menu', () => {
+  it('ends immediately after the seventh action, without an eighth confirmation', () => {
+    for (const route of Object.values(SHORT_ENDING_TEST_ROUTES)) {
+      const before = play(route.slice(0, -1));
+      expect(before.endingId).toBeNull();
+      expect(before.nodeId).not.toBe('n30');
+      const after = choose(before, route.at(-1)!)!.state;
+      expect(after.endingId).toBeTruthy();
+      expect(after.history).toHaveLength(7);
+      expect(getChoices(after).some(choice => choice.enabled)).toBe(false);
+    }
   });
 
-  it('shows different completed facts before the last choice on rescue, departure and classroom routes', () => {
-    const routes = ['reunited', 'caravan', 'lantern'];
-    const pages = routes.map(id => render(play(SHORT_ENDING_TEST_ROUTES[id].slice(0, -1))));
-    expect(pages[0]).toContain('阿明救出了父亲');
-    expect(pages[1]).toContain('露天货斗');
-    expect(pages[2]).toContain('课堂已经开起来');
-    expect(new Set(pages).size).toBe(3);
+  it('shows departure and returning for Leila as different actions in the same encounter', () => {
+    const state = play(SHORT_ENDING_TEST_ROUTES.caravan.slice(0, -1));
+    const html = render(state);
+    const departure = getChoices(state).find(choice => choice.id === 'register')!;
+    const returnForFriend = getChoices(state).find(choice => choice.id === 'child')!;
+    expect(html).toContain(escape(departure.label));
+    expect(html).toContain(escape(returnForFriend.label));
+    expect(choose(state, departure.id)!.state.endingId).toBe('caravan');
+    expect(choose(state, returnForFriend.id)!.state.endingId).toBe('lantern');
+    expect(html).not.toContain('选择下一步');
+    expect(html).not.toContain('做一个梦');
   });
 
-  it('keeps final choices isolated when previewing another route', () => {
-    const original = structuredClone(NODES.n30);
-    const rescue = play(SHORT_ENDING_TEST_ROUTES.reunited.slice(0, -1));
-    const first = getNode(rescue);
+  it('labels the earned adult tales where their commitments are made', () => {
+    const state = play(SHORT_ENDING_TEST_ROUTES.dream_guardian.slice(0, -1));
+    const html = render(state);
+    expect(html.match(/encounter-ending-kind/g)).toHaveLength(2);
+    expect(html.match(/>成年童话</g)).toHaveLength(2);
+    expect(html).not.toContain('现实终章');
+    expect(html).not.toContain('做一个梦');
+    const before = structuredClone(NODES.n30);
+    getNode(state);
     getNode(play(SHORT_ENDING_TEST_ROUTES.caravan.slice(0, -1)));
-    expect(first.choices.find(choice => choice.id === 'live')!.label).toContain('父亲回家');
-    expect(NODES.n30).toEqual(original);
+    expect(NODES.n30).toEqual(before);
   });
 });

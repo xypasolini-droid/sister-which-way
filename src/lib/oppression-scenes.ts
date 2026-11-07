@@ -21,7 +21,7 @@ export type DramaShot = {
 };
 
 type ShotTemplate = Omit<DramaShot, 'id'>;
-type DramaState = Pick<BranchState, 'nodeId' | 'edition' | 'endingId' | 'flags'>;
+type DramaState = Pick<BranchState, 'nodeId' | 'edition' | 'endingId' | 'flags' | 'storyRevision'>;
 
 // Original staging of the authored story, rather than a transcript of the film.
 // These shots only present events: skipping or replaying them never changes rules.
@@ -71,10 +71,12 @@ const RELATIVE: readonly ShotTemplate[] = [
 
 function prisonShots(state: DramaState): readonly ShotTemplate[] {
   const bonded = state.flags.includes('guardBond');
+  const missedWindow = state.storyRevision === 5 && !state.flags.includes('pact');
+  const canAttemptRescue = bonded && !missedWindow;
   return [
     { visual: 'prison-gunfire', scene: 'prison', location: '北门外的路口', speaker: '阿明', line: '趴下！别站在路中央！', caption: '路口传来枪声，武装者守在门边。', durationMs: 2300 },
     { visual: 'prison-shelter', scene: 'prison', location: '北门侧墙', speaker: '努拉', line: '我记得他的名字。我还在这里。', caption: '女孩蹲在墙边避开路口，仍盯着门。', durationMs: 2600 },
-    { visual: 'prison-signal', scene: 'prison', location: '北门侧墙', speaker: '阿明', line: bonded ? '躲在门侧。我进去找他，别冲出来。' : '名字留下。先退开，我不能答应。', caption: bonded ? '阿明认出字迹，示意女孩留在门边。' : '阿明收下姓名，没有答应开门救人。', durationMs: 2800 },
+    { visual: 'prison-signal', scene: 'prison', location: '北门侧墙', speaker: '阿明', line: canAttemptRescue ? '躲在门侧。我进去找他，别冲出来。' : bonded ? '已经换岗了。先退开，我不能带你进去。' : '名字留下。先退开，我不能答应。', caption: canAttemptRescue ? '阿明认出字迹，示意女孩留在门边。' : bonded ? '阿明认得女孩，但侧门时段已经错过。' : '阿明收下姓名，没有答应开门救人。', durationMs: 2800 },
   ];
 }
 
@@ -94,7 +96,7 @@ export function getOppressionShots(state: DramaState): DramaShot[] {
       break;
     case 'n07': shots = STREET; break;
     case 'n08': shots = CHECKPOINT; break;
-    case 'n21': shots = RELATIVE; break;
+    case 'n21': shots = state.storyRevision === 5 ? RELATIVE.map(shot => ({ ...shot, location: `此前 · ${shot.location}` })) : RELATIVE; break;
     case 'n25': shots = prisonShots(state); break;
   }
   return shots.map((shot, index) => ({ ...shot, id: `${state.nodeId}:${index + 1}:${shot.visual}` }));

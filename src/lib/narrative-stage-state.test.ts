@@ -3,9 +3,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { choose, createInitialState, getEnding, getNode, type BranchState, type SceneId } from './branch-story';
 import { selectNarrativeStage, type NarrativeStageContext } from './narrative-stage-state';
 import { getOppressionShots } from './oppression-scenes';
-import { ENDING_TEST_ROUTES, NODE_TEST_ROUTES, REALITY_VARIANT_TEST_ROUTES } from './story-test-routes';
+import { ENDING_TEST_ROUTES, NODE_TEST_ROUTES, REALITY_VARIANT_TEST_ROUTES, SHORT_ENDING_TEST_ROUTES } from './story-test-routes';
 function stage(patch:Partial<BranchState>,scene?:SceneId,camera:Pick<NarrativeStageContext,'beatIndex'|'phase'>={}){const state={...createInitialState(),...patch};return selectNarrativeStage({...state,...camera,scene:scene??getNode(state).scene,ending:state.endingId});}
 function play(path:string[]){return path.reduce((state,id)=>{const next=choose(state,id);if(!next)throw new Error(`${state.nodeId}/${id}`);return next.state;},createInitialState());}
+function playCurrent(path:string[]){return path.reduce((state,id)=>{const next=choose(state,id);if(!next)throw new Error(`${state.nodeId}/${id}`);return next.state;},createInitialState('short'));}
 describe('physical presence, clothing and visible story consequences',()=>{
  it('opens on the father and daughter stall, then leaves the father absent after arrest',()=>{
   expect(stage({})).toMatchObject({showHero:true,showFather:true,showMother:false,showSister:false,showBrother:false});
@@ -56,6 +57,34 @@ describe('physical presence, clothing and visible story consequences',()=>{
   const cast=stage({nodeId:'n21',flags:['friendMet','disguise']});
   expect(cast).toMatchObject({showHero:false,showMother:true,showSister:true,showBrother:true});
   expect(cast.assets.sister).toContain('sister-outdoor.png');expect(cast.assets.mother).toContain('mother-outdoor.png');
+ });
+ it('returns the current heroine to her family at the uncle’s open truck before the final choice',()=>{
+  const state=playCurrent(SHORT_ENDING_TEST_ROUTES.caravan.slice(0,-1));
+  expect(state.nodeId).toBe('n21');
+  const cast=selectNarrativeStage({...state,scene:getNode(state).scene,ending:state.endingId});
+  expect(cast).toMatchObject({showHero:true,showMother:true,showSister:true,showBrother:true,showFriend:false,womenInVehicle:false});
+  expect(cast.companion).toMatchObject({presence:'present',label:'母亲拒绝强迫后，你已回到姐姐和舅舅的车旁。'});
+  expect(cast.locationName).toBe('亲舅舅接应的露天货车旁');
+  expect(cast.assets.background).toBe('/art/oppression/road-open-truck.svg');
+ });
+ it('keeps the departed family out of the current side-door scene and puts Layla beside the heroine',()=>{
+  const state=playCurrent(SHORT_ENDING_TEST_ROUTES.dream_guardian.slice(0,-1));
+  expect(state.nodeId).toBe('n22');
+  expect(state.flags).toContain('familyDeparted');
+  const cast=selectNarrativeStage({...state,scene:getNode(state).scene,ending:state.endingId});
+  expect(cast).toMatchObject({showHero:true,showFriend:true,showMother:false,showSister:false,showBrother:false,showFather:false,showGuard:false});
+  expect(cast.companion).toMatchObject({presence:'apart'});
+  expect(cast.companion.label).toContain('已随舅舅离城');
+  expect(cast.locationName).toBe('家人离城后，法里达半开的侧门');
+ });
+ it('uses the adult mountain-guide tableau without overlaying the two childhood sprites',()=>{
+  const state=playCurrent(SHORT_ENDING_TEST_ROUTES.lantern);
+  const cast=selectNarrativeStage({...state,scene:getEnding(state)!.scene,ending:state.endingId});
+  expect(cast).toMatchObject({showHero:false,showFriend:false,showMother:false,showSister:false,showBrother:false,showFather:false,showGuard:false,featuredProp:null});
+  expect(cast.assets.background).toBe('/art/sister-v4/end-lantern.webp');
+  expect(cast.assets.hero).toBe('/art/sister-v3/adult-builder.png');
+  expect(cast.heroDescription).toContain('成年的努拉与莱拉');
+  expect(cast.locationName).toBe('几年后的秘密山隘');
  });
  it('shows the sister in the back courtyard while the mother is still searching elsewhere',()=>{
   const cast=stage({nodeId:'n23',sister:'apart',flags:['motherReturned','motherSearching']});

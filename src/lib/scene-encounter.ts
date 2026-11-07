@@ -172,6 +172,11 @@ const SHORT_SCENES: Partial<Record<string, SceneSpec>> = {
 
 export function getSceneEncounter(state: BranchState): SceneEncounterData {
   const node = getNode(state);
+  if (state.storyRevision === 5 && ['n10', 'n18', 'n21', 'n22', 'n25', 'n30'].includes(state.nodeId)) return {
+    title: node.title,
+    goal: state.endingId ? '这一程的行动已经改变了你和家人的去向。' : node.id === 'n22' ? '家人的车已经出发。护住眼前的人，或续写有来处的成年童话。' : node.id === 'n25' ? '读字往来和早先的接应约定，决定侧门能否打开；别的路仍要放下另一些人。' : node.id === 'n21' ? '家人的车与被堵住的莱拉，只能先赶向一边。' : node.id === 'n10' ? '老板推搡女工。你要护她退出，还是获准留下记录？' : '封关正在逼近。先前做过的事，会决定接下来的路。',
+    points: node.choices.map((choice, index) => ({ id: `${node.id}-r5-${index}`, label: choice.label, speaker: node.id === 'n22' ? '莱拉' : '努拉', response: choice.detail, choiceId: choice.id })),
+  };
   const short = 'edition' in state && state.edition === 'short';
   const spec = (short && SHORT_SCENES[state.nodeId]) || SCENES[state.nodeId] || { goal: '点选身边的人与物，走出今天的一步。', points: [] };
   let goal = spec.goal;

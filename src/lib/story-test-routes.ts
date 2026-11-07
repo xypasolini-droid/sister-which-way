@@ -13,9 +13,9 @@ export const REALITY_VARIANT_TEST_ROUTES: Record<string, string[]> = Object.from
 );
 
 export const SHORT_ENDING_TEST_ROUTES: Record<string, string[]> = {
-  reunited: ['work','sew','buy','truth','courier','plan','release','live'],
-  caravan: ['work','sew','buy','pact','care','find','register','live'],
-  lantern: ['work','sew','buy','pact','care','rush','school','live'],
-  dream_guardian: ['work','sew','buy','pact','care','rush','school','dream_guardian'],
-  dream_commons: ['work','sew','buy','pact','care','rush','school','dream_commons'],
+  reunited: ['work','sew','buy','truth','courier','plan','release'],
+  caravan: ['work','sew','buy','pact','care','find','register'],
+  lantern: ['work','sew','buy','pact','care','find','child'],
+  dream_guardian: ['work','sew','buy','pact','care','rush','father'],
+  dream_commons: ['neighbor','sew','buy','truth','courier','rush','school'],
 };

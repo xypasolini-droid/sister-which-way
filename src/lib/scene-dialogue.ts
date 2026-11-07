@@ -22,6 +22,44 @@ export function getSceneDialogue(state: BranchState): SceneDialogueLine[] {
   const arrival = (texts: Record<string, string>, fallback: string) => texts[`${previous?.nodeId}:${previous?.choiceId}`] ?? fallback;
   const street = (text: string) => line(has('aliasAatish') ? '阿提什' : '努拉', 'hero', text);
 
+  if (state.storyRevision === 5) {
+    if (state.nodeId === 'n10') return [
+      street('莱拉介绍我来补衣。先说好报酬。'),
+      friend('货送完了。我回来接你。'),
+      line('女工·帘后', 'narrator', '一整件都不算钱？线钱也没有？'),
+      street('别推她！那处污渍原来就有。'),
+    ];
+    if (state.nodeId === 'n18') return state.sister === 'apart' ? [
+      line('法里达·捎话', 'narrator', '你母亲回绝了婚事，优素福来接你们。'),
+      line('玛莉安·托话', 'narrator', '先前没说清的去向，现在得多跑一趟。'),
+      hero('父亲还在北门。莱拉也还在街上。'),
+      line('广播', 'narrator', '关口即将关闭！所有人离开道路！'),
+    ] : [
+      mother('我不能替你答应婚事。我请弟弟来接。'),
+      sister('最后一趟车。去北门，就可能赶不上。'),
+      hero('莱拉也还在街上。不能都留给别人。'),
+      line('广播', 'narrator', '关口即将关闭！所有人离开道路！'),
+    ];
+    if (state.nodeId === 'n21') return [
+      mother('我女儿没答应！离我们远一点！'),
+      line('优素福·车旁', 'narrator', '我来接你们。坐低，扶住货斗栏板。'),
+      line('送信人', 'narrator', '莱拉堵在市场那头，过不来了！'),
+      sister('跟我们走，还是回头？你得说清楚。'),
+    ];
+    if (state.nodeId === 'n22') return [
+      friend('你真没上车？这里还有两个女孩。'),
+      hero('我叫家人别等。先让她们进侧门。'),
+      line('门内的女人', 'narrator', '快！巡查转过来以前，把门关上。'),
+      friend('火苗如果长大，会守住怎样的地方？'),
+    ];
+    if (state.nodeId === 'n25') return [
+      has('guardBond') ? guard('你教过的字，我记得。里面在调人。') : guard('哈拉的信还在。救人，我没答应。'),
+      has('pact') ? street('姐姐等着约好的门。我会推车回来。') : street('补送消息晚了一步。侧门换岗了。'),
+      line('送信人', 'narrator', '舅舅已到。莱拉被堵住。车不能等！'),
+      street('往哪边走，就会把另一些人留在身后。'),
+    ];
+  }
+
   switch (state.nodeId) {
     case 'n01':
       return [

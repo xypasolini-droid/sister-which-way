@@ -1,223 +1,180 @@
 import type { BranchState, StoryChoice, StoryNode } from './branch-story';
+import { getLegacyShortNode } from './legacy-short-story';
 
 type Effect = NonNullable<StoryChoice['effect']>;
-type ChoicePatch = Partial<StoryChoice>;
 const has = (state: BranchState, flag: string) => state.flags.includes(flag);
-const need = (stat: 'coins' | 'health' | 'food', min: number, reason: string) => ({ stat, min, reason });
-
-function edit(node: StoryNode, patches: Record<string, ChoicePatch>, content: Partial<Omit<StoryNode, 'choices'>> = {}): StoryNode {
+const needs = (flag: string, reason: string) => ({ flag, reason });
+function effect(original: StoryChoice, extra: Effect): Effect {
+  return { ...original.effect, ...extra, stats: { ...original.effect?.stats, ...extra.stats }, add: [...new Set([...(original.effect?.add ?? []), ...(extra.add ?? [])])], remove: [...new Set([...(original.effect?.remove ?? []), ...(extra.remove ?? [])])] };
+}
+function edit(node: StoryNode, patches: Record<string, Partial<StoryChoice>>, content: Partial<Omit<StoryNode, 'choices'>> = {}): StoryNode {
   return { ...node, ...content, choices: node.choices.map(choice => ({ ...choice, ...patches[choice.id] })) };
 }
-function addEffect(choice: StoryChoice, extra: Effect): Effect {
-  return {
-    ...choice.effect,
-    ...extra,
-    stats: { ...choice.effect?.stats, ...extra.stats },
-    add: [...new Set([...(choice.effect?.add ?? []), ...(extra.add ?? [])])],
-    remove: [...new Set([...(choice.effect?.remove ?? []), ...(extra.remove ?? [])])],
-  };
-}
+const familyDeparture: Effect = {
+  outfit: 'travel', sister: 'beside',
+  add: ['caravan', 'documents', 'registered', 'escortConfirmed', 'boarded', 'familyTogether', 'motherReturned', 'marriageRefused', 'fateDeparture'],
+  remove: ['missingSister', 'hiddenRisk', 'fateGuide', 'fateGuardian', 'fateCommons'],
+};
+const familyParts: Effect = {
+  outfit: 'worker', sister: 'apart',
+  add: ['familyDeparted', 'escortConfirmed', 'motherReturned', 'marriageRefused', 'heroStayed', 'friendTogether'],
+  remove: ['boarded', 'familyTogether', 'missingSister', 'hiddenRisk'],
+};
+const guide: Effect = { ...familyParts, add: [...familyParts.add!, 'fateGuide'] };
+const departText = '你先回到约定的私院。母亲已经带着姐姐和萨米拒绝贾维德的强迫，优素福本人也赶到了。他核对去向与家人，替母亲找好能坐低的地方。你们四人登上露天后斗货车，握住栏板；父亲仍被关着。莱拉托人说会与熟悉的同伴走另一条路，你们不能保证她也能离开。';
+const guideText = '你先把母亲、姐姐和萨米送到优素福亲自接应的露天货车旁。街口传来莱拉被堵住的消息。你告诉姐姐：“我去接她。封关了就走，不要回头等我。”她反复确认你的话，紧握过你的手才上车。你折返把莱拉拉进侧巷；关卡随即封闭，车已不得不开走。母亲、姐姐与幼弟离了城，你与莱拉留在另一边，父亲仍未获救。';
 
-/** Eight authored decisions. Called by getNode only for the short edition. */
-export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
-  if (node.id === 'n30') return node;
-  if (node.id === 'n01') return edit(node, { work: { label: '拉住父亲，先离开这里' } });
-
-  if (node.id === 'n02') {
-    const patches: Record<string, ChoicePatch> = {};
-    for (const choice of node.choices) patches[choice.id] = {
-      next: 'n06',
-      detail: `${choice.detail}接下来几日的遭遇会以过场推进。`,
-      consequence: `${choice.id === 'sew' ? '你先和姐姐写好回家的约定，再陪母亲出门。' : '你陪母亲去拘留院要求放人，姐姐留家照看萨米。'}街口巡查指责母女没有成年男性亲属陪同，母亲的话没说完，棍子已落下来。你扶她回家养伤，随后独自买饼，却被推回零钱、追赶着空手归来。萨米问有钱为什么没有饭，你答不上来，只陪他讲完火苗守住名字的故事。姐姐打开亡兄的衣箱，把剪刀放在你面前。`,
-      effect: addEffect(choice, { father: 'missing', stats: { ...choice.effect?.stats, health: -2, food: -1 }, add: ['motherSearch', 'motherHurt', 'brotherStory', 'book'] }),
-    };
-    return edit(node, patches);
-  }
-
-  if (node.id === 'n06') return edit(node, {
-    buy: { label: '告诉姐姐我害怕，请她陪我开始', detail: '先说出害怕，让姐姐陪你完成剪发与换装，再约好回家的时间。', keywords: [...node.choices[0].keywords, '害怕', '陪我', '告诉姐姐'] },
-    help: { label: '我也害怕，但想自己迈出这一步', detail: '姐姐留在身旁，你接过剪刀，亲手留下属于自己的决定。', keywords: [...node.choices[1].keywords, '迈出', '亲手', '自己开始'] },
-  }, {
-    paragraphs: [
-      '这几天，母亲带你要求释放父亲，被巡查以没有成年男性亲属陪同为由殴打；她回家养伤。你偷偷买饼，被拒绝、追赶，带着仍未花掉的钱空手回家。萨米听完火苗的故事，还是饿。',
-      '姐姐打开亡兄阿里的衣箱。灰白长衫、宽裤和朴素小帽压在最下面。穿成男孩或许能接过一枚钱，却不能让饥饿、武器和战争消失。她把剪刀放低，等你决定怎样开始。',
-    ],
-    sisterLine: '我们借阿里的衣服，不把你变成阿里。回来以后，我还是叫你努拉。',
+/** Revision five: seven decisions, five fixed fates, no extra final-page click. */
+export function getShortNode(original: StoryNode, state: BranchState): StoryNode {
+  const node = getLegacyShortNode(original, state);
+  const find = (id: string) => node.choices.find(choice => choice.id === id)!;
+  if (node.id === 'n01') return edit(node, {
+    work: { effect: effect(find('work'), { add: ['protectedSomeone'] }) },
+    neighbor: { effect: effect(find('neighbor'), { add: ['recordPractice'] }) },
+    mother: { effect: effect(find('mother'), { add: ['recordPractice'] }) },
   });
-
-  if (node.id === 'n07') return edit(node, {
-    truth: {
-      next: 'n09',
-      consequence: '莱拉与你核对工钱，一起跑腿，挣到两人的饭。你把自己的饼送回家，再到摊位读信。阿明捏着一封信等在那里；你认出他曾站在抓走父亲的人身旁，脚先退了半步。',
-    },
-    hide: { next: 'n10' },
-    pact: {
-      label: '先回家，和姐姐商量下一步',
-      detail: '把自己的饼带回去，告诉姐姐莱拉的帮助，以及在街上使用的新名字。',
-      keywords: ['回家', '姐姐', '商量', '饼', '约定'],
-      next: 'n13',
-      consequence: '莱拉带你认过愿意开后门的熟人，再去照顾她自己的家。你把饼带回去，告诉姐姐在外面叫阿提什——火焰。她没有因你能挣钱便放心，先问下次要去哪儿、几点回来。',
-    },
-  });
-
   if (node.id === 'n09') return edit(node, {
-    verify: {
-      next: 'n18',
-      consequence: '你把信还给阿明，陪他静坐了一会儿。稍后再见，才在另一张纸上写下父亲的名字。他对照轮值纸，确认父亲仍在北门拘留院，没有答应探视。哈拉的信仍由阿明收着，你把问得的地点带回家；知道关在哪里，和能把人救回家，仍隔着一道铁门。',
-    },
-    courier: {
-      next: 'n18',
-      consequence: '接下来的几次送货，阿明都请你再念一次妻子哈拉的名字。你陪他练写，他终于能自己认出来。后来你才另拿一张纸写下父亲的姓名，他记下了，阿齐兹也愿意递消息。你回家商量，有了几次真实的往来，仍没有放人的保证。',
-    },
-    sister: {
-      next: 'n18',
-      consequence: '你把信还给阿明，带着自己的见闻回家，告诉姐姐他想念妻子哈拉。她与你沉默了一会儿，再核对下一次能找谁问父亲。母亲把夜里写给远亲的信推到灯下，另一个求生的办法也需要有人说清代价。',
-    },
+    courier: { effect: effect(find('courier'), { add: ['literacyPractice'] }) },
   });
-
   if (node.id === 'n10') return edit(node, {
     wage: {
-      label: '带自己的报酬回家',
-      detail: '家里仍在等饭，把自己挣到的报酬先带回去。',
-      next: 'n18',
+      label: '挡到女工身前，和她一起退出作坊',
+      detail: '老板伸手推她，你扶住她往门外退；自己今天的报酬也可能拿不到。',
+      keywords: ['挡住', '保护', '女工', '一起退出', '离开作坊'],
+      consequence: '老板伸手推搡不肯认账的女工。你挡到她身前，莱拉拉开门，三个人一起退进巷子。她稳住身体后让你别再回去争；你的活也没拿到报酬。你把遭遇照实告诉家人，母亲摊开那封寄给远亲的信：她已向优素福求接应，却还没收到回话。',
+      effect: { stats: { coins: -1, trust: 1 }, add: ['protectedSomeone', 'workerProtected'] },
     },
-    ledger: {
-      label: '征求女工同意，保留被扣工钱的记录',
-      detail: '听她说完，用代号留下获准保留的记录；记录不能保证讨回工钱。',
-      next: 'n18',
-      consequence: '女工同意用代号，你听她说完，把被扣工钱的事记下。对方仍说下次再谈；她收好副本，你只保留获准留下的记录，把报酬带回家。家里广播正说道路快要封锁，母亲拿出一封还没敢念给姐姐听的信。',
-    },
-  });
-
+    ledger: { effect: effect(find('ledger'), { add: ['recordPractice'] }) },
+  }, { paragraphs: [`${node.paragraphs[0]}莱拉送完货回到后门，与你一起听见女工争辩。`, ...node.paragraphs.slice(1)] });
   if (node.id === 'n13') return edit(node, {
-    listen: { next: 'n18' },
-    secret: {
-      label: '说不清楚，先独自去做工',
-      detail: '保留自己的行动，也承受没有把去向说清的距离；住处仍需互相知道。',
-      keywords: ['独自', '做工', '不告诉', '自己去'],
-      next: 'n18',
-      consequence: '你没有把话说清。姐姐、母亲和萨米先住法里达相连的里间，你去作坊做工，不能再把她会等在原处当成理所当然。广播说路快封了；法里达转来母亲的信，你才知道她还试着用一桩婚事向远亲求照应。',
-    },
-    care: {
-      next: 'n18',
-      consequence: '你接过水盆，让姐姐终于坐下。母亲喝了水，伤仍在；关于明天的争执也没有消失。夜里广播说道路快封锁，母亲把写给远亲的信拿出来，这一次不能再只让一个人决定全家的去路。',
-    },
+    listen: { effect: effect(find('listen'), { add: ['pact', 'listenedSister'] }) },
+    secret: { effect: effect(find('secret'), { add: ['leftUnsaid'], remove: ['pact'] }) },
+    care: { effect: effect(find('care'), { add: ['carePractice', 'protectedSomeone', 'pact'] }) },
   });
-
   if (node.id === 'n18') return edit(node, {
     plan: {
-      label: '先确认接信地址，再独自去北门',
-      detail: '与姐姐约好回话的门和时限；她留在已知住处，你去问阿明。',
-      keywords: ['北门', '阿明', '父亲', '救父', '地址', '约定'],
-      next: 'n25', requires: [],
-      consequence: `${state.sister === 'apart' ? '你托法里达把接信地址和回话时限交给姐姐。她确认收到了，没有答应立刻搬回一起住。' : '你和姐姐确认接信地址、回话时限，再把母亲和萨米托给她。'}你独自去北门，仍不知道贾维德会提前来催人离开。能不能救父亲，还要看阿明认不认得你，以及门边有没有人盯着。`,
-      effect: { stats: { trust: 1, hope: 1, exposure: 1, food: -1 }, add: ['pact', 'marriageOffer', 'sisterRefused', 'rescueRoute', 'relativePressure'], remove: ['caravan'] },
+      label: '按姐妹约定去北门，争取救父',
+      detail: has(state, 'pact') ? '姐姐知道回话的门和时限。先前教字的往来，会决定阿明是否肯冒险。' : '此前没把联络约好；今天要补接应，会错过救父的侧门机会。仍可以去核实，或回头与家人离城。',
+      effect: { stats: { hope: 1, exposure: 1, food: -1 }, add: ['marriageOffer', 'sisterRefused', 'rescueRoute', 'relativePressure'], remove: ['caravan'] },
+      consequence: `${has(state, 'pact') ? '姐姐复述了你们先前说好的门与时限。' : '你先托法里达把去向送给姐姐；之前没说清的话，现在需要多跑一趟，错过了侧门接应时段。'}母亲拒绝用婚事换路，已请亲弟优素福来接孩子。你去北门找阿明，莱拉留在市场收尾；封关的消息越来越急。`,
     },
     find: {
-      label: '去问亲舅舅接应，让家人在屋里等',
-      detail: '先问优素福是否真的能来，不能让司机或婚约替家人决定。',
-      keywords: ['舅舅', '接应', '屋里', '母亲', '车', '撤离'],
-      next: 'n21', requires: [],
-      consequence: '你去问母亲的亲弟优素福有没有回信，家人留在关门的住处。贾维德却趁你不在开着红色轿车提前到了，借战事催母亲、姐姐和萨米上车。母亲反复说还有一个女儿没回来，他不肯等；接下来的决定，由她们自己作出。',
-      effect: { outfit: 'travel', stats: { hope: 1 }, add: ['caravan', 'relativePressure', 'marriageOffer', 'sisterRefused'], remove: ['rescueRoute'] },
+      label: '先与家人会合，争取最后一趟离城车',
+      detail: '优素福刚传来接应消息。贾维德催人走，母亲必须先摆脱他的控制。',
     },
     rush: {
-      label: '留在内院，把照护与谋生分担起来',
-      detail: '接受有限的邻里互助，先安排饭、休息和关门里间的学习。',
-      keywords: ['留下', '院子', '互助', '照护', '课堂', '谋生'],
-      next: 'n22', requires: [],
-      consequence: `${state.sister === 'apart' ? '你先到内院听姐姐的意见，她确认愿意共同安排照护，再和你写清谁做什么。' : '你先听姐姐说完，她愿意和你共同安排照护。'}你们确认法里达仍愿意留门，把有限口粮凑在一起。母亲在关好的门里拒绝贾维德：玛莉安没有答应婚事。留下仍会挨饿、会害怕，也需要主人承担风险，但这一次不拿姐姐的一生去换一个屋檐。`,
-      effect: { sister: 'beside', stats: { food: 1 }, add: ['stayRoute', 'marriageOffer', 'sisterRefused', 'marriageRefused'], remove: ['caravan', 'rescueRoute', 'missingSister', 'hiddenRisk'] },
+      label: '让家人先走，我与莱拉接应受困的女孩',
+      detail: '向家人说明分别，留下找莱拉。你们不能同时赶车、去监所和接人。',
+      consequence: '优素福亲自赶到私院，母亲拒绝贾维德的逼婚，决定带姐姐和萨米跟亲弟离城。你告诉她们自己要去找被堵住的莱拉：“封关了就走，不要等。”姐姐先与你确认这真是你的决定，再把手松开。你沿市场侧巷去找莱拉。家人的车已经出发，父亲仍在监所。',
+      effect: { ...familyParts, add: [...familyParts.add!, 'stayRoute', 'relativePressure', 'sisterRefused'] },
     },
   }, {
-    title: '这一次，谁来决定',
-    paragraphs: state.sister === 'apart' ? [
-      '广播说道路快封锁。法里达捎来母亲的信：她曾主动提出让姐姐嫁给远亲的小儿子，以求那一家照应母亲和孩子。母亲害怕活不下去，姐姐却没有答应。',
-      '姐姐托人说，她不愿被拿一生交换一条路。母亲终于答应不能替她决定。你们仍分住两处，可以先确认接信地址，再决定寻父、问亲属接应，还是留在内院互助。',
-    ] : [
-      '广播说道路快封锁。母亲把夜里写给远亲贾维德的信放到灯下：她主动提出让姐姐嫁给他的小儿子，希望全家得到照应。说到最后，她不敢看姐姐。',
-      '姐姐明确说不。母亲握着受伤的手臂，终于答应不能替她决定。亲舅舅优素福尚未到场，父亲仍在铁门后；你们必须先选一件今天能做的事。',
+    title: '最后一趟车，和北门的灯',
+    paragraphs: [
+      '母亲承认曾想用玛莉安的婚事求贾维德照应。姐姐说不，她终于收回这份没有得到女儿同意的许诺。亲弟优素福传来消息：最后一趟露天货车会在封关前接她们。贾维德却已提前上门逼人走。',
+      `父亲仍在北门，莱拉仍在街上。${has(state, 'pact') ? '你和姐姐保留着早先说好的接应时限。' : '你还没有守住与姐姐的联络约定；临时补消息会耗掉北门的窗口。'}炮火不会等你把每个人都找齐。今天往哪边走，会让另一些人留在身后。`,
     ],
-    sisterLine: state.sister === 'apart' ? '她托人传话：“去哪里先说清楚。我的婚事，也必须听我说完。”' : '我知道母亲很怕。但不能先许出我的一生，再说那是为了全家。',
+    sisterLine: '我不答应嫁过去。你要去哪里，现在告诉我；封关以前，我们得知道彼此会不会回来。',
   });
-
   if (node.id === 'n25') return edit(node, {
     release: {
-      next: 'n30',
-      requires: node.choices.find(choice => choice.id === 'release')!.requires?.map(requirement => requirement.flag === 'guardBond' ? { ...requirement, reason: '先前尚未建立读信、教字的往来，今天不能要求阿明冒险。' } : requirement),
-      consequence: '炮火与调动声中，阿明负伤把父亲带出侧门，安置到借来的木推车上。父亲平日跛行，需要腋拐支撑，如今添了重伤，暂时不能撑拐行走，你推着他离开。与此同时，母亲拒绝贾维德的强迫带离，带萨米回到约定的门。你们再接上姐姐，终于重新数到五个人；父母都还需要水、休息和照护。',
-      effect: addEffect(node.choices.find(choice => choice.id === 'release')!, { sister: 'beside', add: ['familyTogether', 'motherReturned', 'marriageRefused'], remove: ['missingSister', 'hiddenRisk'] }),
+      label: '守住侧门，把父亲接到木车上',
+      requires: [needs('guardBond', '此前尚未建立读信、教字的往来，阿明不会因一次请求便冒险救人。'), needs('pact', '此前没有守住姐妹联络约定，补传消息已错过侧门接应时段。')],
+      consequence: '阿明认出了你教过的字。炮火与调动声中，他负伤把父亲带出侧门，安置到借来的木推车上。父亲平日跛行，需要腋拐支撑，如今添了重伤，暂时不能自己撑拐行走。你握紧车把，朝先前与姐姐约定的门推去。母亲拒绝贾维德的强迫，已带萨米返回，姐姐也守在那里。',
+      effect: effect(find('release'), { add: ['fateRescue', 'familyTogether', 'motherReturned', 'marriageRefused'] }),
     },
     letter: {
-      next: 'n30',
-      consequence: '阿明没能立刻带人出来，只托人确认父亲仍在。你留下接信地址，退回约定的私院。母亲拒绝了强迫离开，带萨米回来；姐姐确认你的去向后也来会合。你们仍少一个人，但下一封信知道该寄到哪扇门。',
-      effect: addEffect(node.choices.find(choice => choice.id === 'letter')!, { sister: 'beside', add: ['familyTogether', 'safeAddress'], remove: ['missingSister', 'hiddenRisk'] }),
+      label: '离开北门，赶回去与家人一起登车',
+      detail: '放弃今天的救父机会，四人随优素福离城；父亲仍留在铁门后。',
+      keywords: ['赶车', '家人', '离城', '舅舅', '上车'],
+      consequence: departText,
+      effect: familyDeparture,
     },
     leave: {
-      label: '先退出门口，和家人接受一夜借住',
-      detail: '承认今天无法救回父亲，确认法里达愿意留门后再安顿家人。',
-      next: 'n30',
-      consequence: '你退回约定的门，母亲拒绝了贾维德，带萨米回来，姐姐也按接信约定与你会合。法里达只答应这一夜，你们接受邀请，把疼着的人安顿到帘后。父亲仍未回来，留下的纸也不保证下一次能打开铁门。',
-      effect: addEffect(node.choices.find(choice => choice.id === 'leave')!, { sister: 'beside', add: ['settled', 'shelter', 'familyTogether', 'safeAddress'], remove: ['missingSister', 'hiddenRisk'] }),
+      label: '送家人上车，回头去接被堵住的莱拉',
+      detail: '先明确告诉家人不要等。回头接她，可能让你再也赶不上这趟车。',
+      keywords: ['莱拉', '回头', '接她', '折返', '留下'],
+      consequence: guideText,
+      effect: guide,
     },
   }, {
     paragraphs: [
-      has(state, 'guardBond') ? '这几次读信和识字，让阿明认出了你的字。战事逼近，你按约到了北门；他记着父亲的名字，却仍不敢保证能把人带出来。' : node.paragraphs[0],
-      '同一时候，贾维德提前来催家人离开。母亲拒绝丢下尚未回家的你，姐姐抱紧萨米，她忍着疼往约定的门返行。你还没听到消息，仍一遍遍讲火苗守在石门前的故事。',
+      has(state, 'guardBond') ? '阿明认出你教过的字，指向炮火间歇时能打开的侧门。救人仍会让他冒险，也会耗尽离城的时间。' : '阿明仍收着妻子哈拉的信。他认得你，或愿意听你再念一次她的名字，却没有同你建立足以进门救人的往来。你不能靠一次求恳让侧门打开。',
+      `${has(state, 'pact') ? '姐姐守着你们先前约好的门。' : '补送去向的脚步回来时，侧门已经换岗。'}送信人带来急话：母亲拒绝了贾维德，优素福已到；莱拉被堵在市场另一头。你仍能赶回家人的车，也能回头接她，却不能把两条路一起走。`,
     ],
-    tale: has(state, 'guardBond') ? node.tale : '火苗守在石门前，念着旅人的名字。它没有编出门已经打开，也没有把陌生看门人写成一定会帮忙的朋友。风大时，它先给自己留一点热，再把能够回话的地址写清。',
   });
-
-  if (node.id === 'n21') return edit(node, {
-    register: {
-      label: '先回去会合，等亲舅舅本人来接',
-      detail: '拒绝婚事与强迫上车，核实优素福本人、办理去向，再支付路费。',
-      keywords: ['舅舅', '接应', '核对', '登记', '会合', '上车'],
-      next: 'n30',
-      requires: [need('coins', 2, '路费需要两枚钱；可以先留在被邀请的私宅。'), need('health', 3, '家人身体暂时承受不了这段路；先接受一夜借住。')],
-      consequence: '母亲拒绝随贾维德走，带姐姐和萨米回到约定的门，你也按时回来。优素福亲自到场，听清她们拒绝婚事，核对去向，办好文书。付过两枚路费，你们才在他的陪同下登上露天后斗货车，坐低、扶住栏板；母亲数齐每个孩子，父亲的消息仍没有回来。',
-      effect: { outfit: 'travel', sister: 'beside', stats: { coins: -2, exposure: -1 }, add: ['caravan', 'documents', 'registered', 'escortConfirmed', 'boarded', 'familyTogether', 'motherReturned', 'marriageRefused', 'relativePressure'], remove: ['missingSister', 'hiddenRisk'] },
-    },
-    child: {
-      label: '拒绝婚事，全家接受一夜私宅借住',
-      detail: '母亲支持姐姐说不，先回去会合，再确认主人愿意留门。',
-      keywords: ['拒绝', '婚事', '借住', '私宅', '一夜', '孩子'],
-      next: 'n30',
-      consequence: '姐姐说没有答应嫁人，母亲挡住伸来的手，让她抱萨米先退进开着的门。她们拒绝继续随贾维德走，回去与你会合。法里达确认可以借住一夜，你们关门倒水；母亲的疼没有因一床被子消失，父亲也仍未归来。',
-      effect: { sister: 'beside', stats: { hope: 2, trust: 1 }, add: ['settled', 'shelter', 'familyTogether', 'motherReturned', 'marriageRefused', 'relativePressure'], remove: ['missingSister', 'hiddenRisk', 'boarded'] },
-    },
-    search: {
-      label: '母亲坚持回家，等尚未归来的女儿',
-      detail: '姐姐与母亲一起拒绝强迫带离，按先前约定找到努拉。',
-      keywords: ['回家', '等', '女儿', '找', '母亲', '拒绝'],
-      next: 'n30',
-      consequence: '母亲不再等贾维德允许，拉着姐姐的手，带萨米返回你们约过的门。你也从问讯的街口回来；姐姐把你拉进屋，先告诉你母亲没有答应丢下任何一个孩子。家里仍缺食物，也仍少父亲，至少彼此知道下一封消息该送到哪里。',
-      effect: { sister: 'beside', stats: { food: -1 }, add: ['familyTogether', 'motherReturned', 'motherSearching', 'marriageRefused', 'relativePressure', 'safeAddress'], remove: ['missingSister', 'hiddenRisk', 'boarded'] },
-    },
-  });
-
+  if (node.id === 'n21') {
+    const departure = edit(node, {
+      register: { label: '握住姐姐的手，四个人一起上车', detail: '与母亲、姐姐、幼弟随优素福离城，父亲仍在监所。', requires: [], consequence: departText, effect: familyDeparture },
+      child: { label: '先送家人上车，我回头接莱拉', detail: '告诉姐姐封关就走。把被堵住的莱拉接回来，可能赶不上这趟车。', requires: [], consequence: guideText, effect: guide },
+    }, {
+      title: '车在等，另一头有人叫你',
+      paragraphs: [
+        '母亲拿起灶边的木棍，逼贾维德退开：“我女儿没有答应！”她带姐姐和萨米回到私院，与你会合。优素福已经到场，确认过落脚处，不拿婚约作交换。',
+        '露天货斗里有母亲和幼弟坐的位置。姐姐伸手拉你，送信人却跑来，说莱拉被截在市场侧巷。车得在封关前走。你若回头，家人不能留下来替你承担同一次危险。',
+      ],
+      sisterLine: '我想你跟我们走。可若你一定回头，先把话说清楚——我不会假装这不痛。',
+    });
+    return { ...departure, choices: departure.choices.filter(choice => choice.id !== 'search') };
+  }
   if (node.id === 'n22') return edit(node, {
-    school: {
-      label: '按现有口粮排轮值，留一小时课堂',
-      detail: '先安排照护与补衣，托可以买食的熟人采买，不让每个女孩轮流冒险上街。',
-      next: 'n30',
-      requires: [need('food', 2, '至少需要两份口粮才能安排有限的轮值课堂。'), need('health', 3, '家人仍需休息；可以先维持日常、等待消息。')],
-      consequence: '值日表先写谁照看萨米、谁补衣、谁能托熟人带食物。姐姐把你的名字也排进读书的一栏，莱拉有空时来坐一会儿。门外一响，所有人仍会停笔；你们只排稳眼前一天，没有许诺明天一定开门。',
-      effect: { stats: { food: -1, trust: 1, hope: 2 }, add: ['school', 'lantern', 'sustained', 'neighbors', 'marriageRefused', 'familyTogether'] },
+    send: {
+      label: '牵住莱拉，带女孩们先穿过这条巷子',
+      detail: '家人的车不再等你。你和莱拉留下相互接应，接着学会怎样带人过路。',
+      requires: [], keywords: ['莱拉', '巷子', '带路', '女孩', '留下'],
+      consequence: '你与莱拉把女孩们带到受邀请的里间，自己再退回侧巷找下一条路。优素福的车在封关前带母亲、姐姐和萨米离开；没有人答应你们何时重逢。你没有救出父亲，也没有赶上车，留下的两个人开始一起认路、一起活下去。',
+      effect: guide,
     },
     father: {
-      next: 'n30',
-      consequence: '母亲坐下歇一会儿，你烧水，姐姐核对今天的口粮，再把父亲的名字写在信封上。母亲已经拒绝婚事，屋外的命令却没有撤掉。回信没有来，你们先完成这个能够分担的一天。',
-      effect: { stats: { health: 1 }, add: ['letter', 'waiting', 'safeAddress', 'stayRoute', 'marriageRefused', 'familyTogether'] },
+      label: '挡在女孩身前，让莱拉带她们进门',
+      finish: 'dream_guardian',
+      detail: '成年童话分支：你曾真正保护过别人，此刻再承担护送，让火苗长成女性卫队首领。现实中的家人仍随舅舅离城，父亲未获救。',
+      requires: [needs('protectedSomeone', '先前尚未选择保护别人：扶父亲退开、保护女工或分担姐姐的照护，会给这个守护之梦留下根。')],
+      keywords: ['守护', '卫队', '山口', '挡住', '保护', '梦境'],
+      consequence: '你挡住侧门，让莱拉先把两个女孩送进里间，再一起把门关上。母亲、姐姐和萨米已随优素福离城，父亲仍在监所。你们躲在门后续写火苗的故事：如果有一天不必再退开，长大的她会怎样守住这条路？故事把时间带到成年，没有替现实的人撤去伤和失散。',
+      effect: { ...familyParts, add: [...familyParts.add!, 'fateGuardian', 'girlsProtected'] },
     },
-    send: {
-      label: '商量分住两处，写清地址与报平安日',
-      detail: '姐姐、母亲和幼弟留在邀请借住的私宅，你到作坊后间；双方确认后才分别。',
-      next: 'n30',
-      consequence: '你先问姐姐愿不愿意，她把两个住处、接信人和报平安日期写清。姐姐、母亲和萨米留在法里达家，你到作坊后间；没有人独自去街上等车。你把亲眼见过、得到允许的事记下来，分别仍让人难过，也没有被说成永远失联。',
-      effect: { sister: 'apart', scarf: 'shared', stats: { trust: -1 }, add: ['sendFamily', 'chosenApart', 'evidence', 'letter', 'safeAddress', 'marriageRefused'], remove: ['missingSister', 'boarded', 'familyTogether'] },
+    school: {
+      label: '教女孩写下真名，让她们自己讲故事',
+      finish: 'dream_commons',
+      detail: '成年童话分支：先前教字、记录或共担照护的行动，成为女性学校、市场与议事庭的开端。现实家人的去向不被梦改变。',
+      requires: canBuildCommons(state) ? [] : [needs('commonsPractice', '先前尚未参与教字、留下获准记录或分担照护；先让建设的愿望有真实行动作根。')],
+      keywords: ['名字', '学校', '自治', '教字', '梦境', '共同'],
+      consequence: '你和莱拉先把女孩们安顿进受邀请的里间，听她们说出自己的名字，再陪不会写字的孩子画第一笔。母亲、姐姐和萨米已随优素福离城，父亲仍在监所。你续写火苗和许多人一起建城的故事，把学校、市场与议事的长桌放进成年之梦；梦没有让现实家人突然团聚。',
+      effect: { ...familyParts, add: [...familyParts.add!, 'fateCommons', 'namesShared'] },
     },
+  }, {
+    title: '两个女孩，和一扇还开着的门',
+    paragraphs: [
+      '你找到莱拉时，她正护着两个被巡查赶离街口的女孩。法里达让侧门开了一线，屋里只能暂时藏身。你们得先把人带进去。',
+      '母亲、姐姐和萨米跟优素福的车离城，父亲仍被囚。你们可以继续学着接应眼前的人，也能把已经做过的保护、教字和照护写进童话，看看成年后的自己能够成为什么人。两种成年结局会明确留在梦境里。',
+    ],
+    sisterLine: '你记着临别时姐姐的话：“你还得活着。帮别人时，也把自己的手牵好。”',
   });
-
+  if (node.id === 'n30') {
+    const live = find('live');
+    const fate = getShortFate(state);
+    const closes: Record<string, Pick<StoryChoice, 'label' | 'detail' | 'consequence'> & { scene: StoryNode['scene']; finish: StoryChoice['finish'] }> = {
+      reunited: { scene: 'road', finish: 'road', label: '推起木车，带父亲回约定的门', detail: '父亲在车上，母亲、姐姐和幼弟守着你们早先约好的门。', consequence: '你推着父亲的木车穿过夜路。姐姐跑来握住另一边车把，母亲牵着萨米让开门槛。父亲两条腿完整，旧跛行之外添了重伤，腋拐收在车边；这一夜五个人重新聚到了一起，伤与战争仍需要共同承受。' },
+      caravan: { scene: 'road', finish: 'road', label: '拉住姐姐的手，在露天货斗里坐稳', detail: '四个人随优素福离城。你没有救回父亲，也没有拿姐姐的婚事换路。', consequence: '姐姐把你拉到母亲身旁，萨米伏在她膝边。你扶住露天货斗的栏板，跟着优素福的车越过最后一个关口。父亲仍被囚禁；你与母亲、姐姐和幼弟离开了城，开始承担没有他同行的新生活。' },
+      lantern: { scene: 'road', finish: 'road', label: '握住莱拉的手，带她穿过封锁', detail: '家人的车已经离开。此后的路由你们相互接应；这段成长是游戏原创延展。', consequence: '你拉着莱拉穿过侧巷，关卡在身后落下。几年后，你们已长成能辨认山路与巡查动向的年轻女人：她守住队尾，你把一个快滑下石阶的女孩拉到身旁。母亲、姐姐和萨米离了城，父亲未能救出；家人没有被安排在山口等你。你无法带回所有人，却成了能带别人过路的人。' },
+      dream_guardian: { scene: 'courtyard', finish: 'dream_guardian', label: '站到女孩身前，守住梦里的山口', detail: '此刻进入明确的成年童话，现实中的父亲、伤势和分别保持原状。', consequence: '门后的小火苗在故事里长大。成年后的你发出手势，女性卫队在山口展开；女孩从你们身后走向学校。这是有意偏离现实的愿望，父亲仍未在现实获救，母亲、姐姐与幼弟也没有因梦重返你身旁。' },
+      dream_commons: { scene: 'courtyard', finish: 'dream_commons', label: '推开梦里的校门，让她们写下真名', detail: '此刻进入明确的成年童话：学校、买卖与公共决定由女性共同掌握。', consequence: '成年之梦展开：姐姐打开校门，莱拉经营自己的铺子，你把议事的位置让给提出异议的女人。女孩当街写下真名。现实里父亲仍被囚，母亲、姐姐与幼弟随舅舅离城，梦没有为这场分别编造已经发生的重逢。' },
+    };
+    const close = closes[fate];
+    return { ...node, title: fate.startsWith('dream_') ? '火苗长大的那一页' : '这一次，握住谁的手', scene: close.scene, paragraphs: [state.history.at(-1)?.consequence ?? close.detail, close.detail], sisterLine: fate === 'lantern' || fate.startsWith('dream_') ? '姐姐已随车离开。这一幕，她的手没有从别处伸过来。' : node.sisterLine,
+      choices: [{ ...live, ...close, next: 'n30', keywords: ['继续', '走', '握住', '推车', '上车', '守住', '校门'], requires: [], effect: fate === 'lantern' ? { add: ['guideGrown'] } : {} }],
+    };
+  }
   return node;
+}
+export function canBuildCommons(state: BranchState): boolean {
+  return ['literacyPractice', 'recordPractice', 'carePractice'].some(flag => has(state, flag));
+}
+export function getShortFate(state: BranchState): 'reunited' | 'caravan' | 'lantern' | 'dream_guardian' | 'dream_commons' {
+  if (has(state, 'fateRescue')) return 'reunited';
+  if (has(state, 'fateDeparture')) return 'caravan';
+  if (has(state, 'fateGuardian')) return 'dream_guardian';
+  if (has(state, 'fateCommons')) return 'dream_commons';
+  return 'lantern';
 }

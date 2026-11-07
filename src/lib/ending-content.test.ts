@@ -1,105 +1,74 @@
 import { describe, expect, it } from 'vitest';
 import { choose, createInitialState, getEnding, type BranchState } from './branch-story';
-import { ENDINGS, projectEnding } from './ending-content';
+import { ENDINGS, getStayEndingPresentation, projectEnding } from './ending-content';
+import { SHORT_ENDING_TEST_ROUTES } from './story-test-routes';
+const play = (id:string) => SHORT_ENDING_TEST_ROUTES[id].reduce((state, choiceId) => choose(state,choiceId)!.state,createInitialState('short'));
+const text = (id:string) => {const e=getEnding(play(id))!;return `${e.summary}${e.paragraphs.join('')}${e.cost}`;};
 
-const state = (patch: Partial<BranchState> = {}): BranchState => ({
-  version: 3, nodeId: 'n30', stats: { food: 0, coins: 0, trust: 5, hope: 4, exposure: 4, health: 3 },
-  flags: [], outfit: 'worker', scarf: 'worn', sister: 'beside', father: 'missing', endingId: 'lantern', history: [], ...patch,
-});
-const ending = (id: string) => ENDINGS.find(item => item.id === id)!;
-const text = (value: ReturnType<typeof projectEnding>) => `${value.summary}${value.paragraphs.join('')}`;
-
-describe('five original ending projections', () => {
-  it('keeps three different reality transformations and two explicitly adult dreams', () => {
-    expect(ENDINGS.map(item => item.id)).toEqual(['reunited', 'caravan', 'lantern', 'dream_guardian', 'dream_commons']);
-    for (const dream of ENDINGS.filter(item => item.dream)) {
-      expect(text(dream)).toContain('成年');
-      expect(text(dream)).not.toMatch(/醒来|醒后|不过是梦|终究是梦/);
+describe('five fixed original final scenes',()=>{
+  it('defines exactly five fates, with three different real lives and two expressly adult fairy tales',()=>{
+    expect(ENDINGS.map(ending=>ending.id)).toEqual(['reunited','caravan','lantern','dream_guardian','dream_commons']);
+    expect(ENDINGS.filter(ending=>ending.dream)).toHaveLength(2);
+    expect(new Set(ENDINGS.map(ending=>ending.title)).size).toBe(5);
+    for(const dream of ENDINGS.filter(ending=>ending.dream)) expect(dream.paragraphs.join('')).toMatch(/明确的成年梦境/);
+  });
+  it('never nests classroom, lodging or shelter variations under ending 03',()=>{
+    const base=play('lantern');
+    const variants:BranchState[]=[base,{...base,sister:'beside',flags:['sustained']},{...base,flags:['shelter']},{...base,flags:['settled','letter','waiting']}];
+    for(const state of variants){
+      expect(projectEnding(state,ENDINGS[2])).toEqual(ENDINGS[2]);
+      expect(getStayEndingPresentation(state).kind).toBe('guide');
+      expect(getStayEndingPresentation(state).title).toBe('回头的人');
     }
   });
-  it('does not manufacture food, healed injuries or a change of state', () => {
-    const input = state({ flags: ['shelter', 'motherHurt', 'motherTreated', 'sisterHurt', 'sisterTreated'] });
-    const before = structuredClone(input);
-    const base = structuredClone(ending('lantern'));
-    const result = projectEnding(input, ending('lantern'));
-    expect(text(result)).not.toMatch(/掰.*饼|剩下的饼|伤已经好了|已经痊愈/);
-    expect(text(result)).toContain('起身仍会牵动伤处');
-    expect(text(result)).toContain('受伤的脚');
-    expect(input).toEqual(before);
-    expect(ending('lantern')).toEqual(base);
+  it('shows a rescued father on a handcart with two complete legs and an underarm crutch',()=>{
+    expect(text('reunited')).toContain('木车');
+    expect(text('reunited')).toContain('两条腿完整');
+    expect(text('reunited')).toContain('木腋拐');
+    expect(text('reunited')).toContain('五个人');
+    expect(text('reunited')).not.toMatch(/单腿|缺腿|空裤管|失去了一条腿/);
   });
-  it('keeps a separated heroine in the workshop and does not conjure a reply or reconciliation', () => {
-    const result = projectEnding(state({ sister: 'apart', flags: ['shelter'] }), ending('lantern'));
-    expect(result.scene).toBe('workshop');
-    expect(text(result)).toContain('今夜没有人在身旁立刻回答');
-    expect(text(result)).toContain('之前没说清去向的争执还在');
-    expect(text(result)).not.toContain('姐姐把一张凳子留给你');
+  it('shows exactly the four departing family members in an open cargo bed and leaves the father imprisoned',()=>{
+    expect(text('caravan')).toContain('露天后斗');
+    expect(text('caravan')).toContain('四个人');
+    expect(text('caravan')).toContain('父亲没有获救');
+    expect(text('caravan')).not.toMatch(/车帘|公交|大巴|五个人离城/);
   });
-  it('distinguishes a real classroom from an invitation to shelter', () => {
-    const school = projectEnding(state({ flags: ['sustained', 'shelter'] }), ending('lantern'));
-    const refuge = projectEnding(state({ flags: ['shelter'] }), ending('lantern'));
-    expect(school.scene).toBe('courtyard');
-    expect(text(school)).toContain('课没有只留在');
-    expect(text(refuge)).not.toContain('课没有只留在');
+  it('makes the third ending a cost-bearing separation and an enacted new vocation',()=>{
+    const t=text('lantern');
+    expect(t).toContain('不要回头等我');
+    expect(t).toContain('游戏原创的几年后');
+    expect(t).toContain('莱拉守住队尾');
+    expect(t).toContain('把一个滑到石阶边缘的女孩拉起来');
+    expect(t).toContain('没有被安排在山口等你');
+    expect(t).toContain('父亲未能救出');
+    expect(t).not.toMatch(/暂借一夜|等待下一封|终于一家团聚/);
   });
-  it('uses the sister-rest echo only after that action, not after feeding a brother', () => {
-    const fedBrother = projectEnding(state({ flags: ['shelter', 'careFirst', 'brotherFed'] }), ending('lantern'));
-    const restedSister = projectEnding(state({ flags: ['shelter'], history: [{ nodeId: 'n13', choiceId: 'care', label: '', consequence: '' }] }), ending('lantern'));
-    expect(text(fedBrother)).not.toContain('你曾让姐姐先坐一会儿');
-    expect(text(restedSister)).toContain('你曾让姐姐先坐一会儿');
+  it('separates the commander’s defense from the builder’s public school, trade and shared decision making',()=>{
+    expect(text('dream_guardian')).toContain('全女性卫队的首领');
+    expect(text('dream_guardian')).toContain('抬手示意队伍守住石墙');
+    expect(text('dream_commons')).toContain('姐姐把教室的门推开');
+    expect(text('dream_commons')).toContain('莱拉翻起自己铺前的木牌');
+    expect(text('dream_commons')).toContain('让出说话的位置');
+    for(const id of ['dream_guardian','dream_commons'])expect(text(id)).toMatch(/男性.*(?:许可|共同许可)/);
   });
-  it('keeps the actual rescue, crutches and injured father when the closing action is writing', () => {
-    const result = projectEnding(state({ father: 'free', endingId: 'reunited', flags: ['guardBond', 'released', 'pact'], history: [{ nodeId: 'n30', choiceId: 'pages', label: '', consequence: '' }] }), ending('reunited'));
-    expect(result.id).toBe('reunited');
-    expect(text(result)).toContain('木推车');
-    expect(text(result)).toContain('跛行时用的腋拐');
-    expect(text(result)).not.toMatch(/失去.*腿|缺腿|单腿|空裤管/);
-    expect(text(result)).toContain('你教他写过的字');
-    expect(text(result)).toContain('回话地点');
+  it('never turns adult wishes into a claim that the real family returned or the real father was freed',()=>{
+    for(const id of ['dream_guardian','dream_commons']){
+      const state=play(id),e=getEnding(state)!;
+      expect(state.father).not.toBe('free');
+      expect(state.sister).toBe('apart');
+      expect(e.cost).toMatch(/现实中/);
+      expect(e.cost).toMatch(/离城/);
+      expect(e.cost).toMatch(/父亲.*(?:未获救|仍被囚)/);
+    }
   });
-  it('keeps the open cargo bed and chosen departure when waiting for news', () => {
-    const result = projectEnding(state({ endingId: 'caravan', flags: ['boarded'], history: [{ nodeId: 'n30', choiceId: 'wait', label: '', consequence: '' }] }), ending('caravan'));
-    expect(result.scene).toBe('road');
-    expect(text(result)).toContain('露天货斗');
-    expect(text(result)).toContain('已经选择的路');
-    expect(text(result)).not.toMatch(/车帘|公交|大巴|旧鞋摆在门边/);
-  });
-  it('does not turn a saved father into an absent waiting figure or invent public transmission', () => {
-    const rescued = projectEnding(state({ father: 'free', endingId: 'reunited', flags: ['released'], history: [{ nodeId: 'n30', choiceId: 'wait', label: '', consequence: '' }] }), ending('reunited'));
-    const privateLetter = projectEnding(state({ history: [{ nodeId: 'n30', choiceId: 'pages', label: '', consequence: '' }] }), ending('lantern'));
-    expect(text(rescued)).not.toContain('仍等父亲的消息');
-    expect(text(privateLetter)).not.toContain('交出获准传递的记录');
-  });
-  it('makes five actual stay-in-city results visibly different without adding saved ending IDs', () => {
-    const prefix = ['work','sew','buy','pact','care'];
-    const cases = [
-      { route: ['rush','school','live'], scene: 'courtyard', fact: /一小时课|粉笔/, cost: /谋生|禁令/ },
-      { route: ['rush','send','live'], scene: 'workshop', fact: /分别|分住/, cost: /距离|团聚/ },
-      { route: ['plan','letter','live'], scene: 'home', fact: /没能救出父亲|没有父亲/, cost: /铁门|救援/ },
-      { route: ['find','child','live'], scene: 'home', fact: /婚事|暂借/, cost: /今夜|永久住处/ },
-      { route: ['rush','father','live'], scene: 'home', fact: /烧水|天亮/, cost: /劳动|食物/ },
-    ];
-    const results = cases.map(({ route, scene, fact, cost }) => {
-      const saved = [...prefix, ...route].reduce((current, id) => {
-        const result = choose(current, id);
-        if (!result) throw new Error(`${current.nodeId}/${id}`);
-        return result.state;
-      }, createInitialState('short'));
-      const snapshot = structuredClone(saved), result = getEnding(saved)!;
-      expect(saved.endingId).toBe('lantern');
-      expect(saved.history).toHaveLength(8);
-      expect(result.scene).toBe(scene);
-      expect(text(result)).toMatch(fact);
-      expect(result.cost).toMatch(cost);
-      expect(text(result)).not.toMatch(/禁令已经撤去|伤已经好了|永远安全|救出了父亲/);
-      expect(saved).toEqual(snapshot);
-      return result;
-    });
-    for (const field of ['title','summary','cost'] as const) expect(new Set(results.map(result => result[field])).size).toBe(5);
-  });
-  it('cannot claim a failed rescue or refused marriage from an unvisited branch', () => {
-    const notVisited = projectEnding(state({ flags: ['rescueRoute','shelter'] }), ending('lantern'));
-    expect(notVisited.title).not.toContain('没能带他回来');
-    expect(text(notVisited)).not.toMatch(/你从北门退回来|拒绝了那份有条件的接应|不用为这一床被褥嫁人/);
+  it('does not mutate or heal a state when reading any ending',()=>{
+    for(const id of Object.keys(SHORT_ENDING_TEST_ROUTES)){
+      const state=play(id),before=structuredClone(state),base=ENDINGS.find(ending=>ending.id===id)!;
+      const original=structuredClone(base);
+      const result=projectEnding(state,base);result.paragraphs.push('local copy');
+      expect(state).toEqual(before);expect(base).toEqual(original);
+      expect(state.flags).toContain('motherHurt');
+    }
   });
 });
