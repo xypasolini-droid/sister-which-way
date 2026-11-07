@@ -80,7 +80,7 @@ export function getSceneDialogue(state: BranchState): SceneDialogueLine[] {
       ];
     case 'n09':
       return [
-        friend('他们推疼你了吗？纸都捡回来了。'),
+        friend(state.edition === 'short' ? '工钱收好了。那个人在等谁替他读信。' : '他们推疼你了吗？纸都捡回来了。'),
         guard('替我读这封信。我叫阿明。'),
         street('信说你妻子死于战火。能帮我问父亲吗？'),
         guard('她的名字，教我认认。你父亲的也写下。'),

@@ -372,3 +372,18 @@
 .narrative-stage--cast-v2 .narrative-actor--father.is-rescued{left:var(--rescued-father-left);height:calc(var(--father-height,64%) * 1.35);width:auto;aspect-ratio:1/2;z-index:4}
 .narrative-actor--father.is-rescued .narrative-foot-shadow{left:19%;width:63%;filter:blur(5px)}
 @media(max-width:760px){.narrative-stage{--rescued-father-left:73%}}
+
+/* Cast nodes persist between dialogue beats. Only actual stage changes transition. */
+.narrative-stage .narrative-actor{
+ transform:translateX(-50%) rotate(var(--actor-tilt,0deg));
+ transition:opacity .32s ease,left var(--actor-move-duration,.7s) cubic-bezier(.22,.61,.36,1),transform var(--actor-move-duration,.7s) cubic-bezier(.22,.61,.36,1),height .7s ease,bottom .7s ease,visibility 0s;
+}
+.narrative-stage .narrative-actor[data-presence="offstage"]{visibility:hidden;transition-delay:0s,0s,0s,0s,0s,.32s}
+.narrative-stage .narrative-actor[data-presence="present"]{visibility:visible}
+.narrative-stage--arrest{--actor-move-duration:.9s}
+.narrative-stage--reduced .narrative-actor,
+.narrative-stage--reduced .narrative-actor[data-presence="offstage"]{transition:none}
+@media(prefers-reduced-motion:reduce){
+ .narrative-stage .narrative-actor,
+ .narrative-stage .narrative-actor[data-presence="offstage"]{transition:none}
+}

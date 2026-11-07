@@ -22,7 +22,7 @@ export type NarrativeStageProps = {
   scarf?: 'worn' | 'shared' | 'lost';
   immersive?: boolean;
   beatIndex?: number;
-  phase?: 'reading' | 'choice' | 'compose' | 'intro' | 'ending';
+  phase?: 'reading' | 'choice' | 'compose' | 'explore' | 'intro' | 'ending';
 };
 
 const SCENES: Record<NarrativeScene, { name: string; detail: string; hero: number; sister: number; hue: string }> = {
@@ -57,6 +57,7 @@ export function describeNarrativeChange(previous: NarrativeStageProps | null, ne
   if (nextCast.arrest) return nextCast.arrest.caption;
   if (nextCast.isDream) return '在这个明确的梦里，成年的阿提什守护着女性自治之地。';
   if (next.nodeId === 'n01') return '清晨，努拉坐在父亲的摊边，听他替客人读信。';
+  if (previous?.nodeId === 'n02' && next.nodeId === 'n06') return '母亲寻父受伤，努拉买饼被拒后回家。姐姐打开亡兄的衣箱，家人需要新的办法。';
   if (next.nodeId === 'n03') return '母亲带努拉来到监所附近。姐姐与萨米留在家里，街上的拦阻让这段路无法顺利走完。';
   if (next.nodeId === 'n04') return '努拉独自来到市场找食物。母亲回家养伤，姐姐与萨米留在门内。';
   if (next.nodeId === 'n21') return '这一幕转向母亲：努拉尚未回来，她拒绝让贾维德替全家决定。';
@@ -91,15 +92,11 @@ export function describeNarrativeChange(previous: NarrativeStageProps | null, ne
 }
 
 export default function NarrativeStage(props: NarrativeStageProps) {
-  const { scene, outfit, sister, father, stats, flags, nodeId, actionLabel, reducedMotion, ending, day = 1, scarf = 'worn', immersive = false } = props;
+  const { scene, outfit, sister, father, stats, flags, nodeId, reducedMotion, ending, day = 1, scarf = 'worn', immersive = false } = props;
   const staging = selectNarrativeStage(props);
   const backgroundSrc = staging.assets.background;
-  const stageRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const sisterRef = useRef<HTMLDivElement>(null);
-  const fatherRef = useRef<HTMLDivElement>(null);
-  const propsRef = useRef<HTMLDivElement>(null);
+  const previousArrestStep = useRef<number | null>(null);
   const previous = useRef<NarrativeStageProps | null>(null);
   const [beat, setBeat] = useState('清晨，努拉坐在父亲的摊边，听他替客人读信。');
   const [backdrop, setBackdrop] = useState(backgroundSrc);
@@ -145,42 +142,26 @@ export default function NarrativeStage(props: NarrativeStageProps) {
     const before = previous.current;
     setBeat(describeNarrativeChange(before, props));
     previous.current = { ...props, stats: { ...stats }, flags: [...flags] };
-    if (!stageRef.current) return;
-    const ctx = gsap.context(() => {
-      const hero = heroRef.current;
-      const sisterActor = sisterRef.current;
-      const fatherActor = fatherRef.current;
-      const duration = reducedMotion || !visible ? 0 : immersive ? .95 : .72;
-      const changedScene = !before || selectNarrativeStage(before).assets.background !== backgroundSrc;
-      if (staging.marketStall) gsap.set(hero, { left: 'var(--stall-hero-left)' });
-      gsap.to(hero, { ...(staging.marketStall ? {} : { left: `${heroX}%` }), opacity: staging.showHero ? 1 : 0, xPercent: -50, x: 0, y: heroWeary ? 3 : 0, duration, ease: 'power2.out' });
-      gsap.to(sisterActor, {
-        left: `${alone ? 104 : sisterX}%`, xPercent: -50, x: 0, y: sisterInjured ? 6 : staging.sisterRecovering ? 2 : 0,
-        opacity: alone ? 0 : 1, duration: duration * (staging.sisterRecovering ? 1.65 : 1.35), ease: 'power2.inOut',
-      });
-      if (staging.marketStall || staging.fatherRescued) gsap.set(fatherActor, { left: staging.marketStall ? 'var(--stall-father-left)' : 'var(--rescued-father-left)' });
-      gsap.to(fatherActor, { ...(staging.marketStall || staging.fatherRescued ? {} : { left: staging.arrest ? `${staging.arrest.fatherLeft}%` : showFather ? '77%' : '96%' }), xPercent: -50, x: 0, opacity: showFather ? 1 : 0, rotation: staging.arrest && staging.arrest.step>0 && staging.arrest.step<3 ? 5 : 0, duration: staging.arrest ? duration*1.15 : duration, ease: 'power2.out' });
-      if (staging.arrest && !reducedMotion && visible && before?.nodeId === 'n02' && before.beatIndex !== props.beatIndex) {
-        gsap.fromTo(worldRef.current, { x: staging.arrest.step === 1 ? 4 : 0 }, { x: 0, duration: .25, ease: 'power2.out' });
-      }
-      if (changedScene && !reducedMotion && visible) {
-        gsap.fromTo(worldRef.current, { scale: immersive ? 1.035 : 1.04 }, { scale: 1, duration: immersive ? 1.8 : 1.1, ease: 'power2.out' });
-        gsap.fromTo(hero, { x: immersive ? -18 : -26, opacity: staging.showHero ? .35 : 0 }, { x: 0, opacity: staging.showHero ? 1 : 0, duration: immersive ? .95 : .7, ease: 'power2.out' });
-      } else if (before?.outfit !== outfit && !reducedMotion && visible) {
-        const sprite = hero?.querySelector('.narrative-sprite');
-        if (sprite) gsap.fromTo(sprite, { opacity: .3, y: -8 }, { opacity: 1, y: 0, duration: .6 });
-      } else if (before && before.nodeId !== nodeId && !reducedMotion && visible) {
-        gsap.fromTo(hero, { rotation: -1.4 }, { rotation: 0, duration: .55, ease: 'power2.out' });
-      }
-      if (propsRef.current && !reducedMotion && visible && (!immersive || changedScene || flags.some(flag => !before?.flags.includes(flag)))) {
-        const items = propsRef.current.querySelectorAll('.narrative-prop');
-        if (items.length) gsap.fromTo(items, { y: 10, opacity: .25 }, { y: 0, opacity: 1, stagger: .055, duration: .45 });
-      }
-    }, stageRef);
-    return () => ctx.revert();
-    // Every story decision changes nodeId; derived positions also respond to undo.
+    // Announcements follow story state, while the cast stays on the same DOM nodes.
+    // Dialogue and reading/choice changes must never revert an actor's final pose.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodeId, scene, backgroundSrc, outfit, sister, father, stats.trust, stats.health, stats.food, flags.join('|'), ending, reducedMotion, visible, immersive, props.beatIndex, props.phase]);
+  }, [nodeId, scene, backgroundSrc, outfit, sister, father, stats.trust, stats.health, stats.food, flags.join('|'), ending, props.beatIndex, props.phase]);
+
+  const arrestStep = staging.arrest?.step ?? null;
+  useEffect(() => {
+    const before = previousArrestStep.current;
+    previousArrestStep.current = arrestStep;
+    const world = worldRef.current;
+    if (!world) return;
+    // This is the only camera impulse: the family being pulled apart at the door.
+    // A later dialogue line, focus change or visibility change never replays it.
+    if (arrestStep !== 1 || before !== 0 || reducedMotion || !visible) {
+      gsap.set(world, { x: 0 });
+      return;
+    }
+    const impulse = gsap.fromTo(world, { x: 2 }, { x: 0, duration: .2, ease: 'power2.out' });
+    return () => { impulse.kill(); gsap.set(world, { x: 0 }); };
+  }, [arrestStep, reducedMotion, visible]);
 
   const sisterClothing = staging.sisterWardrobe === 'home' ? '长辫垂在肩巾旁' : staging.sisterWardrobe === 'covered' ? '头巾遮着头发，脸露在外面' : '穿着带面部网窗的全身外罩';
   const characterDescription = staging.isDream
@@ -191,7 +172,7 @@ export default function NarrativeStage(props: NarrativeStageProps) {
   const propClass = (name: string) => `narrative-prop narrative-prop--${name}${staging.featuredProp === name ? ' is-featured' : ''}`;
 
   return <figure className={`narrative-stage narrative-stage--cast-v2 narrative-stage--${scene}${staging.marketStall ? ' narrative-stage--market-stall' : ''}${staging.arrest ? ' narrative-stage--arrest' : ''}${staging.isDream ? ' narrative-stage--dream' : ''}${!staging.showHero ? ' narrative-stage--maternal' : ''}${immersive ? ' narrative-stage--immersive' : ''}${reducedMotion ? ' narrative-stage--reduced' : ''}`} data-space={staging.space} data-arrest-step={staging.arrest?.step} style={{ '--scene-color': place.hue, '--hero-left': `${heroX}%` } as CSSProperties}>
-    <div className="narrative-world" ref={stageRef} role="img" aria-label={`${locationName}。${characterDescription}${staging.sisterRecovering && !alone ? '姐姐治疗后仍小心落脚，走得比以前慢。' : ''}${heroWeary ? '努拉的脚步放慢，站姿微微低垂。' : ''}`}>
+    <div className="narrative-world" role="img" aria-label={`${locationName}。${characterDescription}${staging.sisterRecovering && !alone ? '姐姐治疗后仍小心落脚，走得比以前慢。' : ''}${heroWeary ? '努拉的脚步放慢，站姿微微低垂。' : ''}`}>
       <div className="narrative-world-art" aria-hidden="true">
         <div className="narrative-backdrops" ref={worldRef}>
           <img src={backdrop} className="narrative-backdrop narrative-backdrop--under" alt="" draggable={false} />
@@ -221,49 +202,49 @@ export default function NarrativeStage(props: NarrativeStageProps) {
 
         <div className="narrative-ensemble">
         {staging.marketStall && <div className="narrative-market-mat" />}
-        {showMother && <div className={`narrative-actor narrative-actor--mother narrative-wardrobe--${staging.motherWardrobe}${motherWeak ? ' is-tired' : ''}`} style={staging.arrest ? { left: `${staging.arrest.motherLeft}%` } : undefined}>
+        <div key="mother" data-actor="mother" data-presence={showMother ? 'present' : 'offstage'} className={`narrative-actor narrative-actor--mother narrative-wardrobe--${staging.motherWardrobe}${motherWeak ? ' is-tired' : ''}`} style={{ ...(staging.arrest ? { left: `${staging.arrest.motherLeft}%` } : {}), opacity: showMother ? 1 : 0 }}>
           <div className="narrative-foot-shadow" />
           <FigureImage src={staging.assets.mother} className="narrative-sprite" />
           <div className="narrative-person-label"><b>母亲</b><span>{motherWeak ? '身体需要照顾' : showMedicine ? '药已经带到了' : '等你们回来'}</span></div>
-        </div>}
+        </div>
 
-        <div className={`narrative-actor narrative-actor--father${staging.fatherRescued ? ' is-rescued' : ''}${showFather ? ' is-present' : ''}`} ref={fatherRef} style={staging.arrest ? { left: `${staging.arrest.fatherLeft}%`, opacity: showFather ? 1 : 0 } : undefined}>
+        <div key="father" data-actor="father" data-presence={showFather ? 'present' : 'offstage'} className={`narrative-actor narrative-actor--father${staging.fatherRescued ? ' is-rescued' : ''}${showFather ? ' is-present' : ''}`} style={{ left: staging.marketStall ? 'var(--stall-father-left)' : staging.fatherRescued ? 'var(--rescued-father-left)' : staging.arrest ? `${staging.arrest.fatherLeft}%` : '77%', opacity: showFather ? 1 : 0, '--actor-tilt': staging.arrest && staging.arrest.step > 0 && staging.arrest.step < 3 ? '5deg' : '0deg' } as CSSProperties}>
           <div className="narrative-foot-shadow" />
           <FigureImage src={staging.assets.father} className="narrative-sprite" />
           <div className="narrative-person-label"><b>父亲</b><span>{nodeId === 'n01' ? '替人读信与摆摊' : staging.arrest ? '被武装者带向门口' : staging.fatherRescued ? '靠在推车上，仍需照护' : '终于回到身边'}</span></div>
         </div>
 
-        <div className={`narrative-actor narrative-actor--hero narrative-outfit--${outfit}${heroWeary ? ' is-weary' : ''}`} ref={heroRef} style={{ left: staging.marketStall ? 'var(--stall-hero-left)' : `${heroX}%`, opacity: staging.showHero ? 1 : 0 }}>
+        <div key="hero" data-actor="hero" data-presence={staging.showHero ? 'present' : 'offstage'} className={`narrative-actor narrative-actor--hero narrative-outfit--${outfit}${heroWeary ? ' is-weary' : ''}`} style={{ left: staging.marketStall ? 'var(--stall-hero-left)' : `${heroX}%`, opacity: staging.showHero ? 1 : 0 }}>
           <div className="narrative-foot-shadow" />
           <FigureImage src={staging.assets.hero} className="narrative-sprite" />
           {scarf === 'shared' && !staging.isDream && <span className="narrative-ribbon-knot" />}
           <div className="narrative-person-label"><b>{staging.isDream ? '成年的阿提什' : has('aliasAatish') && staging.space === 'public' ? '阿提什' : '努拉'}</b><span>{outfit === 'worker' ? '别人眼里的小工' : outfit === 'travel' ? '背起新的生活' : '还在寻找一条路'}</span></div>
         </div>
 
-        <div className={`narrative-actor narrative-actor--sister narrative-wardrobe--${staging.sisterWardrobe}${sisterInjured ? ' is-injured' : ''}${staging.sisterRecovering ? ' is-recovering' : ''}${distant && !sisterInjured ? ' is-distant' : ''}${alone ? ' is-away' : ''}`} ref={sisterRef} style={{ left: `${sisterX}%`, opacity: alone ? 0 : 1 }}>
+        <div key="sister" data-actor="sister" data-presence={alone ? 'offstage' : 'present'} className={`narrative-actor narrative-actor--sister narrative-wardrobe--${staging.sisterWardrobe}${sisterInjured ? ' is-injured' : ''}${staging.sisterRecovering ? ' is-recovering' : ''}${distant && !sisterInjured ? ' is-distant' : ''}${alone ? ' is-away' : ''}`} style={{ left: `${sisterX}%`, opacity: alone ? 0 : 1 }}>
           <div className="narrative-foot-shadow" />
           <FigureImage src={staging.assets.sister} className="narrative-sprite" />
           <div className="narrative-person-label"><b>玛莉安</b><span>{sisterInjured ? '靠在你身旁休息' : staging.sisterRecovering ? '慢慢试着落脚' : distant ? '有些话没有说出口' : nearby ? '愿意与你一起决定' : '姐姐，也在找路'}</span></div>
         </div>
 
-        {staging.showBrother && <div className="narrative-actor narrative-actor--brother">
+        <div key="brother" data-actor="brother" data-presence={staging.showBrother ? 'present' : 'offstage'} className="narrative-actor narrative-actor--brother" style={{ opacity: staging.showBrother ? 1 : 0 }}>
           <div className="narrative-foot-shadow" />
           <FigureImage src={staging.assets.brother} className="narrative-sprite" />
           <div className="narrative-person-label"><b>萨米</b><span>把布玩具抱在怀里</span></div>
-        </div>}
-        {staging.showFriend && <div className="narrative-actor narrative-actor--friend">
+        </div>
+        <div key="friend" data-actor="friend" data-presence={staging.showFriend ? 'present' : 'offstage'} className="narrative-actor narrative-actor--friend" style={{ opacity: staging.showFriend ? 1 : 0 }}>
           <div className="narrative-foot-shadow" />
           <FigureImage src={staging.assets.friend} className="narrative-sprite" />
           <div className="narrative-person-label"><b>莱拉</b><span>也在男孩衣服里藏着名字</span></div>
-        </div>}
-        {staging.showGuard && <div className="narrative-actor narrative-actor--guard">
+        </div>
+        <div key="guard" data-actor="guard" data-presence={staging.showGuard ? 'present' : 'offstage'} className="narrative-actor narrative-actor--guard" style={{ opacity: staging.showGuard ? 1 : 0 }}>
           <div className="narrative-foot-shadow" />
           <FigureImage src={staging.assets.guard} className="narrative-sprite" />
           <div className="narrative-person-label"><b>阿明</b><span>愿意听你把信读完</span></div>
-        </div>}
+        </div>
 
         {staging.arrest && <div className="narrative-arrest-bowl"><i /></div>}
-        <div className="narrative-props" ref={propsRef}>
+        <div className="narrative-props">
           {showBread && <div className={propClass('bread')}><FigureImage src="/art/sister/bread.png" /><span>剩下的馕</span></div>}
           {showMedicine && <div className={propClass('medicine')}><FigureImage src="/art/sister/medicine.png" /><span>带给家人的药</span></div>}
           {showLetter && <div className={propClass('letter')}><FigureImage src="/art/sister/letter.png" /><span>{has('documents') ? '地址与旧纸' : has('evidence') ? '核对过的线索' : '折好的信件'}</span></div>}

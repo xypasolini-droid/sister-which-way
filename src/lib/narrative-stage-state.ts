@@ -3,7 +3,7 @@ import { getCompanionStatus } from './story-presentation';
 
 export type NarrativeStageContext = Pick<BranchState, 'nodeId' | 'outfit' | 'sister' | 'father' | 'flags'> & {
   scene: SceneId; ending?: string | null;
-  beatIndex?: number; phase?: 'reading' | 'choice' | 'compose' | 'intro' | 'ending';
+  beatIndex?: number; phase?: 'explore' | 'reading' | 'choice' | 'compose' | 'intro' | 'ending';
   stats: Pick<BranchState['stats'], 'trust' | 'health' | 'food'>;
 };
 type FeaturedProp = 'bread' | 'medicine' | 'letter' | 'book' | 'bag' | 'lantern';
@@ -23,7 +23,7 @@ export function selectNarrativeStage(context: NarrativeStageContext) {
   const isDream=ending==='dream_guardian'||ending==='dream_commons';
   const marketStall=nodeId==='n01'&&!isDream;
   const fatherRescued=!isDream&&father==='free'&&has('released');
-  const arrestStep=nodeId==='n02'&&!isDream ? context.phase==='choice'||context.phase==='compose' ? 3 : Math.min(3,Math.max(0,Math.trunc(context.beatIndex??0))) : null;
+  const arrestStep=nodeId==='n02'&&!isDream ? context.phase==='explore'||context.phase==='choice'||context.phase==='compose' ? 3 : Math.min(3,Math.max(0,Math.trunc(context.beatIndex??0))) : null;
   const arrest=arrestStep===null?null:{step:arrestStep,fatherLeft:[69,77,86,108][arrestStep],heroLeft:[46,53,59,59][arrestStep],motherLeft:[21,62,70,45][arrestStep],sisterLeft:[36,36,37,36][arrestStep],caption:[
     '傍晚，白天的年轻巡查带人踢开家门。父亲还站在屋里，家人转向门口。',
     '父亲被拉向门口。母亲和努拉上前阻拦，姐姐把萨米护到身后。',
@@ -48,7 +48,7 @@ export function selectNarrativeStage(context: NarrativeStageContext) {
   const sisterRecovering=has('sisterTreated')&&!sisterInjured;
   const sisterBase=sisterWardrobe==='home'?'sister':`sister-${sisterWardrobe}`;
   const motherWardrobe=space==='public'?'outdoor':'home';
-  const motherStruckOnCamera=nodeId==='n03'&&((context.beatIndex??0)>=2||context.phase==='choice'||context.phase==='compose');
+  const motherStruckOnCamera=nodeId==='n03'&&((context.beatIndex??0)>=2||context.phase==='explore'||context.phase==='choice'||context.phase==='compose');
   const motherInjured=motherStruckOnCamera||(has('motherHurt')&&!has('motherTreated'));
   const showBread=!isDream&&has('bread')&&stats.food>0;
   const disguised=context.outfit==='worker'||(context.outfit==='travel'&&has('disguise'));

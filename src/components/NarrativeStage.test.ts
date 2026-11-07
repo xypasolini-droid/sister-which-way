@@ -46,3 +46,37 @@ describe('stage announcements follow the cast actually on camera',()=>{
   expect(describeNarrativeChange(before,{...next,flags:['bread']})).toContain('馕饼被放进布袋');
  });
 });
+
+
+describe('persistent cast between dialogue and encounter phases',()=>{
+ const render=(value:NarrativeStageProps)=>renderToStaticMarkup(createElement(NarrativeStage,value));
+ const actorTags=(value:NarrativeStageProps)=>render(value).match(/<div data-actor="[^"]+"[^>]*>/g)??[];
+ const actorIds=(value:NarrativeStageProps)=>actorTags(value).map(tag=>tag.match(/data-actor="([^"]+)"/)?.[1]);
+ it('retains all seven actor slots when a family member enters or leaves the scene',()=>{
+  const market=props({nodeId:'n01'}),home=props({nodeId:'n02'}),solo=props({nodeId:'n04',flags:['motherHurt']});
+  const ids=['mother','father','hero','sister','brother','friend','guard'];
+  for(const value of [market,home,solo])expect(actorIds(value)).toEqual(ids);
+  expect(actorTags(market).find(tag=>tag.includes('data-actor="mother"'))).toContain('data-presence="offstage"');
+  expect(actorTags(home).find(tag=>tag.includes('data-actor="mother"'))).toContain('data-presence="present"');
+  expect(actorTags(solo).find(tag=>tag.includes('data-actor="father"'))).toContain('data-presence="offstage"');
+ });
+ it('keeps ordinary dialogue, choices and exploration in exactly the same cast pose',()=>{
+  const base=props({nodeId:'n13'});
+  const still=actorTags({...base,phase:'reading',beatIndex:0});
+  for(const value of [
+   {...base,phase:'reading' as const,beatIndex:1},
+   {...base,phase:'choice' as const,beatIndex:0},
+   {...base,phase:'explore' as const,beatIndex:0},
+   {...base,phase:'compose' as const,beatIndex:0},
+   {...base,phase:'reading' as const,beatIndex:0,reducedMotion:false},
+  ])expect(actorTags(value)).toEqual(still);
+ });
+ it('still carries the father towards the door over four arrest beats without replacing his slot',()=>{
+  const base=props({nodeId:'n02'});
+  for(const [beatIndex,left] of [69,77,86,108].entries()){
+   const tag=actorTags({...base,phase:'reading',beatIndex}).find(value=>value.includes('data-actor="father"'));
+   expect(tag).toContain(`left:${left}%`);
+   expect(tag).toContain(`data-presence="${beatIndex===3?'offstage':'present'}"`);
+  }
+ });
+});

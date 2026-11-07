@@ -47,7 +47,7 @@ button{color:inherit;cursor:pointer;border:0;background:none}button:disabled{cur
 .choice-considerations{list-style:none;margin:12px 0 25px;padding:0}.choice-considerations li{padding:18px 0;border-top:1px solid #ffffff24}.choice-considerations h3{margin:4px 0 8px;font-size:17px}.choice-considerations p{margin:0}
 .is-large-text .spoken-line{font-size:22px}.is-large-text .story-choices strong{font-size:16px}
 @media(min-height:561px){
- .immersive-world[data-quiet="false"]:is([data-phase="choice"],[data-phase="compose"]) .narrative-stage--immersive{--cast-floor:25%;--hero-height:49%;--sister-height:55%;--mother-height:39%;--father-height:55%}
+ .immersive-world[data-quiet="false"] .narrative-stage--immersive{--cast-floor:25%;--hero-height:49%;--sister-height:55%;--mother-height:39%;--father-height:55%}
 }
 @media(max-width:760px){
  .story-dialogue{width:calc(100% - 24px);padding:10px 15px 8px;bottom:calc(27px + env(safe-area-inset-bottom));max-height:42dvh}
@@ -67,7 +67,7 @@ button{color:inherit;cursor:pointer;border:0;background:none}button:disabled{cur
  .ending-scene h2{font-size:22px}
 }
 @media(max-width:760px) and (min-height:561px){
- .immersive-world[data-quiet="false"]:is([data-phase="choice"],[data-phase="compose"]) .narrative-stage--immersive{--cast-floor:36%;--hero-height:41%;--sister-height:46%;--mother-height:33%;--father-height:46%}
+ .immersive-world[data-quiet="false"] .narrative-stage--immersive{--cast-floor:36%;--hero-height:41%;--sister-height:46%;--mother-height:33%;--father-height:46%}
 }
 @media(max-height:560px) and (orientation:landscape){
  .story-dialogue{top:auto;left:auto;right:16px;transform:none;width:46%;bottom:24px;max-height:calc(100dvh - 100px);padding:10px 14px 8px}
@@ -105,3 +105,11 @@ button{color:inherit;cursor:pointer;border:0;background:none}button:disabled{cur
 .immersive-world[data-speaking="brother"] .narrative-actor.narrative-actor--brother .narrative-sprite,
 .immersive-world[data-speaking="friend"] .narrative-actor.narrative-actor--friend .narrative-sprite,
 .immersive-world[data-speaking="guard"] .narrative-actor.narrative-actor--guard .narrative-sprite{opacity:1;filter:brightness(1.06)}
+
+/* Exploration owns the action surface; reading remains an optional, compact layer. */
+.story-dialogue[hidden]{display:none}
+.choice-return{display:flex;align-items:center;gap:8px}
+.choice-return>.text-button{min-height:44px;font-size:12px}
+.spoken-line{animation:none}
+
+.ending-summary{max-width:40em;font:400 14px/1.9 var(--serif);color:#d7d4ce;margin:10px 0 18px;text-wrap:pretty}

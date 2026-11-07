@@ -21,14 +21,14 @@ describe('physical presence, clothing and visible story consequences',()=>{
   expect(shots.every(s=>s.showMother&&s.showSister&&s.showBrother&&!s.showGuard)).toBe(true);
   expect(shots[0].arrest?.caption).toContain('踢开家门');
   expect(shots[3].arrest?.caption).toContain('被武装者带出');
-  for(const phase of ['choice','compose'] as const)expect(stage(context,undefined,{beatIndex:0,phase}).showFather).toBe(false);
+  for(const phase of ['explore','choice','compose'] as const)expect(stage(context,undefined,{beatIndex:0,phase}).showFather).toBe(false);
   expect(stage(context,undefined,{beatIndex:0,phase:'reading'}).showFather).toBe(true);
   expect(stage({nodeId:'n03',father:'missing'}).arrest).toBeNull();
  });
  it('shows the mother on the first prison journey and keeps her injuries visible at home',()=>{
   expect(stage({nodeId:'n03'})).toMatchObject({showMother:true,showSister:false,showBrother:false,motherInjured:false});
   expect([0,1,2,3].map(beatIndex=>stage({nodeId:'n03'},undefined,{beatIndex,phase:'reading'}).motherInjured)).toEqual([false,false,true,true]);
-  for(const phase of ['choice','compose'] as const)expect(stage({nodeId:'n03'},undefined,{beatIndex:0,phase}).motherInjured).toBe(true);
+  for(const phase of ['explore','choice','compose'] as const)expect(stage({nodeId:'n03'},undefined,{beatIndex:0,phase}).motherInjured).toBe(true);
   expect(stage({nodeId:'n03'},undefined,{beatIndex:2}).assets.mother).toBe('/art/sister-v2/mother-outdoor.png');
   const home=stage({nodeId:'n05',flags:['motherHurt']});
   expect(home).toMatchObject({showMother:true,showBrother:true});expect(home.assets.mother).toContain('mother-injured.png');

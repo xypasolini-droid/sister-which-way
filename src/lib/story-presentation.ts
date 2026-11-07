@@ -17,13 +17,16 @@ export const MAX_SUBTITLE_CHARACTERS = 40;
 /** A node id or step count alone cannot distinguish converging branches. */
 export function storyPresentationKey(state: BranchState): string {
   const path = state.history.map(step => `${step.nodeId}:${step.choiceId}`).join('>');
-  return `v${state.version}|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
+  return `v${state.version}${state.edition === 'short' ? '-short' : ''}|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
 }
 
 /** Physical presence is separate from the long-term relationship stored by the engine. */
 export function getCompanionStatus(state: Pick<BranchState, 'nodeId' | 'endingId' | 'sister'> & { stats: Pick<BranchState['stats'], 'trust'> }): CompanionStatus {
   const injured = state.sister === 'injured';
   const tone = state.stats.trust <= 3 ? 'guarded' : state.stats.trust >= 7 ? 'warm' : 'neutral';
+  if (state.nodeId === 'n21' && !state.endingId) {
+    return { presence: 'present', label: '镜头转向母亲与姐姐。努拉还没有回到这条街口。', speaker: '玛莉安', injured, tone };
+  }
   if (['n23', 'n29'].includes(state.nodeId) && !state.endingId) {
     return { presence: 'present', label: state.nodeId === 'n29' ? '她仍在内院，你们正在商量分住或留下的约定。' : '你在女医师的后院找到了她，还有些话需要说清楚。', speaker: '玛莉安', injured, tone: state.sister === 'apart' ? 'guarded' : tone };
   }
@@ -81,6 +84,10 @@ export function buildReadingBeats(state: BranchState, _consequence = ''): Readin
   if (getEnding(state)) return endingDialogue(state).map((text, index) => ({
     id: `${key}|ending:${index}`, kind: 'ending', speaker: state.endingId?.startsWith('dream_') ? '梦里的阿提什' : '努拉', actor: 'narrator', text,
   }));
+  if (state.edition === 'short' && state.nodeId === 'n06') return [
+    { speaker: '努拉', actor: 'hero' as const, text: '母亲去要求放人，没说完就挨了打。我去买饼，钱被推回。' },
+    { speaker: '玛莉安', actor: 'sister' as const, text: '这不是你的错。阿里的旧衣服还在。出门借他的衣服，回家你仍是努拉。' },
+  ].map((line, index) => ({ ...line, id: `${key}|bridge:${index}`, kind: 'dialogue' as const }));
   const beats: ReadingBeat[] = getSceneDialogue(state).map((line, index) => ({...line, id: `${key}|dialogue:${index}`, kind: 'dialogue'}));
   taleDialogue(state).forEach((text, index) => beats.push({id:`${key}|tale:${index}`,kind:'tale',speaker:state.nodeId==='n05'?'讲给萨米的故事':'你们续写的童话',actor:'narrator',text}));
   return beats;
