@@ -145,7 +145,7 @@ export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
     release: {
       next: 'n30',
       requires: node.choices.find(choice => choice.id === 'release')!.requires?.map(requirement => requirement.flag === 'guardBond' ? { ...requirement, reason: '先前尚未建立读信、教字的往来，今天不能要求阿明冒险。' } : requirement),
-      consequence: '炮火与调动声中，阿明负伤把父亲带出侧门，安置到借来的木推车上。父亲早已失去一条腿，如今添了重伤，不能撑拐行走，你推着他离开。与此同时，母亲拒绝贾维德的强迫带离，带萨米回到约定的门。你们再接上姐姐，终于重新数到五个人；父母都还需要水、休息和照护。',
+      consequence: '炮火与调动声中，阿明负伤把父亲带出侧门，安置到借来的木推车上。父亲平日跛行，需要腋拐支撑，如今添了重伤，暂时不能撑拐行走，你推着他离开。与此同时，母亲拒绝贾维德的强迫带离，带萨米回到约定的门。你们再接上姐姐，终于重新数到五个人；父母都还需要水、休息和照护。',
       effect: addEffect(node.choices.find(choice => choice.id === 'release')!, { sister: 'beside', add: ['familyTogether', 'motherReturned', 'marriageRefused'], remove: ['missingSister', 'hiddenRisk'] }),
     },
     letter: {

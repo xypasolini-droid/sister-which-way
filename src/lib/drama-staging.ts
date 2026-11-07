@@ -11,7 +11,14 @@ export type DramaStaging = {
   oppressorAsset: string; secondAsset: string; heroineAsset?: string; motherAsset?: string; fatherAsset?: string; friendAsset?: string;
   preDisguise: boolean; gunfire: boolean;
 };
-const asset = (name: string) => `/art/oppression/${name}.svg`;
+const asset = (name: string) => {
+  const originals: Record<string, string> = {
+    'mother-plead': '/art/sister-v3/mother-standing.png',
+    'father-shield': '/art/sister-v3/father-standing-crutch.png',
+    recruit: '/art/sister-v3/armed-patrol.png',
+  };
+  return originals[name] ?? `/art/sister-v3/${name}.png`;
+};
 
 /** Shot facts override the story node while its read-only event is on camera. */
 export function getDramaStaging(shot?: DramaShot | null): DramaStaging | null {
@@ -30,9 +37,9 @@ export function getDramaStaging(shot?: DramaShot | null): DramaStaging | null {
   } else if (v.startsWith('arrest-')) {
     Object.assign(stage, { mother: true, sister: true, brother: true, father: v !== 'arrest-empty', secondPatrol: true,
       heroLeft: 31, motherLeft: 40, sisterLeft: 13, fatherLeft: 58, oppressorLeft: 77, secondLeft: 91,
-      preDisguise: true, fatherAsset: asset('father-standing-crutch'), oppressorAsset: asset('armed-patrol'), motherPose: 'plead', motherAsset: '/art/sister-v2/mother-stop.png' });
-    if (v === 'arrest-grab') Object.assign(stage, { fatherPose: 'grabbed', fatherLeft: 65, motherLeft: 47, oppressorLeft: 72, oppressorPose: 'grab', oppressorAsset: asset('armed-patrol-grab'), fatherAsset: asset('father-drag'), heroineAsset: asset('hero-fear') });
-    if (v === 'arrest-drag') Object.assign(stage, { fatherPose: 'dragged', fatherLeft: 79, motherLeft: 51, heroLeft: 40, oppressorLeft: 86, secondLeft: 98, oppressorPose: 'drag', oppressorAsset: asset('armed-patrol-grab'), fatherAsset: asset('father-drag'), heroineAsset: asset('hero-fear') });
+      preDisguise: true, fatherAsset: asset('father-standing-crutch'), oppressorAsset: asset('patrol'), motherPose: 'plead', motherAsset: '/art/sister-v2/mother-stop.png' });
+    if (v === 'arrest-grab') Object.assign(stage, { fatherPose: 'grabbed', fatherLeft: 65, motherLeft: 47, oppressorLeft: 72, oppressorPose: 'grab', oppressorAsset: asset('armed-patrol-grab'), secondAsset: asset('patrol'), fatherAsset: asset('father-drag'), heroineAsset: asset('hero-fear') });
+    if (v === 'arrest-drag') Object.assign(stage, { fatherPose: 'dragged', fatherLeft: 79, motherLeft: 51, heroLeft: 40, oppressorLeft: 86, secondLeft: 98, oppressorPose: 'drag', oppressorAsset: asset('armed-patrol-grab'), secondAsset: asset('patrol'), fatherAsset: asset('father-drag'), heroineAsset: asset('hero-fear') });
     if (v === 'arrest-empty') Object.assign(stage, { motherLeft: 45, heroLeft: 30, oppressorLeft: 96, secondLeft: 108, motherPose: 'fallen', motherAsset: '/art/sister-v2/mother-injured.png', heroPose: 'help', heroineAsset: asset('hero-help') });
   } else if (v.startsWith('mother-')) {
     Object.assign(stage, { mother: true, preDisguise: true, heroineAsset: asset('hero-fear'), motherAsset: asset('mother-plead'), motherPose: 'plead', heroLeft: 27, motherLeft: 48, oppressorLeft: 66 });
@@ -46,8 +53,8 @@ export function getDramaStaging(shot?: DramaShot | null): DramaStaging | null {
     if (v === 'bread-flee') Object.assign(stage, { secondPatrol: true, secondLeft: 83, secondAsset: asset('patrol-raised'), heroLeft: 19, heroPose: 'hide' });
   } else if (v === 'home-wounded') {
     Object.assign(stage, { mother: true, sister: true, brother: true, oppressor: null, preDisguise: true,
-      motherPose: 'wounded', motherAsset: '/art/sister-v2/mother-injured.png', heroineAsset: asset('hero-help'),
-      heroPose: 'help', heroLeft: 46, motherLeft: 65, sisterLeft: 27 });
+      motherPose: 'wounded', motherAsset: '/art/sister-v2/mother-injured.png', heroineAsset: '/art/sister-v2/hero-cloak.png',
+      heroPose: 'still', heroLeft: 46, motherLeft: 65, sisterLeft: 27 });
   } else if (v.startsWith('street-')) {
     Object.assign(stage, { friend: true, oppressor: 'recruit', oppressorAsset: asset('recruit'), heroLeft: 31, friendLeft: 48 });
     if (v === 'street-hide') Object.assign(stage, { heroPose: 'hide', heroLeft: 23, friendLeft: 39, oppressorLeft: 83, heroineAsset: asset('hero-worker-crouch'), friendAsset: asset('friend-worker-crouch') });

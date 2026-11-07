@@ -11,8 +11,8 @@ describe('physical presence, clothing and visible story consequences',()=>{
   expect(stage({})).toMatchObject({showHero:true,showFather:true,showMother:false,showSister:false,showBrother:false});
   expect(stage({})).toMatchObject({marketStall:true,featuredProp:null});
   expect(stage({}).assets.hero).toBe('/art/sister-v2/hero-market.png');
-  expect(stage({}).assets.father).toBe('/art/oppression/father-market.svg');
-  expect(stage({nodeId:'n02'}).assets.father).toBe('/art/oppression/father-standing-crutch.svg');
+  expect(stage({}).assets.father).toBe('/art/sister-v2/father-market.png');
+  expect(stage({nodeId:'n02'}).assets.father).toBe('/art/sister-v3/father-standing-crutch.png');
   expect(stage({nodeId:'n02',father:'free'},undefined,{beatIndex:3})).toMatchObject({showMother:true,showSister:true,showBrother:true,showFather:false});
  });
  it('performs the arrest over four dialogue beats and keeps the empty place through decisions',()=>{
@@ -74,7 +74,7 @@ describe('physical presence, clothing and visible story consequences',()=>{
   expect(stage({nodeId:'n25',sister:'beside',flags:['sisterHurt']})).toMatchObject({showMother:false,showSister:false,sisterInjured:true,showGuard:true});
   const resting=stage({nodeId:'n30',sister:'beside',father:'free',flags:['released','sisterHurt']},'home');
   expect(resting).toMatchObject({showFather:true,showSister:true,sisterInjured:true,fatherRescued:true});
-  expect(resting.assets.father).toBe('/art/oppression/father-rescued.svg');
+  expect(resting.assets.father).toBe('/art/sister-v2/father-rescued.png');
   expect(resting.assets.sister).toContain('sister-injured.png');
   expect(stage({nodeId:'n30',flags:['sisterTreated']},'home')).toMatchObject({sisterInjured:false,sisterRecovering:true});
   expect(stage({nodeId:'n30',flags:['sisterTreated']},'home').assets.sister).toContain('sister-injured.png');
@@ -137,7 +137,7 @@ describe('physical presence, clothing and visible story consequences',()=>{
   for(const endingId of ['dream_guardian','dream_commons']){
    const cast=stage({nodeId:'n30',endingId,sister:'injured',father:'free',flags:['released','motherHurt','sisterHurt','friendMet']},'courtyard');
    expect(cast).toMatchObject({isDream:true,showHero:true,showMother:false,showFather:false,showSister:false,showBrother:false,showFriend:false,showGuard:false,featuredProp:null});
-   expect(cast.assets.hero).toBe(endingId==='dream_commons'?'/art/oppression/adult-builder.svg':'/art/sister-v2/dream-guardian.png');
+   expect(cast.assets.hero).toBe(endingId==='dream_commons'?'/art/sister-v3/adult-builder.png':'/art/sister-v2/dream-guardian.png');
    expect(cast.assets.background).toBe(`/art/oppression/${endingId.replace('_','-')}.svg`);
    if(endingId==='dream_commons')expect(cast.heroDescription).not.toContain('卫队');
    else expect(cast.heroDescription).toContain('卫队');

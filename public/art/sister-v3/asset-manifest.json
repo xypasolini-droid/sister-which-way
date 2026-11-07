@@ -1,0 +1,254 @@
+[
+  {
+    "file": "adult-builder.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.5878548849789456,
+    "opaqueFraction": 0.0007098652844735875,
+    "visibleBoundingBoxAlphaGT10": [
+      127,
+      16,
+      712,
+      1753
+    ]
+  },
+  {
+    "file": "armed-patrol-grab.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.5001366347682737,
+    "opaqueFraction": 0.000796294719288635,
+    "visibleBoundingBoxAlphaGT10": [
+      11,
+      46,
+      818,
+      1746
+    ]
+  },
+  {
+    "file": "armed-patrol.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.5185708892953332,
+    "opaqueFraction": 0.0006882579257698257,
+    "visibleBoundingBoxAlphaGT10": [
+      137,
+      40,
+      771,
+      1750
+    ]
+  },
+  {
+    "file": "father-drag.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.623078692729378,
+    "opaqueFraction": 0.00019573724943407786,
+    "visibleBoundingBoxAlphaGT10": [
+      18,
+      129,
+      877,
+      1625
+    ]
+  },
+  {
+    "file": "father-standing-crutch.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.6488823275955204,
+    "opaqueFraction": 0.0006946130312709321,
+    "visibleBoundingBoxAlphaGT10": [
+      23,
+      65,
+      804,
+      1709
+    ]
+  },
+  {
+    "file": "friend-worker-crouch.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.7955092282486982,
+    "opaqueFraction": 0.00004766329125829818,
+    "visibleBoundingBoxAlphaGT10": [
+      125,
+      843,
+      705,
+      1751
+    ]
+  },
+  {
+    "file": "hero-fear.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.6781602986391178,
+    "opaqueFraction": 0.00009532658251659636,
+    "visibleBoundingBoxAlphaGT10": [
+      173,
+      89,
+      690,
+      1723
+    ]
+  },
+  {
+    "file": "hero-help.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.6527157272337878,
+    "opaqueFraction": 0.00042197900527346657,
+    "visibleBoundingBoxAlphaGT10": [
+      51,
+      136,
+      856,
+      1703
+    ]
+  },
+  {
+    "file": "hero-worker-crouch.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.8441581963702179,
+    "opaqueFraction": 0.00001334572155232349,
+    "visibleBoundingBoxAlphaGT10": [
+      177,
+      929,
+      662,
+      1745
+    ]
+  },
+  {
+    "file": "merchant.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.5285890776072774,
+    "opaqueFraction": 0.0007257530482263536,
+    "visibleBoundingBoxAlphaGT10": [
+      36,
+      49,
+      828,
+      1749
+    ]
+  },
+  {
+    "file": "mother-fallen.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.7842816633598935,
+    "opaqueFraction": 0.00010422373021814534,
+    "visibleBoundingBoxAlphaGT10": [
+      33,
+      1031,
+      863,
+      1744
+    ]
+  },
+  {
+    "file": "mother-shield.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.6206173603687994,
+    "opaqueFraction": 0.00042960513187479424,
+    "visibleBoundingBoxAlphaGT10": [
+      49,
+      461,
+      743,
+      1751
+    ]
+  },
+  {
+    "file": "mother-standing.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.7301742951234733,
+    "opaqueFraction": 0.00013981232102434132,
+    "visibleBoundingBoxAlphaGT10": [
+      229,
+      475,
+      674,
+      1749
+    ]
+  },
+  {
+    "file": "patrol-raised.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.6012800453500329,
+    "opaqueFraction": 0.0007638836812329921,
+    "visibleBoundingBoxAlphaGT10": [
+      61,
+      31,
+      773,
+      1739
+    ]
+  },
+  {
+    "file": "patrol-strike.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.6451359929026181,
+    "opaqueFraction": 0.0004232500263736878,
+    "visibleBoundingBoxAlphaGT10": [
+      24,
+      214,
+      861,
+      1638
+    ]
+  },
+  {
+    "file": "patrol.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.5998990809246424,
+    "opaqueFraction": 0.0007206689638254685,
+    "visibleBoundingBoxAlphaGT10": [
+      12,
+      91,
+      805,
+      1738
+    ]
+  },
+  {
+    "file": "relative-pull.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.5761945374055155,
+    "opaqueFraction": 0.0003387271232089724,
+    "visibleBoundingBoxAlphaGT10": [
+      11,
+      113,
+      871,
+      1717
+    ]
+  },
+  {
+    "file": "relative.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "transparentFraction": 0.557558826034071,
+    "opaqueFraction": 0.0003882969461176025,
+    "visibleBoundingBoxAlphaGT10": [
+      36,
+      24,
+      805,
+      1734
+    ]
+  }
+]

@@ -129,6 +129,12 @@ export default function NarrativeStage(props: NarrativeStageProps) {
   const showMedicine = !staging.isDream && has('medicine');
   const showLetter = !staging.isDream && (has('letter') || has('documents') || has('evidence'));
   const showLantern = !staging.isDream && (has('lantern') || scene === 'home' || scene === 'courtyard');
+  // An image failure must not change an adult into a child, or undo a disguise.
+  // Exact injury/action poses have no standing substitute: hide failed art.
+  const heroineFallback = staging.isDream ? undefined : drama?.preDisguise ? '/art/sister-v2/hero-cloak.png'
+    : outfit === 'worker' || (outfit === 'travel' && has('disguise'))
+      ? `/art/sister-v2/hero-worker${staging.space === 'public' ? '' : '-indoor'}.png`
+      : outfit === 'travel' ? '/art/sister-v2/hero-travel-girl.png' : '/art/sister-v2/hero-cloak.png';
 
   useEffect(() => {
     const update = () => setVisible(!document.hidden);
@@ -210,19 +216,20 @@ export default function NarrativeStage(props: NarrativeStageProps) {
         {staging.marketStall && <div className="narrative-market-mat" />}
         <div key="mother" data-actor="mother" data-pose={drama?.motherPose} data-presence={showMother ? 'present' : 'offstage'} className={`narrative-actor narrative-actor--mother narrative-wardrobe--${staging.motherWardrobe}${motherWeak ? ' is-tired' : ''}`} style={{ ...(drama ? {left:`${drama.motherLeft}%`} : staging.arrest ? { left: `${staging.arrest.motherLeft}%` } : {}), opacity: showMother ? 1 : 0 }}>
           <div className="narrative-foot-shadow" />
-          <FigureImage src={staging.assets.mother} fallback={staging.motherWardrobe === 'home' ? '/art/sister-v2/mother-stop.png' : '/art/sister-v2/mother-outdoor.png'} className="narrative-sprite" />
+          <FigureImage src={staging.assets.mother} fallback={drama || staging.motherInjured ? undefined : staging.motherWardrobe === 'home' ? '/art/sister-v2/mother.png' : '/art/sister-v3/mother-standing.png'} className="narrative-sprite" />
           <div className="narrative-person-label"><b>母亲</b><span>{motherWeak ? '身体需要照顾' : showMedicine ? '药已经带到了' : '等你们回来'}</span></div>
         </div>
 
         <div key="father" data-actor="father" data-pose={drama?.fatherPose} data-presence={showFather ? 'present' : 'offstage'} className={`narrative-actor narrative-actor--father${staging.fatherRescued ? ' is-rescued' : ''}${showFather ? ' is-present' : ''}`} style={{ left: drama ? `${drama.fatherLeft}%` : staging.marketStall ? 'var(--stall-father-left)' : staging.fatherRescued ? 'var(--rescued-father-left)' : staging.arrest ? `${staging.arrest.fatherLeft}%` : '77%', opacity: showFather ? 1 : 0 } as CSSProperties}>
           <div className="narrative-foot-shadow" />
-          <FigureImage src={staging.assets.father} fallback="/art/sister-v2/father.png" className="narrative-sprite" />
+          <FigureImage src={staging.assets.father} fallback={staging.marketStall || staging.fatherRescued ? undefined : '/art/sister-v3/father-standing-crutch.png'} className="narrative-sprite" />
+          {((staging.marketStall && drama?.fatherPose !== 'shield') || staging.fatherRescued) && <svg className={staging.fatherRescued ? 'narrative-cart-crutch' : 'narrative-market-crutch'} viewBox="0 0 70 260" aria-hidden="true"><path d="M10 13 Q34 3 59 13 M14 17 L26 132 L30 248 M55 17 L44 132 L36 248 M23 100 L47 100" fill="none" stroke="#634b33" strokeWidth="8" strokeLinecap="round"/><path d="M14 17 L27 132 L31 242 M54 17 L43 132 L35 242" fill="none" stroke="#b08b5c" strokeWidth="4"/><path d="M29 248 L37 248" stroke="#3d3b34" strokeWidth="10" strokeLinecap="round"/></svg>}
           <div className="narrative-person-label"><b>父亲</b><span>{nodeId === 'n01' ? '替人读信与摆摊' : staging.arrest ? '被武装者带向门口' : staging.fatherRescued ? '靠在推车上，仍需照护' : '终于回到身边'}</span></div>
         </div>
 
         <div key="hero" data-actor="hero" data-pose={drama?.heroPose} data-presence={staging.showHero ? 'present' : 'offstage'} className={`narrative-actor narrative-actor--hero narrative-outfit--${outfit}${heroWeary ? ' is-weary' : ''}`} style={{ left: drama ? `${heroX}%` : staging.marketStall ? 'var(--stall-hero-left)' : `${heroX}%`, opacity: staging.showHero ? 1 : 0 }}>
           <div className="narrative-foot-shadow" />
-          <FigureImage src={staging.assets.hero} fallback={drama?.preDisguise ? '/art/sister-v2/hero-cloak.png' : '/art/sister-v2/hero-worker.png'} className="narrative-sprite" />
+          <FigureImage src={staging.assets.hero} fallback={heroineFallback} className="narrative-sprite" />
           {scarf === 'shared' && !staging.isDream && <span className="narrative-ribbon-knot" />}
           <div className="narrative-person-label"><b>{staging.isDream ? '成年的阿提什' : has('aliasAatish') && staging.space === 'public' ? '阿提什' : '努拉'}</b><span>{outfit === 'worker' ? '别人眼里的小工' : outfit === 'travel' ? '背起新的生活' : '还在寻找一条路'}</span></div>
         </div>
@@ -251,10 +258,10 @@ export default function NarrativeStage(props: NarrativeStageProps) {
 
         <div key="oppressor" data-actor="oppressor" data-kind={drama?.oppressor} data-pose={drama?.oppressorPose} data-presence={drama?.oppressor ? 'present' : 'offstage'} className="narrative-actor narrative-actor--oppressor" style={{left:`${drama?.oppressorLeft ?? 88}%`,opacity:drama?.oppressor ? 1 : 0}}>
           <div className="narrative-foot-shadow"/>
-          <FigureImage src={drama?.oppressorAsset ?? '/art/oppression/patrol.svg'} fallback="/art/oppression/patrol.svg" className="narrative-sprite"/>
+          <FigureImage src={drama?.oppressorAsset ?? '/art/sister-v3/patrol.png'} fallback="/art/sister-v3/patrol.png" className="narrative-sprite"/>
         </div>
         <div key="second-patrol" data-actor="second-patrol" data-presence={drama?.secondPatrol ? 'present' : 'offstage'} className="narrative-actor narrative-actor--second-patrol" style={{left:`${drama?.secondLeft ?? 96}%`,opacity:drama?.secondPatrol ? 1 : 0}}>
-          <FigureImage src={drama?.secondAsset ?? '/art/oppression/armed-patrol.svg'} fallback="/art/oppression/patrol.svg" className="narrative-sprite"/>
+          <FigureImage src={drama?.secondAsset ?? '/art/sister-v3/armed-patrol.png'} fallback="/art/sister-v3/patrol.png" className="narrative-sprite"/>
         </div>
         <div className="narrative-gunfire-haze" data-active={drama?.gunfire || undefined}/>
 

@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-07",
+  "mode": "built-in image_gen, one edit request per asset",
+  "skill": "/Users/xiongyi/.codex/skills/.system/imagegen/SKILL.md",
+  "filmReference": "/Volumes/Ariel-SD卡1/养家之人.mp4",
+  "filmFramesReviewed": [
+    "work/film-full/frame_00130.000.jpg",
+    "work/film-full/frame_00380.000.jpg"
+  ],
+  "referenceSprites": [
+    "public/art/sister-v2/hero-cloak.png",
+    "public/art/sister-v2/hero-worker.png",
+    "public/art/sister-v2/friend-worker.png"
+  ],
+  "transparent_background": true,
+  "pixelValidation": {
+    "canvas": [887, 1774],
+    "hero-fear.png": { "bboxAlphaAbove16": [173, 89, 690, 1723], "fullyTransparentPercent": 68, "bytes": 904920 },
+    "hero-help.png": { "bboxAlphaAbove16": [51, 136, 856, 1703], "fullyTransparentPercent": 65, "bytes": 990119 },
+    "hero-worker-crouch.png": { "bboxAlphaAbove16": [177, 929, 662, 1745], "fullyTransparentPercent": 84, "bytes": 514605 },
+    "friend-worker-crouch.png": { "bboxAlphaAbove16": [125, 843, 705, 1751], "fullyTransparentPercent": 80, "bytes": 621261 }
+  },
+  "prompts": {
+    "fear": "Edit the reference sprite, identity-preserve. Create ONE full-body hand-drawn 2D game character sprite on a truly transparent background. The edit target is hero-cloak.png: preserve this exact young girl's recognizable narrow face, warm brown skin, short black fringe partly under the scarf, eye shape, age about 11, child proportions, dark forest-green plain headscarf covering her hair, muted olive-grey knee-length long-sleeved tunic, loose dusty brown trousers, brown flat shoes, thin softly textured dark outlines and subtle painted-paper flat shading. Match the reference's refined drawn animation rendering, not a new visual style. Only change pose and acting: she is startled by an off-screen adult and takes a small step backward, shoulders slightly drawn inward, one hand instinctively held close to her chest and the other hand slightly lifted with a relaxed natural open palm. Her body is anatomically natural and upright with a normal short neck and believable limbs. Her expression is tense and worried, brows gently lifted and drawn together, eyes slightly widened but the SAME almond eye size, mouth just slightly parted. It must remain a restrained human emotion, never a scream or horror expression. She faces three-quarter right as in the source. Single isolated girl, entire scarf, hands and both shoes visible, portrait 1:2 composition with breathing room around the silhouette, no cropping, no floor, no scenery, no contact shadow, no text, no extra people. Preserve alpha transparency. Avoid large white eyes, exaggerated eyeballs, caricature, geometric SVG shapes, thick vector strokes, 3D, glossy finish, adult body, long neck, hunchback, extra fingers.",
+    "friendCrouch": "Edit the reference sprite, identity-preserve. Create ONE full-body hand-drawn 2D game sprite of the SAME friend character in friend-worker.png on truly transparent background. Preserve this friend's distinctive broader angular face, strong dark brows, warm brown skin, short untidy black hair under a plain dark taupe round cap, muted taupe-brown knee-length long-sleeved tunic, dark brown loose shalwar trousers, simple brown flat shoes. She is a young girl disguised as a boy, child around 11-12; retain the exact reference identity, original proportions, palette, delicate thin textured outlines and soft paper-painted flat shading. Only change the pose: she is crouching low to hide behind a wall out of frame, both knees bent naturally, heels near the ground, torso slightly inclined forward without a hunched/deformed back, one hand lightly resting on a knee and the other held close at her side for balance. She looks alert towards the right in three-quarter view, mouth closed, worried focused brows, normal narrow almond eyes. Anatomically convincing child crouch, both legs and shoes visible, clean hands with five fingers. The crouched person should occupy the LOWER PART of a tall portrait canvas at the SAME character scale as the standing reference, with generous transparent empty space above her head; do not enlarge her to fill the entire height. Single isolated character, no floor, no wall, no background, no contact shadow, no text, no other characters. Preserve true alpha. Avoid geometric SVG, oversimplified polygons, large white eyes, horror expression, adult body, elongated neck, 3D.",
+    "help": "Edit the original reference sprite hero-cloak.png, identity-preserve. The second reference hero-fear.png is ONLY a supporting identity/rendering reference showing the same girl. Create ONE full-body transparent 2D hand-drawn game character sprite. Preserve the first reference's exact young girl's narrow facial structure, warm brown skin, short black fringe, original naturally sized almond eyes, age around 11 and natural child proportions. Preserve the plain dark forest-green headscarf covering her hair and draped over her shoulders, muted olive-grey knee-length long-sleeved tunic, dusty brown loose shalwar trousers and brown flat shoes. Keep the thin textured dark contour line, muted colors and subtle paper-painted shading of the references. CHANGE ONLY the pose and expression: she is reaching forward to help and protect someone just outside the frame to her right, eyes focused with frightened determination. One arm extends forward and slightly downward with palm open in a believable gentle helping gesture, the other arm reaches partway forward near her waist ready to support that person. Both hands, thumbs and fingers are natural and clearly drawn. She stands with a stable slight step forward and knees softly bent, upright balanced torso, relaxed lowered shoulders, normal short neck connected naturally to the body. Do not lean or crane her neck forward. Chin slightly tucked, brows drawn together, mouth softly closed. Entire full-body isolated sprite in three-quarter right view. Same scale and vertical standing placement as the original, tall portrait 1:2 canvas with head and both shoes fully visible and some transparent margin. Truly transparent alpha background, no injured person, no extra character, no floor, no scenery, no shadow, no props, no text. Avoid hunched back, elongated neck, giant white eyes, scream, horror, melodrama, vector geometric shapes, heavy outlines, glossy 3D, deformed arms, extra digits.",
+    "heroCrouch": "Edit the reference sprite hero-worker.png, identity-preserve. Create ONE full-body transparent 2D hand-drawn game sprite of exactly the SAME young girl disguised as a boy in the reference. Preserve her recognizable narrow child face, warm brown skin, small natural almond eyes, short black hair, plain light grey-beige round prayer cap without a pattern, plain pale dusty-grey long-sleeved knee-length tunic with narrow split neckline, loose light-grey shalwar trousers, brown flat shoes. Keep the reference's thin textured dark outlines, muted colors, quiet hand-drawn animation style and soft paper-painted shading. Only change acting and pose: she is HALF-CROUCHING to hide from an unseen patrol, both knees bent naturally, one knee a little higher than the other, weight balanced, torso gently inclined forward but with a normal spine and short neck. One hand rests against her bent knee, the other hovers naturally near her lower leg for balance. She looks cautiously to the right, brows knit with contained fear, lips closed, eyes same size as source. Anatomically believable child and both shoes completely visible. Her crouched body occupies the LOWER portion of a tall 1:2 canvas at the SAME body scale as the standing reference, with substantial empty transparent space above her head; do not stretch or enlarge the crouched figure to fill the height. Single isolated sprite, alpha transparent background, no wall, no ground, no cast shadow, no scene, no words, no extra characters. Avoid giant white eyes, long neck, large adult hands, adult body, geometric SVG polygons, 3D, exaggerated cartoon expression or horror."
+  },
+  "artifacts": {
+    "fear": {
+      "path": "/Users/xiongyi/Documents/Codex/2026-11-06/sou-suo/outputs/story-paper-game/public/art/sister-v3/hero-fear.png",
+      "source": "/Users/xiongyi/.codex/generated_images/01a1b4f3-7c0c-7f91-b177-4ded643368b5/exec-753b90b6-bd91-42b9-8516-322881de04b0.png"
+    },
+    "friendCrouch": {
+      "path": "/Users/xiongyi/Documents/Codex/2026-11-06/sou-suo/outputs/story-paper-game/public/art/sister-v3/friend-worker-crouch.png",
+      "source": "/Users/xiongyi/.codex/generated_images/01a1b4f3-7c0c-7f91-b177-4ded643368b5/exec-ecde2983-3387-4e74-bf7b-0a07a2b45f44.png"
+    },
+    "help": {
+      "path": "/Users/xiongyi/Documents/Codex/2026-11-06/sou-suo/outputs/story-paper-game/public/art/sister-v3/hero-help.png",
+      "source": "/Users/xiongyi/.codex/generated_images/01a1b4f3-7c0c-7f91-b177-4ded643368b5/exec-6d601342-b25d-4617-b58f-e3ff7bce6a71.png"
+    },
+    "heroCrouch": {
+      "path": "/Users/xiongyi/Documents/Codex/2026-11-06/sou-suo/outputs/story-paper-game/public/art/sister-v3/hero-worker-crouch.png",
+      "source": "/Users/xiongyi/.codex/generated_images/01a1b4f3-7c0c-7f91-b177-4ded643368b5/exec-f2533d52-8481-4f52-8cfa-ebb27ad3650c.png"
+    }
+  },
+  "review": "Each generated output was visually inspected using view_image before acceptance. Natural eye size, same face/clothes and muted hand-drawn rendering accepted. Full body and both shoes visible. Crouching sprites deliberately retain transparent space above their heads to preserve original body scale, rather than enlarging to fill the canvas. sips confirms RGBA/hasAlpha."
+}

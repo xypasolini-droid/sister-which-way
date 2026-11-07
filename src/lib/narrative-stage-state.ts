@@ -72,7 +72,7 @@ export function selectNarrativeStage(context: NarrativeStageContext) {
     showHero,showSister,showMother,showBrother,showFather,showFriend,showGuard,showBread,
     heroSheltered:!disguised&&space==='public'&&nodeId!=='n01',
     featuredProp,locationName,
-    assets:{background,hero:ending==='dream_commons'?'/art/oppression/adult-builder.svg':`/art/sister-v2/${heroAsset}.png`,sister:`/art/sister-v2/${sisterBase}${sisterInjured||sisterRecovering?'-injured':''}.png`,mother:`/art/sister-v2/${arrest?'mother-stop':motherWardrobe==='outdoor'?'mother-outdoor':motherInjured?'mother-injured':'mother'}.png`,father:marketStall?'/art/oppression/father-market.svg':fatherRescued?'/art/oppression/father-rescued.svg':'/art/oppression/father-standing-crutch.svg',brother:'/art/sister-v2/young-brother.png',friend:'/art/sister-v2/friend-worker.png',guard:'/art/sister-v2/guard-amin.png'},
+    assets:{background,hero:ending==='dream_commons'?'/art/sister-v3/adult-builder.png':`/art/sister-v2/${heroAsset}.png`,sister:`/art/sister-v2/${sisterBase}${sisterInjured||sisterRecovering?'-injured':''}.png`,mother:`/art/sister-v2/${arrest?'mother-stop':motherWardrobe==='outdoor'?'mother-outdoor':motherInjured?'mother-injured':'mother'}.png`,father:marketStall?'/art/sister-v2/father-market.png':fatherRescued?'/art/sister-v2/father-rescued.png':'/art/sister-v3/father-standing-crutch.png',brother:'/art/sister-v2/young-brother.png',friend:'/art/sister-v2/friend-worker.png',guard:'/art/sister-v2/guard-amin.png'},
   };
   if (!drama) return { ...staging, drama: null };
   const shot = context.dramaShot!;

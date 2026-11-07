@@ -56,11 +56,14 @@ describe('performed scenes and a separate full journal',()=>{
   });
   it('keeps the rescued father lying on a handcart and distinguishes both vehicles in prose and subtitles',()=>{
     const opening=getNode(createInitialState()).paragraphs.join('');
-    expect(opening).toContain('早已失去一条腿');
+    expect(opening).toContain('双腿');
+    expect(opening).toContain('走路有些跛');
+    expect(opening).not.toMatch(/失去.*腿|缺腿|单腿|空裤管/);
     expect(opening).toContain('腋拐');
     const reunion=play(ENDING_ROUTES.reunited);
     expect(getEnding(reunion)!.paragraphs.join('')).toContain('木推车');
     expect(getEnding(reunion)!.paragraphs.join('')).toContain('腋拐');
+    expect(reunion.history.map(step=>step.consequence).join('')).not.toMatch(/失去.*腿|缺腿|单腿|空裤管/);
     expect(buildReadingBeats(reunion).map(beat=>beat.text).join('')).toContain('车把');
     expect(getNode(play(NODE_ROUTES.n21)).paragraphs.join('')).toContain('红色轿车');
     const departure=play(ENDING_ROUTES.caravan);

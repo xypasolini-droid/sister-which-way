@@ -1,0 +1,98 @@
+{
+  "date": "2026-11-07",
+  "mode": "built-in image_gen",
+  "skill": "/Users/xiongyi/.codex/skills/.system/imagegen/SKILL.md",
+  "scope": "Three mother pose PNGs only, including a standing street replacement for the original seated outdoor sprite. No SVG, source mapping, stage CSS or original reference assets modified.",
+  "source_review": {
+    "game_art": [
+      "public/art/sister-v2/mother-outdoor.png",
+      "public/art/sister-v2/mother-injured.png"
+    ],
+    "local_film": "User-provided local film reviewed for wardrobe and action context only; film frames were not passed to image generation or copied to public assets.",
+    "film_samples": [
+      "00:13:20",
+      "00:13:30",
+      "00:13:40",
+      "00:13:50",
+      "00:14:00",
+      "00:14:10-00:14:19",
+      "00:14:40",
+      "00:15:00",
+      "00:15:30"
+    ],
+    "limitation": "These are original compressed game poses, not claims of exact frame recreation or full-film certification."
+  },
+  "assets": [
+    {
+      "file": "mother-shield.png",
+      "prompt": "Use case: identity-preserve. Asset type: transparent full-body 2D narrative game sprite, portrait canvas approximately 1:2. Edit the original game mother from reference image 1 into a frightened protective standing pose. Image 1 is the PRIMARY wardrobe and linework reference (mother-outdoor.png); image 2 is only an identity and restrained hand-drawn finish reference (mother-injured.png), do not copy its indoor clothing, stool, exposed face or hands. This is the exact same adult mother, not a new character. Preserve image 1's muted dusty grey-blue burqa, fitted rounded crown with three fine curved seams, dark small tightly woven mesh face window, fine dark hand-drawn contour lines, natural hanging pleats, matte subtly textured flat color and quiet 2D illustrated finish. Action: three-quarter view facing LEFT, she recoils and bends her knees a little while raising one forearm protectively above and beside her head and the other arm outward to shelter a child off canvas. The raised arms remain beneath the long opaque draped cloth; hands and all skin stay covered. The gesture is tense and human, not theatrical. Maintain anatomically believable adult proportions and two arms, fabric tension changes naturally around the raised elbows, fully intact mesh panel. No visible eyes, face, hair, bare hands, skin, wounds, tears in clothing or blood. Only one mother, no child, no weapon, no attacker, no stool, no scene. Full body and hem/closed brown shoes visible, not cropped. Place the top of the head about 24% down the portrait canvas, shoe contact near 97% down, leave generous transparent margin above and around the silhouette to match the original layered game sprites. Genuine alpha-transparent background, no opaque backdrop or checkerboard printed into the pixels. Only a very small soft translucent contact shadow beneath the shoes, no floor plane. No text, no logo. Avoid thick vector strokes, geometric SVG look, glossy rendering, 3D, anime eyes, big white eyes, photorealism, giant sleeves or balloon-like cloth.",
+      "references": [
+        "public/art/sister-v2/mother-outdoor.png",
+        "public/art/sister-v2/mother-injured.png"
+      ],
+      "source_generated_path": "/Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980/exec-654c22eb-8706-4921-a96d-180f26e0b417.png",
+      "output_hint": "Generated images are saved to /Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980 as /Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980/exec-654c22eb-8706-4921-a96d-180f26e0b417.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "transparent_background": true,
+      "validation": {
+        "width": 887,
+        "height": 1774,
+        "hasAlpha": true,
+        "zeroAlphaFraction": 0.6206173603687994,
+        "bboxAlphaOver10": {
+          "minX": 49,
+          "minY": 461,
+          "maxX": 743,
+          "maxY": 1751
+        },
+        "review": "Viewed generated image before copying. Muted blue-grey crown, intact dense mesh, fine drawn folds, hidden face and hands, protective arm pose, no blood, no backdrop."
+      }
+    },
+    {
+      "file": "mother-fallen.png",
+      "prompt": "Use case: identity-preserve. Asset type: transparent full-body 2D narrative game sprite, portrait canvas approximately 1:2. Create the FALLEN pose of the SAME adult mother as reference image 1, the newly completed hand-drawn shield pose. Image 2, original mother-outdoor.png, is supporting wardrobe, weave and fine linework reference. Preserve exactly the same muted dusty grey-blue burqa, rounded fitted crown with three thin curved seams, small dark tightly woven mesh face window, slender natural adult build, thin dark contours, softly textured matte flat colors and restrained hand-drawn 2D finish. Change only her pose. She has fallen onto her hip and sits low on the ground with both knees folded together to one side under the opaque garment. Her torso is bent protectively and the head inclines toward the LEFT. One covered arm braces against the ground beside her and the other covered forearm is lifted beside/over the head defensively. Readable human weight, a real lateral seated crouch, not a standing figure rotated, not a shapeless pile. Burqa cloth pools naturally around the two folded legs, with long coherent folds and normal fabric thickness. Maintain the fine woven face panel fully intact. Arms and hands stay inside opaque draped fabric, no exposed face, hair, skin or fingers; no visible eyes, no wounds, no blood. Include only the mother and a very small soft translucent contact shadow under her resting fabric. No child, attacker, weapon, chair, prop, floor plane, scenery, text, logo or visible background. Entire crouched body and garment silhouette inside the canvas without cropping. Use a normal eye-level game-sprite camera, not top-down. Important canvas placement: because she is sitting on the ground her visible crown should be about 52% down the tall portrait canvas, resting hem at about 97%, with large transparent headroom above, so she is genuinely lower on the existing standing-character stage. Genuine alpha-transparent PNG, preserve alpha, do not draw a checkerboard. Avoid thick vector outlines, geometric SVG shapes, shiny 3D, photorealism, exaggerated facial features or billowing balloon cloth.",
+      "references": [
+        "public/art/sister-v3/mother-shield.png",
+        "public/art/sister-v2/mother-outdoor.png"
+      ],
+      "source_generated_path": "/Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980/exec-f3d54898-87b6-4934-89d8-aa7fdeb557e4.png",
+      "output_hint": "Generated images are saved to /Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980 as /Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980/exec-f3d54898-87b6-4934-89d8-aa7fdeb557e4.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "transparent_background": true,
+      "validation": {
+        "width": 887,
+        "height": 1774,
+        "hasAlpha": true,
+        "zeroAlphaFraction": 0.7842816633598935,
+        "bboxAlphaOver10": {
+          "minX": 33,
+          "minY": 1031,
+          "maxX": 863,
+          "maxY": 1744
+        },
+        "review": "Viewed generated image before copying. Same garment and mesh, seated low on hip with folded knees under cloth, one covered arm braced and the other protecting head, no exposed skin or blood. Actual stage integration remains for browser QA."
+      }
+    },
+    {
+      "file": "mother-standing.png",
+      "prompt": "Use case: identity-preserve. Asset type: transparent full-body 2D narrative game sprite. Edit the SAME mother in reference image 1 (mother-shield.png) into a calm but frightened STANDING plea pose. The only change is her arm/body posture; preserve exactly her wardrobe, body scale, drawing style, muted dusty grey-blue burqa, rounded fitted crown with three thin curved seams, dark small dense woven mesh face window, fine dark hand-drawn lines, subtle paper-like matte color and restrained 2D painted finish. No visible face, eyes, hair, bare hands or skin. Adult mother standing fully upright with both feet grounded, slight forward lean toward LEFT in a humble urgent appeal; both forearms and hands gathered together low in front of her chest beneath the opaque cloth. Natural gravity and long coherent vertical pleats from the crown to the ankle hem, not inflatable or overly wide. Full body with two closed brown shoes on the ground, no crop. IMPORTANT: NO stool, chair, bench or seat of any kind; she is standing on her own two feet in a public street game scene, but do not draw the street. Only one isolated mother. Use the SAME portrait canvas size and scale as the reference: about 887 by 1774 pixels, aspect ratio exactly 1:2, the top of her crown near y=480 (about 27% of canvas), shoe soles near y=1740 (98%), generous transparent margin above. Match the physical head/crown width and hem-to-head scale of the supplied reference so the character doesn't change size when her pose changes. Genuine alpha-transparent background, no opaque backdrop, checkerboard, floor plane or environmental objects. Only a tiny soft translucent contact shadow right beneath the shoes. No other people, weapon, wounds, blood, text, logos. Avoid thick geometric SVG contours, 3D, glossy shading, anime, caricature, inflated cape, or extra limbs.",
+      "references": [
+        "public/art/sister-v3/mother-shield.png"
+      ],
+      "source_generated_path": "/Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980/exec-4149b113-c866-4713-9971-f7256f4bbd60.png",
+      "output_hint": "Generated images are saved to /Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980 as /Users/xiongyi/.codex/generated_images/01a1b4f1-4ecd-7d13-ae33-d19f1ef79980/exec-4149b113-c866-4713-9971-f7256f4bbd60.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "transparent_background": true,
+      "validation": {
+        "width": 887,
+        "height": 1774,
+        "hasAlpha": true,
+        "zeroAlphaFraction": 0.7301742951234733,
+        "bboxAlphaOver10": {
+          "minX": 229,
+          "minY": 475,
+          "maxX": 674,
+          "maxY": 1749
+        },
+        "review": "Viewed generated image before copying. Same grey-blue burqa, crown and dense face mesh as shield pose. Upright two-shoe standing posture, covered hands gathered in front, no seat or stool, no visible skin, no blood."
+      }
+    }
+  ]
+}

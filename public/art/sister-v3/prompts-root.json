@@ -1,0 +1,21 @@
+{
+  "tool": "built-in imagegen",
+  "transparent_background": true,
+  "assets": [
+    {
+      "file": "father-standing-crutch.png",
+      "reference": "../sister-v2/father.png",
+      "prompt": "Keep the original narrow-faced father, grey pakol, olive waistcoat, grey-beige tunic and trousers, brown shoes. Both complete legs; chronic limp, one wooden underarm crutch. Gentle protective open hand. Full-body transparent hand-painted sprite, natural anatomy."
+    },
+    {
+      "file": "father-drag.png",
+      "reference": "father-standing-crutch.png",
+      "prompt": "Same father being forcibly led right by an offscreen patrolman. Right arm tense toward right; worried face looks back left. Both intact complete legs and shoes. One wooden underarm crutch on his left side, tip on ground. Preserve identity, clothes, fine outlines, hand-painted texture, natural anatomy, full body and transparency."
+    },
+    {
+      "file": "adult-builder.png",
+      "reference": "../sister-v2/dream-guardian.png",
+      "prompt": "Same adult heroine, twenty-five, narrow long face, forest green scarf, grey-olive coat, beige tunic, loose trousers, brown boots. Peaceful civic builder: remove shield and staff, hold closed cream notebook, invite with open palm. Same fine organic outline and softly hand-painted fabric. Full body, natural adult proportions, transparent background."
+    }
+  ]
+}

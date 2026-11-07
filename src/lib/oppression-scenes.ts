@@ -38,42 +38,42 @@ const ARREST: readonly ShotTemplate[] = [
 ];
 
 const MOTHER: readonly ShotTemplate[] = [
-  { visual: 'mother-block', scene: 'checkpoint', location: '监所外的街口', speaker: '巡查', line: '没有男人陪着，你们还敢出门？', caption: '巡查横棍拦住母女。', durationMs: 2600 },
-  { visual: 'mother-plead', scene: 'checkpoint', location: '监所外的街口', speaker: '母亲', line: '他们抓走我丈夫。我只想见他。', caption: '母亲向前求问父亲的去向。', durationMs: 2600 },
+  { visual: 'mother-block', scene: 'checkpoint', location: '监所外的街口', speaker: '巡查', line: '没有男人陪着，你们还敢出门？', caption: '巡查指着母女，挡住去路。', durationMs: 2600 },
+  { visual: 'mother-plead', scene: 'checkpoint', location: '监所外的街口', speaker: '母亲', line: '他们抓走我丈夫。我只想见他。', caption: '母亲向前要求探视，被巡查逼住。', durationMs: 2600 },
   { visual: 'mother-struck', scene: 'checkpoint', location: '监所外的街口', speaker: '巡查', line: '回去！这里不准你们说话！', caption: '棍子落下，母亲抬臂护住头。', durationMs: 2500 },
-  { visual: 'mother-floor', scene: 'checkpoint', location: '监所外的街口', speaker: '努拉', line: '母亲，靠着我。我们回家。', caption: '女孩弯腰伸手，试着扶起母亲。', durationMs: 2800 },
+  { visual: 'mother-floor', scene: 'checkpoint', location: '监所外的街口', speaker: '努拉', line: '母亲，靠着我。我们回家。', caption: '女孩向母亲伸手，试着扶她起身。', durationMs: 2800 },
 ];
 
 const BREAD: readonly ShotTemplate[] = [
-  { visual: 'bread-refuse', scene: 'market', location: '集市的面饼摊前', speaker: '摊主', line: '收起钱，别在这里惹麻烦。', caption: '摊主推回零钱，巡查站在摊边。', durationMs: 2400 },
+  { visual: 'bread-refuse', scene: 'market', location: '集市的面饼摊前', speaker: '摊主', line: '收起钱，别在这里惹麻烦。', caption: '摊主举掌拒卖，巡查站在摊边。', durationMs: 2400 },
   { visual: 'bread-threat', scene: 'market', location: '集市的面饼摊前', speaker: '巡查', line: '一个女孩？回家去！', caption: '巡查举棍，向空手的女孩逼近。', durationMs: 2500 },
-  { visual: 'bread-flee', scene: 'market', location: '集市出口', speaker: '努拉', line: '我走，我这就走。', caption: '女孩被逼退开，攥着没花掉的零钱。', durationMs: 2500 },
+  { visual: 'bread-flee', scene: 'market', location: '集市出口', speaker: '努拉', line: '我走，我这就走。', caption: '女孩空手退开，没能买到食物。', durationMs: 2500 },
 ];
 
 const HOME_WOUNDED: readonly ShotTemplate[] = [
-  { visual: 'home-wounded', scene: 'home', location: '家中的房间', speaker: '母亲', line: '先把门关好。过来，让我看看你。', caption: '母亲倚墙养伤，女孩空手回家。', durationMs: 2800 },
+  { visual: 'home-wounded', scene: 'home', location: '家中的房间', speaker: '母亲', line: '先把门关好。过来，让我看看你。', caption: '母亲坐着养伤，女孩空手回家。', durationMs: 2800 },
 ];
 
 const STREET: readonly ShotTemplate[] = [
-  { visual: 'street-recruit', scene: 'market', location: '集市的军需车旁', speaker: '武装者', line: '两个小子，过来搬军需！', caption: '武装者拦住两个孩子，指向军需包。', durationMs: 2500 },
+  { visual: 'street-recruit', scene: 'market', location: '集市的通道', speaker: '武装者', line: '两个小子，过来搬军需！', caption: '武装者堵住通道，催两个孩子搬军需。', durationMs: 2500 },
   { visual: 'street-hide', scene: 'market', location: '集市摊后的窄道', speaker: '莱拉', line: '低头，先退到摊后。', caption: '两个孩子退入摊后，让开武装队伍。', durationMs: 2500 },
 ];
 
 const CHECKPOINT: readonly ShotTemplate[] = [
-  { visual: 'mother-block', scene: 'checkpoint', location: '集市街口的检查绳前', speaker: '巡查', line: '你，小子，站住。把包打开！', caption: '巡查横棍拦住戴小帽的孩子。', durationMs: 2500 },
+  { visual: 'mother-block', scene: 'checkpoint', location: '集市街口的检查绳前', speaker: '巡查', line: '你，小子，站住。把包打开！', caption: '巡查指着戴小帽的孩子，命令他停下。', durationMs: 2500 },
 ];
 
 const RELATIVE: readonly ShotTemplate[] = [
   { visual: 'relative-order', scene: 'road', location: '远亲的车旁', speaker: '贾维德', line: '现在就走。你女儿的事已经说好。', caption: '远亲堵在车前，催家人上车。', durationMs: 2600 },
-  { visual: 'relative-pull', scene: 'road', location: '远亲的车旁', speaker: '母亲', line: '努拉还没回来，你放开我！', caption: '贾维德扯住母亲手臂，逼她上车。', durationMs: 2500 },
+  { visual: 'relative-pull', scene: 'road', location: '远亲的车旁', speaker: '母亲', line: '努拉还没回来，你放开我！', caption: '贾维德伸手强拉母亲，逼她上车。', durationMs: 2500 },
   { visual: 'relative-refuse', scene: 'road', location: '远亲的车旁', speaker: '母亲', line: '不能丢下任何一个孩子。我回去。', caption: '母亲挣开他的手，拒绝强迫带离。', durationMs: 2800 },
 ];
 
 function prisonShots(state: DramaState): readonly ShotTemplate[] {
   const bonded = state.flags.includes('guardBond');
   return [
-    { visual: 'prison-gunfire', scene: 'prison', location: '北门外的路口', speaker: '阿明', line: '趴下！别站在路中央！', caption: '枪火掠过路口，武装者向门内退。', durationMs: 2300 },
-    { visual: 'prison-shelter', scene: 'prison', location: '北门侧墙', speaker: '努拉', line: '我记得他的名字。我还在这里。', caption: '女孩蹲在墙脚，护住写着名字的纸。', durationMs: 2600 },
+    { visual: 'prison-gunfire', scene: 'prison', location: '北门外的路口', speaker: '阿明', line: '趴下！别站在路中央！', caption: '路口传来枪声，武装者守在门边。', durationMs: 2300 },
+    { visual: 'prison-shelter', scene: 'prison', location: '北门侧墙', speaker: '努拉', line: '我记得他的名字。我还在这里。', caption: '女孩蹲在墙边避开路口，仍盯着门。', durationMs: 2600 },
     { visual: 'prison-signal', scene: 'prison', location: '北门侧墙', speaker: '阿明', line: bonded ? '躲在门侧。我进去找他，别冲出来。' : '名字留下。先退开，我不能答应。', caption: bonded ? '阿明认出字迹，示意女孩留在门边。' : '阿明收下姓名，没有答应开门救人。', durationMs: 2800 },
   ];
 }

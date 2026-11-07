@@ -64,11 +64,11 @@ describe('automatic scenes of coercion', () => {
     ]);
     expect(shots.every(shot => shot.location.startsWith('此前 · '))).toBe(true);
     expect(shots[2].caption).toMatch(/棍子落下.*抬臂护住头/);
-    expect(shots[3].caption).toMatch(/女孩弯腰伸手.*扶起母亲/);
-    expect(shots[4].caption).toMatch(/推回零钱.*巡查/);
+    expect(shots[3].caption).toMatch(/女孩向母亲伸手.*扶她起身/);
+    expect(shots[4].caption).toMatch(/举掌拒卖.*巡查/);
     expect(shots[5].speaker).toBe('巡查');
     expect(shots[5].caption).toMatch(/举棍.*逼近/);
-    expect(shots[6].caption).toMatch(/被逼退.*没花掉/);
+    expect(shots[6].caption).toMatch(/空手退开.*没能买到食物/);
     expect(shots[7].caption).toMatch(/养伤.*空手回家/);
     expect(getOppressionShots(sceneState('n07', 'short'))[0].scene).toBe('market');
   });
@@ -94,7 +94,7 @@ describe('automatic scenes of coercion', () => {
     const shots = getOppressionShots(sceneState('n21', 'short'));
     expect(shots.map(shot => shot.visual)).toEqual(['relative-order', 'relative-pull', 'relative-refuse']);
     expect(shots[1].speaker).toBe('母亲');
-    expect(shots[1].caption).toMatch(/扯住母亲/);
+    expect(shots[1].caption).toMatch(/强拉母亲.*逼她上车/);
     expect(shots[2].speaker).toBe('母亲');
     expect(shots[2].line).toMatch(/不能丢下.*我回去/);
     expect(shots[2].caption).toMatch(/拒绝强迫带离/);

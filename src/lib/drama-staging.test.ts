@@ -14,7 +14,7 @@ describe('visible actions and physical presence during oppressive events', () =>
   it('shows a distinct persecutor whose drawn arm changes from pointing to raised and lowered cane', () => {
     const market = shots('n01').map(shot => getDramaStaging(shot)!);
     expect(market.map(frame => frame.oppressor)).toEqual(['patrol', 'patrol']);
-    expect(market.map(frame => frame.oppressorAsset)).toEqual(['/art/oppression/patrol.svg', '/art/oppression/patrol-raised.svg']);
+    expect(market.map(frame => frame.oppressorAsset)).toEqual(['/art/sister-v3/patrol.png', '/art/sister-v3/patrol-raised.png']);
     const mother = shots('n06').slice(0, 4).map(shot => getDramaStaging(shot)!);
     expect(mother[1].oppressorPose).toBe('raised');
     expect(mother[2].oppressorPose).toBe('strike');
@@ -33,9 +33,9 @@ describe('visible actions and physical presence during oppressive events', () =>
     }
     const shield = cast('n06', sequence[2]);
     const fallen = cast('n06', sequence[3]);
-    expect(shield.assets.mother).toContain('mother-shield.svg');
-    expect(fallen.assets.mother).toContain('mother-fallen.svg');
-    expect(fallen.assets.hero).toContain('hero-help.svg');
+    expect(shield.assets.mother).toContain('mother-shield.png');
+    expect(fallen.assets.mother).toContain('mother-fallen.png');
+    expect(fallen.assets.hero).toContain('hero-help.png');
     expect(fallen.drama?.heroPose).toBe('help');
     expect(fallen.motherInjured).toBe(true);
   });
@@ -59,9 +59,12 @@ describe('visible actions and physical presence during oppressive events', () =>
     const frames = sequence.map(shot => cast('n02', shot));
     expect(frames.map(frame => frame.showFather)).toEqual([true, true, true, false]);
     expect(frames.every(frame => frame.drama?.secondPatrol)).toBe(true);
-    expect(frames[1].assets.father).toContain('father-drag.svg');
+    expect(frames[0].drama?.oppressorAsset).toContain('/patrol.png');
+    expect(frames[0].drama?.secondAsset).toContain('/armed-patrol.png');
+    expect(frames[1].drama?.secondAsset).toContain('/patrol.png');
+    expect(frames[1].assets.father).toContain('father-drag.png');
     expect(frames[2].drama!.fatherLeft).toBeGreaterThan(frames[1].drama!.fatherLeft);
-    expect(frames[1].drama?.oppressorAsset).toContain('armed-patrol-grab.svg');
+    expect(frames[1].drama?.oppressorAsset).toContain('armed-patrol-grab.png');
     const finalShot = sequence.at(-1)!;
     for (const phase of ['cinematic', 'explore', 'reading'] as const) {
       expect(cast('n02', finalShot, phase).drama).toEqual(frames[3].drama);
@@ -88,7 +91,7 @@ describe('visible actions and physical presence during oppressive events', () =>
       expect(frame.sisterWardrobe).toBe('outdoor');
       expect(frame.drama?.oppressor).toBe('relative');
     }
-    expect(getDramaStaging(sequence[1])?.oppressorAsset).toContain('relative-pull.svg');
+    expect(getDramaStaging(sequence[1])?.oppressorAsset).toContain('relative-pull.png');
     expect(getDramaStaging(sequence[2])?.motherLeft).toBeLessThan(getDramaStaging(sequence[1])!.motherLeft);
     for (const shot of shots('n25')) {
       const frame = cast('n25', shot);

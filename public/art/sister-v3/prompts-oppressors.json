@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-11-07",
+  "toolMode": "built-in image_gen",
+  "transparentBackground": true,
+  "purpose": "Replace geometric SVG oppressor sprites with consistent raster illustrations matching the established hand-drawn family art.",
+  "referenceReview": {
+    "film": "The Breadwinner (2017), user-provided local film",
+    "reviewedFrames": [
+      "00:06:20 — market confrontation; narrow-faced young patrol and older armed man, period clothing",
+      "00:14:20 — uncovered pickup bed, men wearing loose long shirts and head coverings"
+    ],
+    "styleReference": "../sister-v2/guard-amin.png",
+    "styleReferenceRole": "Medium and rendering only. Amin's benevolent identity, face, grey beard and pakol were not copied."
+  },
+  "validation": {
+    "viewedEveryAsset": true,
+    "pngAlphaRange": [
+      0,
+      255
+    ],
+    "allEdgesClear": true,
+    "dimensions": [
+      887,
+      1774
+    ],
+    "background": "Real transparent alpha; no opaque backdrop or floor.",
+    "scope": "Single isolated adult, full headwear to shoes and entire props. No second person, visible wounds, blood, scenery or text."
+  },
+  "assets": [
+    {
+      "file": "patrol.png",
+      "description": "Young patrol: scolding and pointing; cane held low.",
+      "identityReference": null,
+      "generatedSourceBasename": "exec-d442a881-4464-4088-bece-3bed9a526168.png",
+      "alphaBoundingBoxGT10": [
+        12,
+        91,
+        805,
+        1738
+      ],
+      "prompt": "Use case: illustration-story. Asset type: single full-body transparent PNG sprite for an emotionally restrained 2D narrative game set in Kabul around 2001. Reference image 1 is STYLE ONLY: match its thin brown organic contour lines, subtle paper grain, muted natural pigments, planar soft shading, natural adult proportions, detailed cloth folds and small believable eyes. DO NOT copy that man, his face, grey beard, grey pakol or helpful open-hand character. Images 2 and 3 are film context for period clothing. Create exactly ONE person, no other human, no environment. Transparent background with real alpha, no floor or ground shadow, no text or watermark. Portrait 1:2. Entire headwear, both shoes, hands and every prop fully visible with generous 4% margins; figure stands naturally and occupies 90% canvas height. Natural 7-head adult proportions, a real anatomical shoulder/elbow/wrist, softly bent cloth trouser legs and shoes. Avoid SVG geometry, giant white eyes, thick black brows, stick legs, photorealism, Disney cuteness. The character's gaze and interaction point toward viewer's LEFT.\nSubject: a slim young male patrol officer, about 22, narrow long tan face, clean shaven, small dark eyes, sharp thin nose, black hair covered by a low simple dusty chestnut-brown wrapped turban with short tail; dark olive long shalwar kameez and baggy matching trousers, dark brown sleeveless waistcoat and worn dark brown shoes. Distinct from the grey-bearded older style reference. He is scolding someone offscreen LEFT: torso leaning slightly left, chin forward, mouth open mid-reprimand, brows drawn naturally; LEFTWARD arm extended with index finger pointing left, the OTHER hand holds a thin short wooden cane diagonally down, low beside his right leg. No rifle. Tension from posture, not grotesque facial distortion."
+    },
+    {
+      "file": "patrol-raised.png",
+      "description": "Same patrol: threatening raised cane.",
+      "identityReference": "patrol.png",
+      "generatedSourceBasename": "exec-57c407c2-b45d-485d-a0ee-23140229e7c0.png",
+      "alphaBoundingBoxGT10": [
+        61,
+        31,
+        773,
+        1739
+      ],
+      "prompt": "Use case: identity-preserve. Make one new transparent-background full-body 2D hand-drawn narrative-game sprite by changing ONLY the pose of the young patrol officer in reference image 1. Keep EXACTLY the same clean-shaven narrow face, tan complexion, thin organic outlines, subdued cloth texture and shading, dusty chestnut wrapped turban with tail, olive shalwar kameez, brown waistcoat, baggy olive trousers and dark shoes. Do not age him, add beard, change outfit or redesign anatomy. His expression is severe, looking toward viewer's LEFT, mouth open scolding. Change pose: his cane hand lifts the thin wooden cane ABOVE his head threateningly, elbow bent, cane angled across upper left space, the other hand forward at chest height. Feet planted with a slight preparatory lean. Cane is a short thin wooden baton, not long staff, no weapon except this cane. Head, BOTH shoes, raised hand and complete cane all visible INSIDE image. One isolated person, no victim, no impact, no blood. Portrait 1:2, true transparent alpha backdrop, no ground, no floor shadow, no text. Generous clear margins around every extremity. Maintain the reference's natural adult proportions and restrained animation design, not SVG geometry or cartoon big-white-eyes."
+    },
+    {
+      "file": "patrol-strike.png",
+      "description": "Same patrol: swings cane down to left; isolated nongraphic pose.",
+      "identityReference": "patrol.png",
+      "generatedSourceBasename": "exec-2583f124-9628-4fb4-8ddf-e1bc3eec8152.png",
+      "alphaBoundingBoxGT10": [
+        24,
+        214,
+        861,
+        1638
+      ],
+      "prompt": "Use case: identity-preserve. Make one new transparent-background full-body 2D hand-drawn narrative-game sprite by changing ONLY the pose of the young patrol officer in reference image 1. Keep EXACTLY the same young clean-shaven narrow face, tan complexion, chestnut wrapped turban and short tail, olive shalwar kameez, brown waistcoat, baggy trousers and brown shoes, thin organic outlines and muted soft planar shading/cloth texture. Action: body turns and leans to viewer's LEFT, the cane arm sweeps downward toward LOWER LEFT in a single tense striking pose. His hand holds a thin SHORT wooden baton diagonally down-left, with the entire cane visible, face angry looking down-left, other arm bent near body to counterbalance. Both legs natural, feet staggered with knees slightly flexed, loose trouser folds, no straight stick legs. No extra person, no contact with anyone, no blood, no impact sparks, no motion lines. Entire turban, both shoes, both hands and COMPLETE cane inside generous 4% clear margins. Portrait 1:2, true transparent alpha, no background or ground shadow, no text or watermark. Do not change identity, do not add beard, do not stylize into simplistic SVG or oversized eyes."
+    },
+    {
+      "file": "armed-patrol-grab.png",
+      "description": "Older armed patrol reaches left to seize an offscreen person.",
+      "identityReference": null,
+      "generatedSourceBasename": "exec-544e9967-9ae6-4b6b-90f7-f43913c967e1.png",
+      "alphaBoundingBoxGT10": [
+        11,
+        46,
+        818,
+        1746
+      ],
+      "prompt": "Use case: illustration-story. Asset type: single full-body transparent PNG sprite for an emotionally restrained 2D narrative game set in Kabul around 2001. Reference image 1 is STYLE ONLY: match its thin brown organic contour lines, subtle paper grain, muted natural pigments, planar soft shading, natural adult proportions, detailed cloth folds and small believable eyes. DO NOT copy that man, his face, grey beard, grey pakol or helpful open-hand character. Images 2 and 3 are film context for period clothing. Create exactly ONE person, no other human, no environment. Transparent background with real alpha, no floor or ground shadow, no text or watermark. Portrait 1:2. Entire headwear, both shoes, hands and every prop fully visible with generous 4% margins; figure stands naturally and occupies 90% canvas height. Natural 7-head adult proportions, a real anatomical shoulder/elbow/wrist, softly bent cloth trouser legs and shoes. Avoid SVG geometry, giant white eyes, thick black brows, stick legs, photorealism, Disney cuteness. The character's gaze and interaction point toward viewer's LEFT.\nSubject: a taller broad-shouldered middle-aged armed oppressor, about 46, long rectangular tan face, thick near-black full beard with just a few grey strands, dark deep-set eyes, prominent nose, heavy plain dark-brown turban with tail. Dusty charcoal-olive shalwar kameez, worn ochre-brown waistcoat, wide dark trousers and dark shoes. A wooden-stock rifle rests safely slung diagonally over his back with visible brown strap and muzzle upward behind shoulder, not held in hand. Torso leaning toward LEFT, one arm reaches left at chest height, hand curved open with strong separated natural fingers about to grab an offscreen person's upper arm; his other hand near belt. A severe coercive glare and slightly open scolding mouth. This is a different person from both style-reference Amin and the slim young patrol. No victim, no wounds, no blood."
+    },
+    {
+      "file": "armed-patrol.png",
+      "description": "Same older armed patrol: neutral watchful stance.",
+      "identityReference": "armed-patrol-grab.png",
+      "generatedSourceBasename": "exec-39b72659-f0e3-4a79-a48e-2f8220528c28.png",
+      "alphaBoundingBoxGT10": [
+        137,
+        40,
+        771,
+        1750
+      ],
+      "prompt": "Use case: identity-preserve. Create a neutral standing pose variant of EXACTLY the same single middle-aged armed man in the reference. Keep his long rectangular tan face, near-black full beard, severe small dark eyes, dark brown wrapped turban and tail, charcoal-olive long shirt and loose trousers, ochre brown waistcoat, leather rifle strap and wooden-stock rifle SLUNG ON HIS BACK. Keep thin organic contours, paper grain, nuanced cloth folds and muted painterly 2D shading exactly. Change ONLY pose: standing upright, weight balanced with naturally separated shoes, head turned slightly toward viewer's LEFT and face watchful, both arms lowered naturally beside his body, one thumb optionally touching belt; no grabbing, pointing or overt physical action. A coercive watchful presence through expression and stance. Entire headwear, rifle muzzle, hands and both shoes fully visible in portrait 1:2 with 4% transparent margins. One isolated person, real transparent alpha background, no environment, no floor shadow, no text or watermark. No extra person, no wounds, no caricature or huge white eyes."
+    },
+    {
+      "file": "relative-pull.png",
+      "description": "Controlling relative reaches to pull an offscreen wrist.",
+      "identityReference": null,
+      "generatedSourceBasename": "exec-caf761c5-daac-4e7c-ac2d-71adf9049a7f.png",
+      "alphaBoundingBoxGT10": [
+        11,
+        113,
+        871,
+        1717
+      ],
+      "prompt": "Use case: illustration-story. Asset type: single full-body transparent PNG sprite for an emotionally restrained 2D narrative game set in Kabul around 2001. Reference image 1 is STYLE ONLY: match its thin brown organic contour lines, subtle paper grain, muted natural pigments, planar soft shading, natural adult proportions, detailed cloth folds and small believable eyes. DO NOT copy that man, his face, grey beard, grey pakol or helpful open-hand character. Images 2 and 3 are film context for period clothing. Create exactly ONE person, no other human, no environment. Transparent background with real alpha, no floor or ground shadow, no text or watermark. Portrait 1:2. Entire headwear, both shoes, hands and every prop fully visible with generous 4% margins; figure stands naturally and occupies 90% canvas height. Natural 7-head adult proportions, a real anatomical shoulder/elbow/wrist, softly bent cloth trouser legs and shoes. Avoid SVG geometry, giant white eyes, thick black brows, stick legs, photorealism, Disney cuteness. The character's gaze and interaction point toward viewer's LEFT.\nSubject: a middle-aged controlling male distant relative, 45, medium build, round angular tan face, broad nose, small close-set dark eyes and short uneven dark beard, simple PLAIN WHITE small prayer cap, no turban. Chestnut-brown waistcoat over a light beige-grey long shalwar kameez, grey-beige loose trousers, old brown sandals. He has NO weapons or military accessories. Leaning backward toward the RIGHT, feet braced apart naturally, one arm stretched out toward LEFT at waist/chest height with curled fingers in an empty gripping gesture as if forcibly pulling an offscreen person's wrist (do not draw another hand/person), other hand gesturing impatiently to the right. Angry controlling face, clenched jaw, mouth open to command. Entire stretched arm and all fingers fully within frame."
+    },
+    {
+      "file": "relative.png",
+      "description": "Same relative: impatient command gesture without pulling.",
+      "identityReference": "relative-pull.png",
+      "generatedSourceBasename": "exec-85cc03cf-d570-4e08-afca-00fa89af45e1.png",
+      "alphaBoundingBoxGT10": [
+        36,
+        24,
+        805,
+        1734
+      ],
+      "prompt": "Use case: identity-preserve. Create a standing command-pose variant of EXACTLY the same single middle-aged distant relative in the reference. Keep same medium build, tan face, short uneven dark beard, broad nose, small eyes, plain WHITE small prayer cap, chestnut waistcoat, light beige-grey long shalwar kameez, beige loose trousers and leather sandals. Preserve thin organic outlines, muted 2D animation shading, paper texture and realistic fabric folds. Change ONLY pose: stand upright with a tense jaw, facing LEFT, one hand held at waist level palm turned up gesturing impatiently that somebody must obey, other hand rests at side. He is not pulling anyone; posture controlling and mouth slightly open in a command. No weapon or military accessories. Entire head to both sandals and all fingers fully inside frame, portrait 1:2, isolated single person on true transparent alpha, no floor/shadow, no text/watermark. Preserve identity and natural adult proportions; no huge white eyes or SVG geometry."
+    },
+    {
+      "file": "merchant.png",
+      "description": "Stockier merchant rejects with outward palm; unarmed.",
+      "identityReference": null,
+      "generatedSourceBasename": "exec-ae642aea-8771-4673-9ef6-0965f33b217a.png",
+      "alphaBoundingBoxGT10": [
+        36,
+        49,
+        828,
+        1749
+      ],
+      "prompt": "Use case: illustration-story. Asset type: single full-body transparent PNG sprite for an emotionally restrained 2D narrative game set in Kabul around 2001. Reference image 1 is STYLE ONLY: match its thin brown organic contour lines, subtle paper grain, muted natural pigments, planar soft shading, natural adult proportions, detailed cloth folds and small believable eyes. DO NOT copy that man, his face, grey beard, grey pakol or helpful open-hand character. Images 2 and 3 are film context for period clothing. Create exactly ONE person, no other human, no environment. Transparent background with real alpha, no floor or ground shadow, no text or watermark. Portrait 1:2. Entire headwear, both shoes, hands and every prop fully visible with generous 4% margins; figure stands naturally and occupies 90% canvas height. Natural 7-head adult proportions, a real anatomical shoulder/elbow/wrist, softly bent cloth trouser legs and shoes. Avoid SVG geometry, giant white eyes, thick black brows, stick legs, photorealism, Disney cuteness. The character's gaze and interaction point toward viewer's LEFT.\nSubject: a stockier middle-aged market merchant about 50, broad tan face, small dark eyes, receding hair under a faded beige embroidered small cap, short brown moustache and stubble, not Amin and not the patrol men. A dusty blue-grey long shalwar kameez and baggy trousers with faded umber waistcoat, old brown leather slippers. He faces slightly LEFT. One arm is extended toward LEFT with palm clearly outward in a firm refusal/stop gesture, the other hand rests at his waist. His face is guarded and dismissive, mouth slightly open telling a customer to leave. No weapons, no cane, no money, no food or stall, one single full person only."
+    }
+  ]
+}

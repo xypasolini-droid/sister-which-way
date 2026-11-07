@@ -48,11 +48,12 @@ describe('five original ending projections', () => {
     expect(text(fedBrother)).not.toContain('你曾让姐姐先坐一会儿');
     expect(text(restedSister)).toContain('你曾让姐姐先坐一会儿');
   });
-  it('keeps the actual rescue and disabled leg visible when the closing action is writing', () => {
+  it('keeps the actual rescue, crutches and injured father when the closing action is writing', () => {
     const result = projectEnding(state({ father: 'free', endingId: 'reunited', flags: ['guardBond', 'released', 'pact'], history: [{ nodeId: 'n30', choiceId: 'pages', label: '', consequence: '' }] }), ending('reunited'));
     expect(result.id).toBe('reunited');
     expect(text(result)).toContain('木推车');
-    expect(text(result)).toContain('早已失去的腿');
+    expect(text(result)).toContain('跛行时用的腋拐');
+    expect(text(result)).not.toMatch(/失去.*腿|缺腿|单腿|空裤管/);
     expect(text(result)).toContain('你教他写过的字');
     expect(text(result)).toContain('回话地点');
   });

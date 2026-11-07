@@ -67,6 +67,12 @@ describe('the eight-decision short edition', () => {
       expect(state.endingId).toBe(endingId);
       expect(state.history).toHaveLength(8);
       expect(validateBranchState(state)).toEqual(state);
+      if(endingId==='reunited'){
+        const rescueText=state.history.find(step=>step.nodeId==='n25')!.consequence;
+        expect(rescueText).toContain('跛行，需要腋拐支撑');
+        expect(rescueText).toContain('木推车');
+        expect(rescueText).not.toMatch(/失去.*腿|缺腿|单腿|空裤管/);
+      }
     }
   });
 

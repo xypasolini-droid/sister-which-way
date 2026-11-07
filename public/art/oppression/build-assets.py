@@ -159,18 +159,9 @@ helping+=group('arm-right',path('M278 423 L306 427 L327 504 L354 594 L322 610 L2
 helping+=girl_head(270,318,True,20)
 save('hero-help','Nura bends at the waist and knees to reach toward her injured mother, green scarf in place, eyes wide with fear and grief, two hands extended.',helping)
 
-# Film verification 00:06:10: his right leg (viewer-left in this frontal pose) is absent.
-# Do not add a prosthetic. The empty trouser end is folded, with one supporting leg.
-def father_crutch(dropped=False):
-    return group('crutch', path('M119 398 L148 399 L130 981 L115 1007 L104 1006 L109 979Z','#8d7655')+path('M92 382 Q125 367 163 383 L162 405 Q125 392 93 405Z','#66523a')+path('M115 583 L145 584 L142 604 L114 603Z','#584a35')+line('M131 411 L116 978','#b69a6d',4))
-f=father_crutch(True)
-f+=group('legs',path('M173 710 L246 722 L239 786 Q204 806 169 784 L161 765Z','#99947b')+path('M170 768 Q207 751 241 770 L239 791 Q205 811 170 791Z','#827d68')+line('M178 780 Q207 771 231 781','#575b4b',2)+path('M250 717 L317 712 L335 847 L360 964 L307 977 L272 864Z','#a7a18a'))
-f+=group('feet',path('M308 966 L357 957 L375 985 L414 997 L408 1009 L317 1008 L302 993Z','#584c3d')+line('M319 999 L402 1001','#302b24',3))
-f+=group('body',path('M178 293 L270 275 L315 314 L336 744 L166 751 L151 457Z','#a9a188')+path('M176 295 L218 273 L238 315 L213 565 L153 574 L154 389Z','#60664e')+path('M264 276 L297 291 L321 316 L345 563 L272 558 L250 314Z','#60664e')+line('M241 329 L253 710 M184 698 L217 706','#6b7158',2))
-f+=group('arm-left',path('M177 301 L150 310 L121 447 L142 524 L178 511 L168 438 L199 337Z','#a9a188')+path('M144 514 L144 548 L156 575 L168 571 L165 548 L184 556 L191 545 L178 513Z',LIGHT))
-f+=group('arm-right',path('M299 296 L322 299 L350 323 L404 280 L428 310 L370 374 L332 374 L286 341Z','#a9a188')+path('M406 283 L424 265 L451 261 L467 272 L459 285 L443 282 L426 309Z',LIGHT))
-f+=face('anxious',True,'cap')
-save('father-drag','Father is pulled by an outstretched wrist, visibly distressed, his right leg absent with an empty folded trouser end and one supporting left leg. A wooden axillary crutch is visible. No invented prosthetic.',f)
+# Father sprites are deliberately excluded from this historical SVG generator.
+# Its amputation inference was rejected. Active assets live in sister-v2/v3;
+# the father has two complete legs, a limp and a wooden underarm crutch.
 
 print('\n'.join(sorted(p.name for p in OUT.glob('*.svg'))))
 
@@ -227,48 +218,6 @@ def crouch(friend=False):
 
 save('hero-worker-crouch','Nura disguised as a boy in a plain pale gray cap, knee-length gray tunic and loose trousers, crouching low with both knees bent, arms protecting her chest, frightened eyes and a small tear. Her cap remains on in public.',crouch(False))
 save('friend-worker-crouch','Layla disguised as a boy in a darker gray-brown cap, long tunic and loose trousers, crouching on bent knees, turning her head to watch the street from cover. Her cap remains on in public.',crouch(True))
-
-# The father gets up to shield his daughter: a distinct defensive pose, not the dragging asset.
-f_shield=man_body('#a9a188','#60664e','neutral',False)
-f_shield=re.sub(r'<g id="legs"[^>]*>.*?</g>',group('legs',path('M169 702 L251 709 L245 782 Q210 805 172 783 L159 758Z','#99947b')+path('M168 770 Q204 754 246 770 L243 793 Q208 811 171 793Z','#827d68')+line('M181 781 Q208 771 235 781','#575b4b',2)+path('M249 712 L324 701 L350 879 L335 967 L278 968 L257 875Z','#a7a18a')+path('M303 783 L280 887 L320 946 L339 928Z','#8a8971')),f_shield)
-f_shield=re.sub(r'<g id="feet"[^>]*>.*?</g>',group('feet',path('M281 956 L333 954 L342 981 L378 993 L374 1007 L278 1007 L269 996Z','#584c3d')+line('M281 996 L365 999','#302b24',3)),f_shield)
-f_shield=father_crutch()+f_shield
-shield_left=group('arm-left',path('M178 283 L151 293 L125 365 L76 411 L91 456 L151 422 L192 341 L199 314Z','#a9a188')+path('M80 413 L57 408 L30 410 L17 422 L24 434 L47 430 L27 443 L34 454 L62 449 L84 459 L97 438Z',LIGHT)+line('M45 426 L67 430','#8e6546',2))
-shield_right=group('arm-right',path('M312 284 L338 282 L369 324 L402 269 L440 291 L407 369 L377 391 L334 360 L301 330Z','#a9a188')+path('M404 273 L398 247 L400 217 Q404 206 410 216 L414 238 L416 198 Q421 187 425 198 L427 238 L435 209 Q441 198 445 210 L443 246 L454 228 Q463 221 464 231 L452 268 L437 292 L418 286Z',LIGHT)+line('M415 249 L419 272 M428 248 L429 275 M441 252 L437 275','#8e6546',2))
-f_shield=re.sub(r'<g id="arm-left"[^>]*>.*?</g>',shield_left,f_shield)
-f_shield=re.sub(r'<g id="arm-right"[^>]*>.*?</g>',shield_right,f_shield)
-f_shield+=face('anxious',True,'cap').replace('<g id="head" >','<g id="head" transform="translate(512 0) scale(-1 1)">')
-save('father-shield','Father shields his daughter with one arm extended back and his other palm toward the patrolman, worried but firm. His right leg is absent: the empty trouser end is folded, only the left foot reaches the ground, and an axillary crutch braces him. No prosthetic.',f_shield)
-
-# A neutral single-leg standing pose for the arrest entrance, not a shielding or dragging pose.
-f_stand=f_shield
-stand_left=group('arm-left',path('M178 286 L151 300 L118 455 L119 569 L153 577 L166 460 L199 328Z','#a9a188')+path('M119 562 L113 581 L119 609 L134 613 L145 603 L153 576Z',LIGHT)+line('M123 589 L142 590','#8e6546',2))
-stand_right=group('arm-right',path('M313 285 L339 300 L372 446 L357 535 L320 528 L327 441 L299 333Z','#a9a188')+path('M322 522 L315 552 L324 579 L337 580 L341 558 L353 569 L363 558 L360 531Z',LIGHT))
-f_stand=re.sub(r'<g id="arm-left"[^>]*>.*?</g>',stand_left,f_stand)
-f_stand=re.sub(r'<g id="arm-right"[^>]*>.*?</g>',stand_right,f_stand)
-save('father-standing-crutch','Father before the arrest: one remaining leg, folded empty trouser end, axillary wooden crutch under one arm, hand gripping the support. Pale cap, long tunic, olive-brown waistcoat. His disability predates the arrest.',f_stand)
-
-# Seated on the ground by his market wares; only one foot and no invented prosthesis.
-f_market=group('crutches',path('M376 438 L395 440 L433 1005 L416 1007Z','#8d7655')+path('M351 420 Q379 410 408 425 L408 444 Q380 434 353 443Z','#66523a')+path('M398 624 L419 623 L420 645 L399 646Z','#584a35')+path('M421 491 L439 489 L475 1006 L458 1007Z','#8d7655')+path('M399 473 Q429 460 455 475 L454 493 Q429 485 400 493Z','#66523a')+line('M384 453 L425 985 M432 501 L465 991','#b69a6d',3))
-f_market+=group('legs',path('M178 823 L257 811 L321 850 L356 925 L330 976 L229 979 L159 930 L121 882Z','#a7a18a')+path('M149 839 Q172 810 207 823 L238 850 L213 892 Q182 895 151 872Z','#99947b')+path('M152 853 Q180 841 214 864 L207 890 Q175 893 150 872Z','#827d68')+path('M255 866 L284 861 L319 918 L295 950 L238 935 L212 909Z','#8c8b74')+line('M234 944 L279 957 M289 911 L308 938','#666b57',3))
-f_market+=group('feet',path('M286 931 L332 938 L337 966 L366 981 L360 998 L284 999 L267 982Z','#584c3d')+line('M286 989 L352 989','#302b24',3))
-f_market+=group('body',path('M177 592 L217 566 L278 572 L316 601 L332 859 Q257 897 151 854 L154 698Z','#a9a188')+path('M177 590 L216 568 L236 610 L217 798 L151 813 L157 667Z','#60664e')+path('M268 574 L299 591 L320 611 L338 804 L276 804 L251 610Z','#60664e')+line('M242 630 L251 834','#666b57',2))
-f_market+=group('arm-left',path('M178 605 L150 619 L127 753 L162 812 L197 787 L169 741 L205 642Z','#a9a188')+path('M163 788 L181 776 L204 785 L222 803 L215 819 L194 807 L183 819 L168 811Z',LIGHT))
-f_market+=group('arm-right',path('M303 600 L329 624 L351 755 L310 808 L277 782 L312 742 L279 641Z','#a9a188')+path('M280 779 L259 774 L235 793 L237 811 L258 806 L266 820 L284 812 L300 794Z',LIGHT))
-f_market+=group('letter',path('M190 750 L272 763 L264 826 L181 810Z','#dbcfb0')+line('M201 767 L260 777 M198 779 L248 788 M196 791 L253 803','#8c8165',2))
-f_market+=face('anxious',True,'cap').replace('<g id="head" >','<g id="head" transform="translate(0 320)">')
-save('father-market','Father seated on the ground at his market stall reading a letter, with a folded empty trouser end, one remaining foot, and two wooden axillary crutches resting beside him. His disability is present before arrest.',f_market)
-
-# After release he is too weak to stand. Entire wooden handcart stays inside the actor canvas.
-cart=group('cart-wheel',path('M325 873 Q373 855 395 898 Q418 950 385 992 Q352 1019 321 985 Q294 935 325 873Z','#4d483a')+path('M336 896 Q363 882 377 909 Q393 946 371 975 Q348 991 332 968 Q315 934 336 896Z','#85775b')+line('M352 897 L355 981 M326 937 L386 939 M333 908 L377 972 M374 905 L333 975','#4b483a',6))
-cart+=group('cart-frame',path('M57 818 L438 846 L427 874 L54 847Z','#7e6547')+path('M66 847 L81 947 L104 948 L97 850Z','#67553c')+path('M409 865 L453 965 L472 962 L433 851Z','#67553c')+path('M32 784 L461 818 L453 850 L31 815Z','#997f58')+line('M50 798 L440 831 M58 819 L429 849','#c2a072',4))
-# Body lies horizontally, head supported at left; one sole trouser leg, empty other end is folded.
-cart+=group('body',path('M164 728 Q219 713 281 737 L369 771 L411 807 L389 827 L266 806 L155 787Z','#aaa28a')+path('M160 729 L222 727 L262 773 L249 805 L159 786Z','#60664e')+path('M234 752 L322 757 L393 799 L382 823 L295 801 L247 795Z','#b1a990')+path('M290 758 L328 767 L352 793 L328 807 L288 788Z','#827d68')+line('M296 783 L325 796','#575b4b',2))
-cart+=group('feet',path('M383 798 L410 806 L437 820 L433 838 L402 838 L377 823Z','#584c3d'))
-cart+=group('arm-left',path('M168 747 L186 753 L218 787 L264 787 L267 806 L209 809 L168 784Z','#a9a188')+path('M263 786 L280 787 L294 797 L289 809 L266 806Z',LIGHT))
-cart+=group('head',path('M93 697 Q116 672 148 691 L174 722 L168 761 L145 785 L113 778 L88 751 L84 722Z','#b28a63')+path('M107 756 L137 761 L161 745 L157 779 L135 801 L105 785Z','#393b34')+path('M90 716 Q117 687 153 706 L173 725 L178 709 Q144 668 106 684 L87 698Z','#c8c3ad')+line('M105 725 L119 730 M137 731 L151 734','#4f4536',3)+line('M115 722 L121 714 M138 722 L149 723','#4f4536',3)+line('M128 730 L125 747 L135 750','#8b6549',2)+line('M122 770 L139 771','#61412f',2))
-cart+=group('blanket',path('M210 754 L247 750 L319 765 L380 799 L372 826 L262 814 L224 797Z','#7e8572')+line('M255 772 L282 802 M307 779 L334 815','#5e6a59',3))
-save('father-rescued','The weakened father lies on a wooden handcart after release, eyes closed, long beard, pale cap and worn olive-gray clothing. One remaining foot is visible, the other trouser end is folded under the blanket. He does not stand or suddenly regain a leg.',cart)
 
 # Adult Nura for the civic-future dream, deliberately distinct from the armed-guardian ending.
 b=group('legs',path('M179 669 L250 676 L250 825 L217 967 L158 965 L152 848Z','#8d9580')+path('M248 674 L319 666 L344 838 L339 968 L280 969 L264 840Z','#919980')+path('M179 739 L201 848 L176 946 L158 935 L156 850Z','#737f6c')+path('M302 755 L286 858 L322 946 L339 936 L340 843Z','#79836c')+line('M206 744 L219 856 M300 861 L310 930','#69775f',2))
