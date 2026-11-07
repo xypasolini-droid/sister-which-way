@@ -20,7 +20,8 @@ function addEffect(choice: StoryChoice, extra: Effect): Effect {
 
 /** Eight authored decisions. Called by getNode only for the short edition. */
 export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
-  if (node.id === 'n01' || node.id === 'n30') return node;
+  if (node.id === 'n30') return node;
+  if (node.id === 'n01') return edit(node, { work: { label: '拉住父亲，先离开这里' } });
 
   if (node.id === 'n02') {
     const patches: Record<string, ChoicePatch> = {};
@@ -33,7 +34,10 @@ export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
     return edit(node, patches);
   }
 
-  if (node.id === 'n06') return edit(node, {}, {
+  if (node.id === 'n06') return edit(node, {
+    buy: { label: '告诉姐姐我害怕，请她陪我开始', detail: '先说出害怕，让姐姐陪你完成剪发与换装，再约好回家的时间。', keywords: [...node.choices[0].keywords, '害怕', '陪我', '告诉姐姐'] },
+    help: { label: '我也害怕，但想自己迈出这一步', detail: '姐姐留在身旁，你接过剪刀，亲手留下属于自己的决定。', keywords: [...node.choices[1].keywords, '迈出', '亲手', '自己开始'] },
+  }, {
     paragraphs: [
       '这几天，母亲带你要求释放父亲，被巡查以没有成年男性亲属陪同为由殴打；她回家养伤。你偷偷买饼，被拒绝、追赶，带着仍未花掉的钱空手回家。萨米听完火苗的故事，还是饿。',
       '姐姐打开亡兄阿里的衣箱。灰白长衫、宽裤和朴素小帽压在最下面。穿成男孩或许能接过一枚钱，却不能让饥饿、武器和战争消失。她把剪刀放低，等你决定怎样开始。',
@@ -72,10 +76,16 @@ export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
   });
 
   if (node.id === 'n10') return edit(node, {
-    wage: { next: 'n18' },
-    ledger: {
+    wage: {
+      label: '带自己的报酬回家',
+      detail: '家里仍在等饭，把自己挣到的报酬先带回去。',
       next: 'n18',
-      consequence: '女工同意用代号，你替她核算被扣的工钱。对方仍说下次再谈；她收好副本，你只保留获准留下的记录，把报酬带回家。家里广播正说道路快要封锁，母亲拿出一封还没敢念给姐姐听的信。',
+    },
+    ledger: {
+      label: '征求女工同意，保留被扣工钱的记录',
+      detail: '听她说完，用代号留下获准保留的记录；记录不能保证讨回工钱。',
+      next: 'n18',
+      consequence: '女工同意用代号，你听她说完，把被扣工钱的事记下。对方仍说下次再谈；她收好副本，你只保留获准留下的记录，把报酬带回家。家里广播正说道路快要封锁，母亲拿出一封还没敢念给姐姐听的信。',
     },
   });
 
@@ -108,7 +118,7 @@ export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
       detail: '先问优素福是否真的能来，不能让司机或婚约替家人决定。',
       keywords: ['舅舅', '接应', '屋里', '母亲', '车', '撤离'],
       next: 'n21', requires: [],
-      consequence: '你去问母亲的亲弟优素福有没有回信，家人留在关门的住处。贾维德却趁你不在提前到了，借战事催母亲、姐姐和萨米上车。母亲反复说还有一个女儿没回来，他不肯等；接下来的决定，由她们自己作出。',
+      consequence: '你去问母亲的亲弟优素福有没有回信，家人留在关门的住处。贾维德却趁你不在开着红色轿车提前到了，借战事催母亲、姐姐和萨米上车。母亲反复说还有一个女儿没回来，他不肯等；接下来的决定，由她们自己作出。',
       effect: { outfit: 'travel', stats: { hope: 1 }, add: ['caravan', 'relativePressure', 'marriageOffer', 'sisterRefused'], remove: ['rescueRoute'] },
     },
     rush: {
@@ -135,7 +145,7 @@ export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
     release: {
       next: 'n30',
       requires: node.choices.find(choice => choice.id === 'release')!.requires?.map(requirement => requirement.flag === 'guardBond' ? { ...requirement, reason: '先前尚未建立读信、教字的往来，今天不能要求阿明冒险。' } : requirement),
-      consequence: '炮火与调动声中，阿明负伤把衰弱的父亲带出侧门，你借推车扶他离开。与此同时，母亲拒绝贾维德的强迫带离，带萨米回到约定的门。你们再接上姐姐，终于重新数到五个人；父母都还需要水、休息和照护。',
+      consequence: '炮火与调动声中，阿明负伤把父亲带出侧门，安置到借来的木推车上。父亲早已失去一条腿，如今添了重伤，不能撑拐行走，你推着他离开。与此同时，母亲拒绝贾维德的强迫带离，带萨米回到约定的门。你们再接上姐姐，终于重新数到五个人；父母都还需要水、休息和照护。',
       effect: addEffect(node.choices.find(choice => choice.id === 'release')!, { sister: 'beside', add: ['familyTogether', 'motherReturned', 'marriageRefused'], remove: ['missingSister', 'hiddenRisk'] }),
     },
     letter: {
@@ -165,7 +175,7 @@ export function getShortNode(node: StoryNode, state: BranchState): StoryNode {
       keywords: ['舅舅', '接应', '核对', '登记', '会合', '上车'],
       next: 'n30',
       requires: [need('coins', 2, '路费需要两枚钱；可以先留在被邀请的私宅。'), need('health', 3, '家人身体暂时承受不了这段路；先接受一夜借住。')],
-      consequence: '母亲拒绝随贾维德走，带姐姐和萨米回到约定的门，你也按时回来。优素福亲自到场，听清她们拒绝婚事，核对去向，办好文书。付过两枚路费，你们才在他的陪同下上车；母亲数齐每个孩子，父亲的消息仍没有回来。',
+      consequence: '母亲拒绝随贾维德走，带姐姐和萨米回到约定的门，你也按时回来。优素福亲自到场，听清她们拒绝婚事，核对去向，办好文书。付过两枚路费，你们才在他的陪同下登上露天后斗货车，坐低、扶住栏板；母亲数齐每个孩子，父亲的消息仍没有回来。',
       effect: { outfit: 'travel', sister: 'beside', stats: { coins: -2, exposure: -1 }, add: ['caravan', 'documents', 'registered', 'escortConfirmed', 'boarded', 'familyTogether', 'motherReturned', 'marriageRefused', 'relativePressure'], remove: ['missingSister', 'hiddenRisk'] },
     },
     child: {

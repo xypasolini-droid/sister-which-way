@@ -1,6 +1,6 @@
 # 沉浸式体验重构 · 姐姐，我该怎么走
 
-> **分阶段设计过程记录。** 本页保留沉浸改造的初始目标与后续阅读方式修订；其中目标、计划和验收要求不等于已经完成的发布验证。当前功能见 [README](../../README.md)，最新发布检查见 [PUBLICATION-QA.md](PUBLICATION-QA.md)，界面走查范围见 [IMMERSION-QA.md](IMMERSION-QA.md)。
+> **历史设计过程记录。** 本页保留沉浸改造的初始目标与后续阅读方式修订，其中结局数量、目标和计划不代表当前 0.4.0 的实现或发布验证。当前八幕短篇、五结局与冲突分镜见 [README](../../README.md)，新版走查范围见 [PLAY-QA.md](PLAY-QA.md)；当时的发布检查与界面记录分别保留在 [PUBLICATION-QA.md](PUBLICATION-QA.md) 和 [IMMERSION-QA.md](IMMERSION-QA.md)。
 
 2026-11-07。用户目标：参考《光·遇》和优质剧情游戏，让界面简洁沉浸，同时校正人物造型和衣着。沿用黑白半透明磨砂玻璃界面与彩色画面。
 

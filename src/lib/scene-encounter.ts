@@ -1,19 +1,12 @@
-import { getChoices, getNode, type BranchState } from './branch-story';
+import { getNode, type BranchState } from './branch-story';
 
 export type EncounterPoint = { id: string; label: string; speaker: string; response: string; choiceId: string };
-export type EncounterItem = { id: string; label: string; note?: string; image?: string };
-export type EncounterActivity = {
-  kind: 'pack' | 'share' | 'compare' | 'route' | 'reply' | 'remember';
-  title: string; instruction: string; items: EncounterItem[];
-  required?: number; capacity?: number; solution?: string[]; choiceId: string;
-  response: string; correction?: string;
-};
-export type SceneEncounterData = { title: string; goal: string; points: EncounterPoint[]; activity?: EncounterActivity };
+export type SceneEncounterData = { title: string; goal: string; points: EncounterPoint[] };
 type PointSpec = [label: string, speaker: string, response: string, choiceId: string];
 type SceneSpec = { goal: string; points: PointSpec[] };
 
 const SCENES: Record<string, SceneSpec> = {
-  n01: { goal: '收好摊上的旧物，陪父亲离开集市。', points: [
+  n01: { goal: '年轻巡查举棍拦摊。父亲挡在你身前，你们怎样离开？', points: [
     ['摊上的旧物', '父亲', '先收纽扣和布。今天挣不到的钱，回家再想。', 'work'],
     ['熟客的方向', '努拉', '他看见了。敢不敢留下见证，要由他决定。', 'neighbor'],
     ['护住故事册', '努拉', '我记得那个人的名字。至少别让这一页也丢了。', 'mother'],
@@ -35,7 +28,7 @@ const SCENES: Record<string, SceneSpec> = {
     ['弟弟的空碗', '萨米', '有钱，为什么没有饼？', 'flour'],
     ['他的布玩具', '努拉', '刚才我不该冲你发火。那不是你的错。', 'names'],
   ] },
-  n06: { goal: '借亡兄的衣服，剪去发辫，准备出门。', points: [
+  n06: { goal: '母亲仍在养伤。借亡兄的衣服，你决定怎样出门？', points: [
     ['姐姐伸来的手', '玛莉安', '我会慢一点。你想停，就告诉我。', 'buy'],
     ['自己的发辫', '努拉', '先剪一小束。最后这一下，我想自己来。', 'help'],
   ] },
@@ -56,7 +49,7 @@ const SCENES: Record<string, SceneSpec> = {
   ] },
   n10: { goal: '一笔工钱被扣了。先问女工是否愿意让你帮忙。', points: [
     ['自己的活计', '努拉', '我也得把今天的工钱带回家。', 'wage'],
-    ['帘后的账目', '女工', '可以替我核一遍。要把名字交出去，先问我。', 'ledger'],
+    ['女工留下的记录', '女工', '只留下我同意写的事。交出名字前，先问我。', 'ledger'],
   ] },
   n11: { goal: '门关上以后，院子里的人才能商量自己的事。', points: [
     ['愿意开口的人', '努拉', '只记自愿留下的证词，不替任何人署名。', 'testimony'],
@@ -153,50 +146,12 @@ const SCENES: Record<string, SceneSpec> = {
   ] },
   n30: { goal: '这句话里，已经有了你走过的路。', points: [
     ['今天的生活', '努拉', '先兑现已经说出的约定，让今天接住明天。', 'live'],
-    ['写给外面的信', '努拉', '把能够核实的经历写下，让消息继续走。', 'pages'],
-    ['还留着的位置', '努拉', '等待不是胜利。我仍想给它安排一顿饭。', 'wait'],
   ] },
 };
 
-const ACTIVITIES: Partial<Record<string, EncounterActivity>> = {
-  n01: { kind: 'pack', title: '收好摊上的旧物', instruction: '收起纽扣和布料，就和父亲离开集市。', required: 2, choiceId: 'work', items: [
-    { id: 'buttons', label: '拢起纽扣', note: '别让它们滚进尘土。' }, { id: 'cloth', label: '折好布料', image: '/art/sister/bag.png' },
-  ], response: '你们拢好布包，离开摊位。' },
-  n05: { kind: 'share', title: '把自己的一份递过去', instruction: '这顿饭不够。把你的那份放到谁面前？', required: 1, choiceId: 'flour', items: [
-    { id: 'sami', label: '放到萨米面前', note: '你少吃一点，仍需为明天找饭。' },
-  ], response: '萨米接过去。姐姐看着你，留出商量明天的位置。' },
-  n06: { kind: 'pack', title: '请姐姐剪发，换上亡兄衣服', instruction: '铺好长衫和宽裤，姐姐便为你剪下发辫。', required: 2, choiceId: 'buy', items: [
-    { id: 'tunic', label: '灰白长衫', note: '亡兄阿里留下的。' }, { id: 'trousers', label: '收紧宽裤', note: '裤脚要折起来。' },
-  ], response: '衣服铺好了。姐姐剪下发辫，替你收好。' },
-  n08: { kind: 'route', title: '从哪条路离开街口', instruction: '点选路线，就沿那条路前行。', required: 1, choiceId: 'alley', items: [
-    { id: 'queue', label: '街口长队', note: '较近 · 需要接受盘查' }, { id: 'alley', label: '作坊小巷', note: '绕远 · 会错过约定时辰' }, { id: 'neighbor', label: '退回私院', note: '暂缓工作 · 托人报平安' },
-  ], response: '绕行会晚到，但你记得该在哪里报平安。' },
-  n09: { kind: 'remember', title: '把信里的意思读完整', instruction: '读出亲人的死讯，留出沉默的时间，陪阿明认字。', required: 2, choiceId: 'courier', items: [
-    { id: 'loss', label: '亲人死于战火', image: '/art/sister/letter.png' }, { id: 'pause', label: '给他沉默的时间', note: '不把悲伤换成放人承诺。' },
-  ], response: '阿明把信折好。他可以学着写字，也可以听你说父亲。' },
-  n10: { kind: 'compare', title: '替她核清这笔账', instruction: '点“核对”就征求女工同意并为她核账；算错可重试。', required: 1, solution: ['eight'], choiceId: 'ledger', items: [
-    { id: 'six', label: '应付 6 枚' }, { id: 'eight', label: '应付 8 枚' },
-  ], correction: '4 × 2 = 8。少付了 2 枚；留下账目之前，还要征得她同意。', response: '少付了 2 枚。她同意你帮着核账，是否交出名字仍由她决定。' },
-  n13: { kind: 'reply', title: '回答姐姐', instruction: '点一句回应，把话说给姐姐。', required: 1, choiceId: 'listen', items: [
-    { id: 'listen', label: '你的计划，我想听完。' }, { id: 'care', label: '今晚我来照顾母亲。' }, { id: 'secret', label: '我现在还说不清。' },
-  ], response: '姐姐把信摊在两人之间：“那我们一起看。”' },
-  n16: { kind: 'compare', title: '看清纸上能追问什么', instruction: '找到可追问负责人的那份纸，办理文书。', required: 1, solution: ['registered'], choiceId: 'register', items: [
-    { id: 'quick', label: '一句“马上办好”', note: '没有登记姓名。' }, { id: 'registered', label: '姓名、见证人与去向', note: '仍需要费用与核实。' },
-  ], correction: '只有许诺，日后找不到负责的人。也可以先向送信人问路线。', response: '这份纸能留下可追问的去向，仍要付费，也不保证通过检查。' },
-  n17: { kind: 'remember', title: '把联络信息记住', instruction: '记住北门与见面时间，抄下去向，隐去传话人身份。', required: 2, choiceId: 'copy', items: [
-    { id: 'gate', label: '北门', image: '/art/sister/letter.png' }, { id: 'time', label: '明天下午', note: '岗位随时可能调动。' },
-  ], response: '去向记住了。抄其他姓名前，仍要想清携带名单的风险。' },
-  n18: { kind: 'pack', title: '手边只能先顾两件事', instruction: '排好两项准备，就和姐姐订下计划。', required: 2, capacity: 2, choiceId: 'plan', items: [
-    { id: 'care', label: '照护和休息' }, { id: 'contact', label: '联络的地址' }, { id: 'food', label: '今天的食物' },
-  ], response: '先后次序写下了。计划要让姐姐也能修改，不是替她答应婚事。' },
-  n27: { kind: 'pack', title: '给今天排一张轮值表', instruction: '排上两项能承担的事，就按这张表开始轮值。', required: 2, capacity: 2, choiceId: 'sustain', items: [
-    { id: 'teaching', label: '在门内教书', image: '/art/sister/book.png' }, { id: 'care', label: '照看幼弟', note: '让照护也有人轮换。' }, { id: 'work', label: '补衣、托人采买', image: '/art/sister/bag.png' },
-  ], response: '轮值表还很小。食物和家人的身体决定它能否持续。' },
-};
-
 const SHORT_SCENES: Partial<Record<string, SceneSpec>> = {
-  n01: { ...SCENES.n01, goal: '年轻巡查指着女孩赶摊。先帮父亲收好旧物。' },
-  n06: { ...SCENES.n06, goal: '母亲寻父挨打，你买饼受拒。借亡兄衣服，准备剪发。' },
+  n01: { ...SCENES.n01, goal: '年轻巡查举棍赶摊。父亲挡在你身前，你们怎样离开？' },
+  n06: { ...SCENES.n06, goal: '母亲寻父挨打，买饼受拒。借亡兄衣服，决定怎样出门。' },
   n07: { ...SCENES.n07, goal: '街上，你叫阿提什——火焰。莱拉也藏着真名，一起谋生。' },
   n18: { goal: '母亲想以婚事换庇护，姐姐拒绝了。封街前，往哪边走？', points: [
     ['北门的联络', '努拉', '去找阿明。母亲和孩子先留在私院等消息。', 'plan'],
@@ -215,26 +170,18 @@ const SHORT_SCENES: Partial<Record<string, SceneSpec>> = {
   ] },
 };
 
-const SHORT_ROUTE: EncounterActivity = {
-  kind: 'route', title: '封街前，往哪边走', instruction: '点一条路，就去做那件事。', required: 1, choiceId: 'plan', items: [
-    { id: 'plan', label: '北门', note: '寻找父亲 · 仍有风险' },
-    { id: 'find', label: '亲舅舅', note: '核对本人 · 安排接应' },
-    { id: 'rush', label: '私院', note: '轮值谋生 · 安顿生活' },
-  ], response: '你选的路，已经写进今天的约定。',
-};
-
 export function getSceneEncounter(state: BranchState): SceneEncounterData {
   const node = getNode(state);
   const short = 'edition' in state && state.edition === 'short';
   const spec = (short && SHORT_SCENES[state.nodeId]) || SCENES[state.nodeId] || { goal: '点选身边的人与物，走出今天的一步。', points: [] };
   let goal = spec.goal;
   if (short && state.nodeId === 'n30') goal = state.father === 'free'
-    ? '阿明救出了父亲，母亲拒绝带离后归来。为今天写下结尾。'
-    : state.sister === 'apart' ? '姐妹已说好分住和回信的地址。父亲未归，下一页怎样写？'
-    : state.flags.includes('boarded') ? '亲舅舅已接齐家人，父亲还在等待的方向。写下下一页。'
-    : state.flags.includes('sustained') ? '轮值表留住一小时课堂。父亲未归，先为今天写下结尾。'
-    : state.flags.includes('settled') ? '你们有了一夜借住的屋檐，父亲仍未回来。写下下一页。'
-    : '母亲拒绝了婚事，家人已会合，父亲未归。写下下一页。';
+    ? '阿明救出了父亲。现在，你能带他回家，也让家人接住你。'
+    : state.sister === 'apart' ? '你们仍分住两处。独立长大，也可以承认自己需要帮助。'
+    : state.flags.includes('boarded') ? '家人已坐上接应的货车，父亲尚未获救。这次，认领自己选择的路。'
+    : state.flags.includes('sustained') ? '一小时课堂已开起来。你也能学习，不必永远独自供养别人。'
+    : state.flags.includes('settled') ? '暂借的屋檐下，父亲仍未归来。你不再是家里唯一的出路。'
+    : '母亲拒绝婚事，家人重新会合。接下来的担子，不再只属于你。';
   let points = spec.points.map(([label, speaker, response, choiceId], i) => ({ id: `${state.nodeId}-${i}`, label, speaker, response, choiceId }));
   const previous = state.history.at(-1);
   if (short && state.nodeId === 'n07') points = points.map(point => point.choiceId === 'truth' ? { ...point, response: '一起核对工钱，也留心退路。少年也会被逼去替队伍搬军需。' } : point.choiceId === 'pact' ? { ...point, response: '把饼和今天的遭遇带回去，也听姐姐怎样想。' } : point);
@@ -252,44 +199,5 @@ export function getSceneEncounter(state: BranchState): SceneEncounterData {
     points = points.map(point => point.choiceId === 'release' ? { ...point, label: '阿明手里的信', response: '先替我读信，教我认名字。救人的事，我还没答应。' } : point);
   }
   if (short && state.nodeId === 'n25') points = points.map(point => point.choiceId === 'leave' ? { ...point, label: '今夜能借住的门', response: '先确认私宅夜宿，带着能核实的证据离开。' } : point);
-  let activity = ACTIVITIES[state.nodeId];
-  if (short && state.nodeId === 'n09') activity = undefined;
-  if (short && state.nodeId === 'n18') activity = SHORT_ROUTE;
-  if (short && state.nodeId === 'n22') activity = { ...ACTIVITIES.n27!, choiceId: 'school' };
-  if (state.nodeId === 'n05' && state.stats.food <= 0) activity = undefined;
-  return { title: node.title, goal, points: points.slice(0, 3), activity };
-}
-
-/** Temporary manipulation never grants resources or changes the authored branch state. */
-export function toggleEncounterItem(activity: EncounterActivity, selected: string[], id: string): string[] {
-  const valid = [...new Set(selected.filter(value => activity.items.some(item => item.id === value)))];
-  if (!activity.items.some(item => item.id === id)) return valid;
-  if (valid.includes(id)) return valid.filter(value => value !== id);
-  if (activity.kind === 'compare' || activity.kind === 'route' || activity.kind === 'reply' || activity.kind === 'share') return [id];
-  if (activity.capacity && valid.length >= activity.capacity) return [...valid.slice(1), id];
-  return [...valid, id];
-}
-
-export function resolveEncounterActivity(state: BranchState, selected: string[]) {
-  const activity = getSceneEncounter(state).activity;
-  if (!activity) return { complete: false, response: '', choiceId: null };
-  let valid = [...new Set(selected.filter(id => activity.items.some(item => item.id === id)))];
-  if (['compare', 'route', 'reply', 'share'].includes(activity.kind)) valid = valid.slice(-1);
-  else if (activity.capacity) valid = valid.slice(-activity.capacity);
-  const complete = valid.length >= (activity.required ?? 1) && (!activity.solution || activity.solution.every(id => valid.includes(id)));
-  let choiceId = activity.choiceId;
-  if ((activity.kind === 'route' || activity.kind === 'reply') && valid.length === 1) choiceId = valid[0];
-  const choice = getChoices(state).find(item => item.id === choiceId);
-  const point = getSceneEncounter(state).points.find(item => item.choiceId === choiceId);
-  const response = !complete && valid.length && activity.correction ? activity.correction
-    : complete ? (activity.kind === 'route' || activity.kind === 'reply') && point ? `${point.speaker}：${point.response}` : activity.response
-    : activity.instruction;
-  return { complete, response, choiceId: complete && choice ? choice.id : null };
-}
-
-/** Completed controls express the action itself; story requirements still gate submission. */
-export function resolveEncounterAction(state: BranchState, selected: string[]): string | null {
-  const result = resolveEncounterActivity(state, selected);
-  if (!result.complete || !result.choiceId) return null;
-  return getChoices(state).find(choice => choice.id === result.choiceId && choice.enabled)?.id ?? null;
+  return { title: node.title, goal, points: points.slice(0, 3) };
 }

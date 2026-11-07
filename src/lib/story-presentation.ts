@@ -17,7 +17,7 @@ export const MAX_SUBTITLE_CHARACTERS = 40;
 /** A node id or step count alone cannot distinguish converging branches. */
 export function storyPresentationKey(state: BranchState): string {
   const path = state.history.map(step => `${step.nodeId}:${step.choiceId}`).join('>');
-  return `v${state.version}${state.edition === 'short' ? '-short' : ''}|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
+  return `v${state.version}${state.edition === 'short' ? '-short' : ''}-drama2-five|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
 }
 
 /** Physical presence is separate from the long-term relationship stored by the engine. */
@@ -64,18 +64,17 @@ function taleDialogue(state: BranchState): string[] {
 }
 
 function endingDialogue(state: BranchState): string[] {
-  const id = state.endingId;
-  const fatherHome = state.father === 'free';
-  if (id === 'dream_guardian') return ['梦里，我已经长大。她们选我守住这片土地。', '这里的女性可以上学、经商，也可以说不。', '谁能进入，由我们共同决定。天亮后，我仍记得。'];
-  if (id === 'dream_commons') return ['梦里，姐姐开了学校，莱拉开了铺子。', '我们在议事庭里争论，谁都能把话说完。', '没有锁的明天，还要从今天这粒火开始。'];
-  if (id === 'reunited') return ['“五个。”母亲把我们数了一遍，才肯坐下。', '父亲靠在门边。萨米伸手，却又怕碰疼他。', '先找水，让家人躺下。明天的路，明天一起想。'];
-  if (id === 'caravan') return ['车帘放下。母亲又数了一遍三个孩子。', '舅舅按说好的地址走。父亲的消息还没有回来。'];
-  if (id === 'lantern') return ['门外的声音过去了，姐姐重新拿起粉笔。', '莱拉也要一张纸。今天，我们轮流添灯油。'];
-  if (id === 'separated') return ['“到了就托人报平安。”姐姐把红线分成两段。', '今夜我们住在不同的门后，仍知道彼此在哪里。'];
-  if (id === 'shelter') return ['法里达说，这间屋子今晚留给你们。', '我把水放在家人手边，先不催任何人赶路。'];
-  if (id === 'witness') return ['我核对名字，把得到同意的话写进信。', fatherHome ? '父亲已经回来，还有许多人的消息没有回来。' : '父亲还没回来。这些字会先走过城墙。'];
-  if (id === 'letters') return ['今天住在哪里，下一次托谁回话，我都写清了。', fatherHome ? '父亲就在屋里。明天的饭与药，也要继续找。' : '有些地方仍空着。我没有替未知的事编答案。'];
-  return ['萨米问父亲什么时候回来。我说，还不知道。', '先把今天的饼分好。明天，再去问一次。'];
+  const has = (flag: string) => state.flags.includes(flag);
+  switch (state.endingId) {
+    case 'reunited': return ['父亲：“努拉？”　“这次，我带你回家。”', state.sister === 'apart' ? '你把推车停在作坊后间，第一次主动开口请求帮手。' : '姐姐握住车把：“现在，可以松开手了。”'];
+    case 'caravan': return ['姐姐：“上这辆车，不等于答应那桩婚事。”', '“我知道。”你看向城门，“这条路，是我们选的。”'];
+    case 'dream_guardian': return ['成年阿提什：“放她们过去。她们是去上学的。”', '女兵让开路。你守住山口，让女孩们走进校门。'];
+    case 'dream_commons': return ['“我不同意你的办法。”年轻女人站起来。', '成年阿提什让出话的位置：“把你的办法说完。”'];
+    default:
+      if (state.sister === 'apart') return ['作坊收工了。你放下没做完的活，给自己留下休息的时间。', '你不再把累垮自己，当成独立长大的证明。'];
+      if (has('sustained')) return ['门外脚步远了，姐姐把粉笔递给你：“接着读。”', '你坐进上课那一栏，第一次没有起身去端水。'];
+      return ['你和家人重新分担照护与生计，不再把自己当作唯一的出路。', '姐姐：“你也有长大的时间。”这一次，你留下了自己的位置。'];
+  }
 }
 
 /** Main view performs 2–4 dialogue rounds, then choices. Long prose stays in the journal. */

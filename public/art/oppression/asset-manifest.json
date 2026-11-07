@@ -1,0 +1,333 @@
+[
+  {
+    "file": "adult-builder.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      128,
+      50,
+      450,
+      1008
+    ],
+    "foot_baseline_y": 1008,
+    "transparent_pixel_fraction": 0.688,
+    "source": "original code-native SVG; build-assets.py",
+    "narrative_status": "adult civilian Nura in the commons dream; no weapons or uniform"
+  },
+  {
+    "file": "armed-patrol-grab.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      5,
+      40,
+      383,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6541,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "armed-patrol.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      12,
+      40,
+      383,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6543,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "father-drag.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      91,
+      61,
+      467,
+      1009
+    ],
+    "transparent_pixel_fraction": 0.703,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1009
+  },
+  {
+    "file": "father-market.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      120,
+      381,
+      475,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.7601,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "father-rescued.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      30,
+      678,
+      472,
+      1004
+    ],
+    "transparent_pixel_fraction": 0.878,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1004
+  },
+  {
+    "file": "father-shield.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      16,
+      61,
+      464,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6663,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "father-standing-crutch.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      91,
+      61,
+      378,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6864,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "friend-worker-crouch.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      101,
+      436,
+      402,
+      1008
+    ],
+    "transparent_pixel_fraction": 0.8385,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1008
+  },
+  {
+    "file": "hero-fear.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      136,
+      55,
+      395,
+      1008
+    ],
+    "transparent_pixel_fraction": 0.7351,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1008
+  },
+  {
+    "file": "hero-help.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      100,
+      200,
+      438,
+      1008
+    ],
+    "transparent_pixel_fraction": 0.7517,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1008
+  },
+  {
+    "file": "hero-worker-crouch.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      101,
+      432,
+      402,
+      1008
+    ],
+    "transparent_pixel_fraction": 0.8391,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1008
+  },
+  {
+    "file": "merchant.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      6,
+      61,
+      383,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6649,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "mother-fallen.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      28,
+      430,
+      424,
+      1008
+    ],
+    "transparent_pixel_fraction": 0.7468,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1008
+  },
+  {
+    "file": "mother-plead.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      126,
+      99,
+      456,
+      1008
+    ],
+    "transparent_pixel_fraction": 0.6689,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1008
+  },
+  {
+    "file": "mother-shield.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      126,
+      99,
+      392,
+      1008
+    ],
+    "transparent_pixel_fraction": 0.6682,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1008
+  },
+  {
+    "file": "patrol-raised.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      12,
+      14,
+      398,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6499,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "patrol-strike.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      12,
+      40,
+      378,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.664,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "patrol.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      12,
+      40,
+      383,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6442,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "recruit.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      12,
+      40,
+      383,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6543,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "relative-pull.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      1,
+      61,
+      383,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6658,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  },
+  {
+    "file": "relative.svg",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      12,
+      61,
+      383,
+      1007
+    ],
+    "transparent_pixel_fraction": 0.6671,
+    "source": "original code-native SVG; build-assets.py",
+    "foot_baseline_y": 1007
+  }
+]

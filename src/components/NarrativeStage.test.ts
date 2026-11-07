@@ -45,6 +45,14 @@ describe('stage announcements follow the cast actually on camera',()=>{
   expect(describeNarrativeChange(before,next)).toBe('家里的口粮又添了一份。');
   expect(describeNarrativeChange(before,{...next,flags:['bread']})).toContain('馕饼被放进布袋');
  });
+ it('announces the whole family in the truck even though separate figure slots are hidden',()=>{
+  const before=props({nodeId:'n21'}),next={...props({nodeId:'n30',flags:['boarded','documents'],outfit:'travel'}),scene:'road' as const};
+  const markup=renderToStaticMarkup(createElement(NarrativeStage,next));
+  expect(markup).toContain('家人 · 同在露天后斗');
+  expect(markup).not.toContain('你独自走在这一页');
+  expect(describeNarrativeChange(before,next)).toContain('努拉与母亲、姐姐、弟弟坐在露天后斗');
+  expect(describeNarrativeChange(before,next)).not.toContain('旧纸摊开');
+ });
 });
 
 
@@ -52,9 +60,9 @@ describe('persistent cast between dialogue and encounter phases',()=>{
  const render=(value:NarrativeStageProps)=>renderToStaticMarkup(createElement(NarrativeStage,value));
  const actorTags=(value:NarrativeStageProps)=>render(value).match(/<div data-actor="[^"]+"[^>]*>/g)??[];
  const actorIds=(value:NarrativeStageProps)=>actorTags(value).map(tag=>tag.match(/data-actor="([^"]+)"/)?.[1]);
- it('retains all seven actor slots when a family member enters or leaves the scene',()=>{
+ it('retains all nine actor slots when a family member enters or leaves the scene',()=>{
   const market=props({nodeId:'n01'}),home=props({nodeId:'n02'}),solo=props({nodeId:'n04',flags:['motherHurt']});
-  const ids=['mother','father','hero','sister','brother','friend','guard'];
+  const ids=['mother','father','hero','sister','brother','friend','guard','oppressor','second-patrol'];
   for(const value of [market,home,solo])expect(actorIds(value)).toEqual(ids);
   expect(actorTags(market).find(tag=>tag.includes('data-actor="mother"'))).toContain('data-presence="offstage"');
   expect(actorTags(home).find(tag=>tag.includes('data-actor="mother"'))).toContain('data-presence="present"');

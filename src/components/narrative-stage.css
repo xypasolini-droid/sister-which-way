@@ -387,3 +387,62 @@
  .narrative-stage .narrative-actor,
  .narrative-stage .narrative-actor[data-presence="offstage"]{transition:none}
 }
+
+/* Read-only dramatic shots retain one cast; each pose is a drawn body, not a
+   rotated standing sprite. The hostile patrol is separate from the named Amin. */
+.narrative-actor--oppressor,.narrative-actor--second-patrol{height:64%;width:auto;aspect-ratio:1/2;z-index:8;pointer-events:none}
+.narrative-actor--second-patrol{z-index:3;filter:brightness(.65) saturate(.6)}
+.narrative-stage--drama{--cast-floor:19%;--hero-height:52%;--sister-height:56%;--father-height:60%;--actor-move-duration:.65s}
+.narrative-stage--drama .narrative-actor--oppressor,.narrative-stage--drama .narrative-actor--second-patrol{height:var(--father-height);width:auto;aspect-ratio:1/2;bottom:var(--cast-floor)}
+.narrative-stage--drama .narrative-actor--father{height:var(--father-height)}
+.narrative-stage--drama .narrative-actor--hero{height:var(--hero-height)}
+.narrative-stage--drama .narrative-actor--mother{height:var(--sister-height)}
+.narrative-stage--drama .narrative-actor .narrative-sprite{transform:translateX(-50%);transform-origin:50% 100%;filter:drop-shadow(0 5px 6px #1814112b)}
+.narrative-stage--drama .narrative-actor--brother{left:17%;z-index:7}
+.narrative-stage--drama .narrative-market-mat{left:39%;width:49%}
+.narrative-stage--drama[data-drama-visual="arrest-grab"] .narrative-actor--oppressor,
+.narrative-stage--drama[data-drama-visual="arrest-drag"] .narrative-actor--oppressor{z-index:9}
+.narrative-stage--drama[data-drama-visual="arrest-empty"] .narrative-actor--oppressor{filter:brightness(.6)}
+.narrative-stage--drama[data-drama-visual="mother-floor"] .narrative-actor--hero,
+.narrative-stage--drama[data-drama-visual="home-wounded"] .narrative-actor--hero{z-index:9}
+.narrative-stage--drama[data-drama-visual="bread-flee"] .narrative-actor--hero{--actor-move-duration:.45s}
+.narrative-stage--drama[data-drama-visual="street-hide"] .narrative-actor--hero,
+.narrative-stage--drama[data-drama-visual="street-hide"] .narrative-actor--friend,
+.narrative-stage--drama[data-drama-visual="prison-shelter"] .narrative-actor--hero{translate:0 5%;clip-path:inset(0 0 0 0 round 0)}
+.narrative-stage--drama[data-drama-visual="relative-pull"] .narrative-actor--mother{z-index:9}
+.narrative-stage--drama[data-drama-visual="relative-refuse"] .narrative-actor--mother{z-index:9}
+.narrative-stage--drama[data-drama-visual^="prison-"] .narrative-actor--oppressor{filter:brightness(.38) saturate(.3)}
+.narrative-stage--drama[data-drama-visual^="prison-"] .narrative-actor--guard{left:57%;filter:none;z-index:7}
+.narrative-gunfire-haze{position:absolute;inset:12% 0 25%;z-index:2;pointer-events:none;opacity:0;background:linear-gradient(166deg,transparent 31%,#d8c5a42a 32%,transparent 33%),linear-gradient(154deg,transparent 43%,#d8c5a428 44%,transparent 45%),radial-gradient(ellipse at 95% 55%,#a89c8c55,transparent 55%);transition:opacity .8s ease}
+.narrative-gunfire-haze[data-active="true"]{opacity:1}
+.narrative-stage--drama .narrative-arrest-shadow{opacity:.3;z-index:2}
+.narrative-stage--drama[data-phase="cinematic"] .narrative-world-art::after{background:linear-gradient(180deg,#0005,transparent 28%,transparent 64%,#0005)}
+@media(max-width:760px){
+ .narrative-stage--drama{--cast-floor:37%;--hero-height:40%;--sister-height:44%;--father-height:48%}
+ .narrative-stage--drama .narrative-actor--mother{width:auto;aspect-ratio:1/2}
+ .narrative-stage--drama .narrative-market-mat{left:40%;width:64%;height:10%}
+ .narrative-stage--drama .narrative-actor--brother{height:var(--sister-height);left:17%}
+ .narrative-stage--drama .narrative-actor--friend{height:var(--hero-height)}
+ .narrative-stage--drama[data-drama-visual="arrest-entry"] .narrative-actor--second-patrol{left:93%}
+ .narrative-stage--drama[data-drama-visual="arrest-drag"] .narrative-actor--second-patrol{left:103%}
+ .narrative-stage--drama .narrative-ensemble{width:100%}
+}
+@media(max-height:560px) and (orientation:landscape){
+ .narrative-stage--drama{--cast-floor:14%;--hero-height:65%;--sister-height:71%;--father-height:77%}
+ .narrative-stage--drama .narrative-ensemble{width:65%}
+}
+.narrative-stage--reduced .narrative-actor,.narrative-stage--reduced .narrative-gunfire-haze{transition:none;translate:none}
+@media(prefers-reduced-motion:reduce){.narrative-stage--drama .narrative-actor,.narrative-gunfire-haze{transition:none;translate:none}}
+
+/* Portrait framing keeps the mother's raised hands within the cane's reach. */
+@media(max-width:760px){
+ .narrative-stage--drama[data-drama-visual^="mother-"] .narrative-actor--hero{left:15%!important}
+ .narrative-stage--drama[data-drama-visual^="mother-"] .narrative-actor--mother{left:48%!important}
+ .narrative-stage--drama[data-drama-visual^="mother-"] .narrative-actor--oppressor{left:83%!important}
+ .narrative-stage--drama[data-drama-visual="mother-struck"] .narrative-actor--oppressor{left:73%!important}
+ .narrative-stage--drama[data-drama-visual="mother-floor"] .narrative-actor--hero{left:44%!important}
+ .narrative-stage--drama[data-drama-visual="mother-floor"] .narrative-actor--mother{left:57%!important}
+ .narrative-stage--drama[data-drama-visual="market-cane"] .narrative-actor--hero{left:20%!important}
+ .narrative-stage--drama[data-drama-visual="market-cane"] .narrative-actor--father{left:49%!important}
+ .narrative-stage--drama[data-drama-visual="market-cane"] .narrative-actor--oppressor{left:84%!important}
+}

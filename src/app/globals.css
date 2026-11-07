@@ -113,3 +113,13 @@ button{color:inherit;cursor:pointer;border:0;background:none}button:disabled{cur
 .spoken-line{animation:none}
 
 .ending-summary{max-width:40em;font:400 14px/1.9 var(--serif);color:#d7d4ce;margin:10px 0 18px;text-wrap:pretty}
+
+/* Endings show one short emotional scene, with growth ahead of explanation. */
+.story-dialogue--ending{max-height:44dvh;padding-top:16px;padding-bottom:12px}
+.ending-scene h2{font-size:26px;letter-spacing:.06em;margin:7px 0}
+.ending-scene .ending-growth{font:13px/1.7 var(--sans);color:#ddd;margin:3px 0 10px}
+.ending-vignette{border-left:1px solid #ffffff50;padding-left:14px}
+.ending-vignette p{font:16px/1.8 var(--serif);margin:2px 0;color:#f4f4f4}
+.ending-scene .ending-echo{font:11px/1.65 var(--sans);color:#c7c7c7;margin:9px 0 0}
+.ending-actions{margin-top:12px;margin-bottom:3px}.ending-actions .continue-button{min-height:44px}
+@media(max-width:760px){.story-dialogue--ending{max-height:45dvh;padding:13px 16px 8px}.ending-scene h2{font-size:22px}.ending-scene .ending-growth{font-size:12px;margin-bottom:7px}.ending-vignette p{font-size:14px}.ending-scene .ending-echo{font-size:11px;margin-top:6px}.ending-actions{margin-top:8px;gap:8px}.ending-scene>.text-button{min-height:36px}}

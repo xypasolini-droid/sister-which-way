@@ -1,0 +1,157 @@
+import { describe, expect, it } from 'vitest';
+import { choose, createInitialState, getChoices, getNode, NODES, type BranchState } from './branch-story';
+import { getOppressionShots } from './oppression-scenes';
+
+const sceneState = (nodeId: string, edition?: 'short', flags: string[] = []) => ({ nodeId, edition, endingId: null, flags });
+
+function shortRoute(actions: string[]): BranchState {
+  return actions.reduce((state, id) => {
+    const result = choose(state, id);
+    if (!result) throw new Error(`Illegal test route: ${state.nodeId}/${id}`);
+    return result.state;
+  }, createInitialState('short'));
+}
+
+describe('automatic scenes of coercion', () => {
+  it('returns only the authored performances and suppresses them after an ending', () => {
+    const expected: Record<string, number> = { n01: 2, n02: 4, n03: 4, n04: 3, n06: 8, n07: 2, n08: 1, n21: 3, n25: 3 };
+    for (const nodeId of Object.keys(NODES)) {
+      const state = sceneState(nodeId, 'short');
+      expect(getOppressionShots(state), nodeId).toHaveLength(expected[nodeId] ?? 0);
+      expect(getOppressionShots({ ...state, endingId: 'dream_guardian' }), nodeId).toEqual([]);
+    }
+    expect(getOppressionShots(sceneState('n06'))).toEqual([]);
+    expect(getOppressionShots(sceneState('unknown'))).toEqual([]);
+  });
+
+  it('uses short, timed shots with stable unique ids and clear scene transitions', () => {
+    const sequences = [
+      ['n01', ['market', 'market']],
+      ['n02', ['home', 'home', 'home', 'home']],
+      ['n03', ['checkpoint', 'checkpoint', 'checkpoint', 'checkpoint']],
+      ['n04', ['market', 'market', 'market']],
+      ['n07', ['market', 'market']],
+      ['n08', ['checkpoint']],
+      ['n21', ['road', 'road', 'road']],
+      ['n25', ['prison', 'prison', 'prison']],
+    ] as const;
+    const ids: string[] = [];
+    for (const [nodeId, scenes] of sequences) {
+      const shots = getOppressionShots(sceneState(nodeId));
+      expect(shots.map(shot => shot.scene), nodeId).toEqual(scenes);
+      expect(getOppressionShots(sceneState(nodeId))).toEqual(shots);
+      ids.push(...shots.map(shot => shot.id));
+      for (const shot of shots) {
+        expect(shot.durationMs).toBeGreaterThanOrEqual(2200);
+        expect(shot.durationMs).toBeLessThanOrEqual(3000);
+        expect(Array.from(shot.line).length).toBeLessThanOrEqual(26);
+        expect(shot.location).not.toBe('');
+        expect(shot.speaker).not.toBe('');
+        expect(shot.caption).not.toBe('');
+      }
+    }
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('shows the mother struck and supported, then the refusal and forced retreat before disguise', () => {
+    const shots = getOppressionShots(sceneState('n06', 'short'));
+    expect(shots.map(shot => shot.visual)).toEqual([
+      'mother-block', 'mother-plead', 'mother-struck', 'mother-floor',
+      'bread-refuse', 'bread-threat', 'bread-flee', 'home-wounded',
+    ]);
+    expect(shots.map(shot => shot.scene)).toEqual([
+      'checkpoint', 'checkpoint', 'checkpoint', 'checkpoint', 'market', 'market', 'market', 'home',
+    ]);
+    expect(shots.every(shot => shot.location.startsWith('此前 · '))).toBe(true);
+    expect(shots[2].caption).toMatch(/棍子落下.*抬臂护住头/);
+    expect(shots[3].caption).toMatch(/女孩弯腰伸手.*扶起母亲/);
+    expect(shots[4].caption).toMatch(/推回零钱.*巡查/);
+    expect(shots[5].speaker).toBe('巡查');
+    expect(shots[5].caption).toMatch(/举棍.*逼近/);
+    expect(shots[6].caption).toMatch(/被逼退.*没花掉/);
+    expect(shots[7].caption).toMatch(/养伤.*空手回家/);
+    expect(getOppressionShots(sceneState('n07', 'short'))[0].scene).toBe('market');
+  });
+
+  it('shows the arrest as a witnessed removal rather than an unexplained disappearance', () => {
+    const shots = getOppressionShots(sceneState('n02', 'short'));
+    expect(shots.map(shot => shot.visual)).toEqual(['arrest-entry', 'arrest-grab', 'arrest-drag', 'arrest-empty']);
+    expect(shots[1].caption).toMatch(/抓住父亲.*母亲/);
+    expect(shots[2].speaker).toBe('努拉');
+    expect(shots[2].caption).toMatch(/父亲被拖向门口/);
+    expect(shots[3].line).toMatch(/拘留院/);
+  });
+
+  it('addresses the disguised child as a boy at the later checkpoint', () => {
+    const shot = getOppressionShots(sceneState('n08'))[0];
+    expect(shot.visual).toBe('mother-block');
+    expect(shot.line).toMatch(/小子/);
+    expect(shot.caption).toMatch(/戴小帽的孩子/);
+    expect(`${shot.line}${shot.caption}`).not.toMatch(/母女|没有男人|女孩/);
+  });
+
+  it('keeps the mother’s refusal in her own words during the relative’s coercion', () => {
+    const shots = getOppressionShots(sceneState('n21', 'short'));
+    expect(shots.map(shot => shot.visual)).toEqual(['relative-order', 'relative-pull', 'relative-refuse']);
+    expect(shots[1].speaker).toBe('母亲');
+    expect(shots[1].caption).toMatch(/扯住母亲/);
+    expect(shots[2].speaker).toBe('母亲');
+    expect(shots[2].line).toMatch(/不能丢下.*我回去/);
+    expect(shots[2].caption).toMatch(/拒绝强迫带离/);
+  });
+
+  it('makes Amin’s willingness depend on prior contact without opening the rescue gate', () => {
+    const bonded = shortRoute(['work', 'sew', 'buy', 'truth', 'courier', 'plan']);
+    expect(bonded.nodeId).toBe('n25');
+    const unbonded = { ...bonded, flags: bonded.flags.filter(flag => flag !== 'guardBond') };
+    const refusal = getOppressionShots(unbonded);
+    const signal = getOppressionShots(bonded);
+    expect(refusal.map(shot => shot.visual)).toEqual(['prison-gunfire', 'prison-shelter', 'prison-signal']);
+    expect(refusal.at(-1)?.line).toMatch(/不能答应/);
+    expect(signal.at(-1)?.line).toMatch(/进去找他/);
+    expect(refusal.slice(0, 2)).toEqual(signal.slice(0, 2));
+    expect(getChoices(unbonded).find(choice => choice.id === 'release')?.enabled).toBe(false);
+    expect(getChoices(bonded).find(choice => choice.id === 'release')?.enabled).toBe(true);
+    for (const shot of [...refusal, ...signal]) {
+      expect(`${shot.line}${shot.caption}`).not.toMatch(/救出|扶出|已经带出|父亲回来了/);
+    }
+    expect(bonded.father).not.toBe('free');
+    expect(unbonded.father).not.toBe('free');
+  });
+
+  it('never mutates story state or leaves shared mutable shot templates', () => {
+    const state = shortRoute(['work', 'sew']);
+    const before = structuredClone(state);
+    Object.freeze(state.flags);
+    Object.freeze(state.stats);
+    Object.freeze(state.history);
+    Object.freeze(state);
+    const shots = getOppressionShots(state);
+    expect(shots).toHaveLength(8);
+    shots[0].line = 'changed by a presentation consumer';
+    shots.pop();
+    expect(getOppressionShots(state)).toHaveLength(8);
+    expect(getOppressionShots(state)[0].line).not.toBe(shots[0].line);
+    expect(state).toEqual(before);
+    expect(state.history).toHaveLength(2);
+  });
+
+  it('removes arithmetic from the short workshop decisions while retaining stored ids and effects', () => {
+    const state = shortRoute(['work', 'sew', 'buy', 'hide']);
+    expect(state.nodeId).toBe('n10');
+    const choices = getNode(state).choices;
+    const ledger = choices.find(choice => choice.id === 'ledger')!;
+    const wage = choices.find(choice => choice.id === 'wage')!;
+    expect(ledger.label).toMatch(/征求.*同意.*记录/);
+    expect(`${ledger.label}${ledger.detail}${ledger.consequence}`).not.toMatch(/核算|核账|算出|乘|四件|八枚/);
+    expect(wage.label).toBe('带自己的报酬回家');
+    for (const choice of [ledger, wage]) {
+      const source = NODES.n10.choices.find(item => item.id === choice.id)!;
+      expect(choice.effect).toEqual(source.effect);
+      expect(choice.requires).toEqual(source.requires);
+      expect(choice.next).toBe('n18');
+      const result = choose(state, choice.id);
+      expect(result?.state.nodeId).toBe('n18');
+    }
+  });
+});

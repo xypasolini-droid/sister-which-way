@@ -45,7 +45,7 @@ describe('performed scenes and a separate full journal',()=>{
     const shared={...original,flags:[...original.flags,'brotherStory']};
     expect(buildReadingBeats(original).filter(b=>b.kind==='tale')).not.toEqual(buildReadingBeats(shared).filter(b=>b.kind==='tale'));
   });
-  it('gives all ten saved endings a brief coda without discarding their authored prose',()=>{
+  it('gives all five saved endings a brief coda without discarding their authored prose',()=>{
     for(const [id,path]of Object.entries(ENDING_ROUTES)){
       const state=play(path);expect(state.endingId).toBe(id);
       const original=getEnding(state)!,beats=buildReadingBeats(state);
@@ -53,6 +53,20 @@ describe('performed scenes and a separate full journal',()=>{
       expect(beats.every(b=>b.kind==='ending'&&b.text.length<=40)).toBe(true);
       expect(getEnding(state)).toEqual(original);expect(original.paragraphs.length).toBeGreaterThanOrEqual(3);
     }
+  });
+  it('keeps the rescued father lying on a handcart and distinguishes both vehicles in prose and subtitles',()=>{
+    const opening=getNode(createInitialState()).paragraphs.join('');
+    expect(opening).toContain('早已失去一条腿');
+    expect(opening).toContain('腋拐');
+    const reunion=play(ENDING_ROUTES.reunited);
+    expect(getEnding(reunion)!.paragraphs.join('')).toContain('木推车');
+    expect(getEnding(reunion)!.paragraphs.join('')).toContain('腋拐');
+    expect(buildReadingBeats(reunion).map(beat=>beat.text).join('')).toContain('车把');
+    expect(getNode(play(NODE_ROUTES.n21)).paragraphs.join('')).toContain('红色轿车');
+    const departure=play(ENDING_ROUTES.caravan);
+    expect(getEnding(departure)!.paragraphs.join('')).toContain('露天货斗');
+    expect(buildReadingBeats(departure).map(beat=>beat.text).join('')).toContain('车');
+    expect(getEnding(departure)!.paragraphs.join('')).not.toMatch(/车帘|帘子放下|车厢内/);
   });
   it('separates physical presence, memory and a face-to-face meeting during separation',()=>{
     expect(getCompanionStatus(play(NODE_ROUTES.n01)).presence).toBe('offstage');

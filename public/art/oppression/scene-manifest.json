@@ -1,0 +1,124 @@
+[
+  {
+    "file": "road-open-truck-departure.svg",
+    "width": 1280,
+    "height": 720,
+    "alpha": false,
+    "visible_bbox_alpha_over_127": [
+      0,
+      0,
+      1279,
+      719
+    ],
+    "transparent_pixel_fraction": 0,
+    "source": "original code-native SVG; build-scenes.py",
+    "embedded_people": [
+      "Nura in boy disguise",
+      "mother",
+      "older sister",
+      "little brother",
+      "Yusuf driving"
+    ],
+    "protagonist_embedded": true,
+    "father_embedded": false,
+    "cargo_bed_passengers": [
+      "Nura in boy disguise",
+      "mother",
+      "little brother",
+      "older sister"
+    ],
+    "driver": "Yusuf",
+    "stage_integration": "Hide independent hero and family actors; all four passengers are seated in the cargo bed. Yusuf is inside the cab."
+  },
+  {
+    "file": "road-open-truck.svg",
+    "width": 1280,
+    "height": 720,
+    "alpha": false,
+    "visible_bbox_alpha_over_127": [
+      0,
+      0,
+      1279,
+      719
+    ],
+    "transparent_pixel_fraction": 0,
+    "source": "original code-native SVG; build-scenes.py",
+    "embedded_people": [],
+    "protagonist_embedded": false,
+    "father_embedded": false
+  },
+  {
+    "file": "road-red-sedan.svg",
+    "width": 1280,
+    "height": 720,
+    "alpha": false,
+    "visible_bbox_alpha_over_127": [
+      0,
+      0,
+      1279,
+      719
+    ],
+    "transparent_pixel_fraction": 0,
+    "source": "original code-native SVG; build-scenes.py",
+    "embedded_people": [],
+    "protagonist_embedded": false,
+    "father_embedded": false
+  },
+  {
+    "file": "dream-guardian.svg",
+    "width": 1280,
+    "height": 720,
+    "alpha": false,
+    "visible_bbox_alpha_over_127": [
+      0,
+      0,
+      1279,
+      719
+    ],
+    "transparent_pixel_fraction": 0,
+    "source": "original code-native SVG; build-dream-scenes.py",
+    "embedded_people": [
+      "3 adult female guards",
+      "3 schoolgirls"
+    ],
+    "protagonist_embedded": false,
+    "father_embedded": false,
+    "narrative_status": "explicitly fictional future dream",
+    "mobile_crop_checked": {
+      "left": 438,
+      "top": 0,
+      "width": 405,
+      "height": 720
+    }
+  },
+  {
+    "file": "dream-commons.svg",
+    "width": 1280,
+    "height": 720,
+    "alpha": false,
+    "visible_bbox_alpha_over_127": [
+      0,
+      0,
+      1279,
+      719
+    ],
+    "transparent_pixel_fraction": 0,
+    "source": "original code-native SVG; build-dream-scenes.py",
+    "embedded_people": [
+      "female stallholder",
+      "female customer",
+      "schoolgirl walking",
+      "3 girls writing",
+      "3 adult women in council"
+    ],
+    "protagonist_embedded": false,
+    "father_embedded": false,
+    "narrative_status": "explicitly fictional future dream",
+    "mobile_crop_checked": {
+      "left": 438,
+      "top": 0,
+      "width": 405,
+      "height": 720
+    }
+  }
+]

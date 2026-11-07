@@ -3,7 +3,8 @@ import {
   ENDINGS, choose, createInitialState, getChoices, getEnding, getNode,
   validateBranchState, type BranchState,
 } from './branch-story';
-import { getSceneEncounter, resolveEncounterActivity } from './scene-encounter';
+import { getSceneEncounter } from './scene-encounter';
+import { SHORT_ENDING_TEST_ROUTES } from './story-test-routes';
 
 function exploreShortStory() {
   const states: BranchState[] = [];
@@ -32,6 +33,7 @@ describe('the eight-decision short edition', () => {
   const explored = exploreShortStory();
 
   it('reaches every ending through legal actions within eight decisions', () => {
+    expect(ENDINGS).toHaveLength(5);
     expect([...explored.endings.keys()].sort()).toEqual(ENDINGS.map(ending => ending.id).sort());
     const chapters = [
       ['n01'], ['n02'], ['n06'], ['n07'], ['n09', 'n10', 'n13'],
@@ -50,6 +52,46 @@ describe('the eight-decision short edition', () => {
         expect(value).toBeGreaterThanOrEqual(0);
         expect(value).toBeLessThanOrEqual(10);
       }
+    }
+  });
+
+  it('has a concrete eight-decision route for each of the five current endings',()=>{
+    expect(Object.keys(SHORT_ENDING_TEST_ROUTES).sort()).toEqual(ENDINGS.map(ending=>ending.id).sort());
+    for(const [endingId,route] of Object.entries(SHORT_ENDING_TEST_ROUTES)){
+      let state=createInitialState('short');
+      for(const id of route){
+        const result=choose(state,id);
+        expect(result,`${endingId}: ${state.nodeId}/${id}`).not.toBeNull();
+        state=result!.state;
+      }
+      expect(state.endingId).toBe(endingId);
+      expect(state.history).toHaveLength(8);
+      expect(validateBranchState(state)).toEqual(state);
+    }
+  });
+
+  it('retains classroom, separate lodging, temporary shelter and waiting inside the stay-in-city ending',()=>{
+    const prefix=['work','sew','buy','pact','care'];
+    const cases=[
+      {route:[...prefix,'rush','school','live'],flag:'sustained',scene:'courtyard',text:/课堂|课读|读完/},
+      {route:[...prefix,'rush','send','live'],flag:'chosenApart',scene:'workshop',text:/作坊后间/},
+      {route:[...prefix,'find','child','live'],flag:'shelter',scene:'home',text:/法里达|这一夜/},
+      {route:[...prefix,'find','search','live'],flag:'safeAddress',scene:'home',text:/父亲/},
+    ];
+    for(const {route,flag,scene,text} of cases){
+      const state=route.reduce((current,id)=>{
+        const next=choose(current,id);
+        if(!next)throw new Error(`${current.nodeId}/${id}`);
+        return next.state;
+      },createInitialState('short'));
+      expect(state.endingId).toBe('lantern');
+      expect(state.flags).toContain(flag);
+      expect(state.father).not.toBe('free');
+      expect(state.flags).not.toContain('boarded');
+      const before=structuredClone(state),ending=getEnding(state)!;
+      expect(ending.scene).toBe(scene);
+      expect(ending.paragraphs.join('')).toMatch(text);
+      expect(state).toEqual(before);
     }
   });
 
@@ -117,15 +159,7 @@ describe('the eight-decision short edition', () => {
       for (const point of encounter.points) {
         expect(choices.some(choice => choice.id === point.choiceId), `${state.nodeId}/${point.choiceId}`).toBe(true);
       }
-      if (encounter.activity) {
-        const activity = encounter.activity;
-        const selected = activity.solution ?? activity.items.slice(0, activity.required ?? 1).map(item => item.id);
-        const snapshot = structuredClone(state);
-        const result = resolveEncounterActivity(state, selected);
-        expect(result.complete, state.nodeId).toBe(true);
-        expect(choices.some(choice => choice.id === result.choiceId), state.nodeId).toBe(true);
-        expect(state).toEqual(snapshot);
-      }
+
     }
   });
 

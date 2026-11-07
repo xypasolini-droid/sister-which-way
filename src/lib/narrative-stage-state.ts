@@ -1,9 +1,12 @@
 import type { BranchState, SceneId } from './branch-story';
 import { getCompanionStatus } from './story-presentation';
+import type { DramaShot } from './oppression-scenes';
+import { getDramaStaging } from './drama-staging';
 
 export type NarrativeStageContext = Pick<BranchState, 'nodeId' | 'outfit' | 'sister' | 'father' | 'flags'> & {
   scene: SceneId; ending?: string | null;
-  beatIndex?: number; phase?: 'explore' | 'reading' | 'choice' | 'compose' | 'intro' | 'ending';
+  beatIndex?: number; phase?: 'explore' | 'reading' | 'choice' | 'compose' | 'intro' | 'ending' | 'cinematic';
+  dramaShot?: DramaShot;
   stats: Pick<BranchState['stats'], 'trust' | 'health' | 'food'>;
 };
 type FeaturedProp = 'bread' | 'medicine' | 'letter' | 'book' | 'bag' | 'lantern';
@@ -18,6 +21,7 @@ const FRIEND_SCENES = new Set(['n07','n08','n09','n10','n17','n20','n27']);
 
 /** Camera presence, private space, costume and real family facts are separate. */
 export function selectNarrativeStage(context: NarrativeStageContext) {
+  const drama = context.ending ? null : getDramaStaging(context.dramaShot);
   const {scene,nodeId,sister,father,stats,flags,ending}=context;
   const has=(flag:string)=>flags.includes(flag);
   const isDream=ending==='dream_guardian'||ending==='dream_commons';
@@ -37,34 +41,61 @@ export function selectNarrativeStage(context: NarrativeStageContext) {
   const familyAway=(nodeId==='n18'&&sister==='apart')||(nodeId==='n30'&&sister==='apart');
   const motherInClinic=nodeId==='n24'&&!has('rescueRoute');
   const showMother=!isDream&&!womenInVehicle&&!familyAway&&(HOME_FAMILY.has(nodeId)||nodeId==='n03'||motherInClinic||(nodeId==='n30'&&['home','courtyard'].includes(scene)));
-  const showBrother=showMother&&nodeId!=='n03';
+  const brotherWithSister=nodeId==='n23'&&has('motherSearching');
+  const showBrother=!isDream&&!womenInVehicle&&((showMother&&nodeId!=='n03')||brotherWithSister);
   const showSister=!isDream&&!womenInVehicle&&companion.presence==='present';
   const showFather=arrest ? arrest.step<3 : !isDream&&father==='free'&&(nodeId==='n01'||has('released'));
-  const showFriend=!isDream&&(nodeId==='n07'||has('friendMet')&&FRIEND_SCENES.has(nodeId));
+  const friendAtCoda=!womenInVehicle&&(ending==='lantern'&&has('sustained')||ending==='witness');
+  const showFriend=!isDream&&(nodeId==='n07'||has('friendMet')&&(FRIEND_SCENES.has(nodeId)||friendAtCoda));
   const showGuard=!isDream&&(['n09','n17','n25'].includes(nodeId)||(nodeId==='n12'&&!has('guardKnown')));
-  const showHero=isDream||nodeId!=='n21';
+  const showHero=isDream||nodeId!=='n21'&&!womenInVehicle;
   const sisterWardrobe=space==='family-home'?'home':space==='public'?'outdoor':'covered';
   const sisterInjured=companion.injured||has('sisterHurt');
   const sisterRecovering=has('sisterTreated')&&!sisterInjured;
   const sisterBase=sisterWardrobe==='home'?'sister':`sister-${sisterWardrobe}`;
   const motherWardrobe=space==='public'?'outdoor':'home';
   const motherStruckOnCamera=nodeId==='n03'&&((context.beatIndex??0)>=2||context.phase==='explore'||context.phase==='choice'||context.phase==='compose');
-  const motherInjured=motherStruckOnCamera||(has('motherHurt')&&!has('motherTreated'));
+  const motherInjured=motherStruckOnCamera||has('motherHurt');
+  const motherRecovering=has('motherHurt')&&has('motherTreated');
   const showBread=!isDream&&has('bread')&&stats.food>0;
   const disguised=context.outfit==='worker'||(context.outfit==='travel'&&has('disguise'));
   const privateSpace=space!=='public';
   const heroAsset=marketStall?'hero-market':isDream?'dream-guardian':context.outfit==='travel'&&!disguised?'hero-travel-girl':disguised&&privateSpace?`hero-${context.outfit}-indoor`:`hero-${context.outfit}`;
-  const heroDescription=isDream?'成年的阿提什，穿着女性卫队的衣服':disguised?privateSpace?'短发、亡兄留下的灰白长衫与宽裤':'朴素浅灰小帽、灰白长衫与宽裤':'绿色头巾与长衫宽裤';
-  const background=isDream?'/art/sister-v2/dream-land.png':scene==='clinic'&&nodeId==='n23'?'/art/sister/courtyard.png':`/art/sister/${scene}.png`;
+  const heroDescription=isDream?ending==='dream_commons'?'成年的阿提什，素色长衫，捧着议事本子':'成年的阿提什，穿着女性卫队的衣服':disguised?privateSpace?'短发、亡兄留下的灰白长衫与宽裤':'朴素浅灰小帽、灰白长衫与宽裤':'绿色头巾与长衫宽裤';
+  const background=isDream?`/art/oppression/${ending==='dream_guardian'?'dream-guardian':'dream-commons'}.svg`:scene==='road'?`/art/oppression/${nodeId==='n21'?'road-red-sedan':womenInVehicle?'road-open-truck-departure':'road-open-truck'}.svg`:scene==='clinic'&&nodeId==='n23'?'/art/sister/courtyard.png':`/art/sister/${scene}.png`;
   const locationName=isDream?'梦里的女性自治之地':nodeId==='n21'?'被提前带离的街口':nodeId==='n26'?'确认接应的关门私院':nodeId==='n29'?'说清分别的内院':scene==='clinic'?nodeId==='n23'?'女医师相连的后院':'女医师遮挡的后屋':scene==='home'&&(has('settled')||ending==='shelter')?'法里达借出的里间':scene==='workshop'?'作坊遮挡的后间':null;
   const sceneProp:FeaturedProp|null=isDream||arrest||marketStall?null:nodeId==='n30'?scene==='courtyard'?'book':scene==='road'?'bag':'letter':SCENE_PROPS[nodeId]??null;
   const featuredProp=sceneProp==='bread'&&!showBread?null:sceneProp;
-  return {
+  const staging = {
     companion,space,clinicPrivate,isDream,womenInVehicle,heroDescription,arrest,marketStall,fatherRescued,
-    sisterWardrobe,sisterInjured,sisterRecovering,motherWardrobe,motherInjured,
+    sisterWardrobe,sisterInjured,sisterRecovering,motherWardrobe,motherInjured,motherRecovering,
     showHero,showSister,showMother,showBrother,showFather,showFriend,showGuard,showBread,
     heroSheltered:!disguised&&space==='public'&&nodeId!=='n01',
     featuredProp,locationName,
-    assets:{background,hero:`/art/sister-v2/${heroAsset}.png`,sister:`/art/sister-v2/${sisterBase}${sisterInjured?'-injured':''}.png`,mother:`/art/sister-v2/${arrest?'mother-stop':motherWardrobe==='outdoor'?'mother-outdoor':motherInjured?'mother-injured':'mother'}.png`,father:marketStall?'/art/sister-v2/father-market.png':fatherRescued?'/art/sister-v2/father-rescued.png':'/art/sister-v2/father.png',brother:'/art/sister-v2/young-brother.png',friend:'/art/sister-v2/friend-worker.png',guard:'/art/sister-v2/guard-amin.png'},
+    assets:{background,hero:ending==='dream_commons'?'/art/oppression/adult-builder.svg':`/art/sister-v2/${heroAsset}.png`,sister:`/art/sister-v2/${sisterBase}${sisterInjured||sisterRecovering?'-injured':''}.png`,mother:`/art/sister-v2/${arrest?'mother-stop':motherWardrobe==='outdoor'?'mother-outdoor':motherInjured?'mother-injured':'mother'}.png`,father:marketStall?'/art/oppression/father-market.svg':fatherRescued?'/art/oppression/father-rescued.svg':'/art/oppression/father-standing-crutch.svg',brother:'/art/sister-v2/young-brother.png',friend:'/art/sister-v2/friend-worker.png',guard:'/art/sister-v2/guard-amin.png'},
+  };
+  if (!drama) return { ...staging, drama: null };
+  const shot = context.dramaShot!;
+  const arrestIndex = ['arrest-entry', 'arrest-grab', 'arrest-drag', 'arrest-empty'].indexOf(drama.visual);
+  return {
+    ...staging, drama,
+    marketStall: drama.visual.startsWith('market-'),
+    arrest: arrestIndex < 0 ? null : { step: arrestIndex, fatherLeft: drama.fatherLeft, heroLeft: drama.heroLeft, motherLeft: drama.motherLeft, sisterLeft: drama.sisterLeft, caption: shot.caption },
+    showHero: drama.hero, showMother: drama.mother, showFather: drama.father,
+    showSister: drama.sister, showBrother: drama.brother, showFriend: drama.friend, showGuard: drama.amin,
+    heroSheltered: false, showBread: false, featuredProp: null,
+    motherWardrobe: shot.scene === 'home' ? 'home' : 'outdoor',
+    sisterWardrobe: shot.scene === 'road' ? 'outdoor' : shot.scene === 'home' ? 'home' : 'covered',
+    motherInjured: ['mother-struck', 'mother-floor', 'home-wounded'].includes(drama.visual),
+    locationName: shot.location,
+    heroDescription: drama.preDisguise ? '尚未剪发的努拉，绿色头巾与女孩衣服' : staging.heroDescription,
+    assets: { ...staging.assets,
+      background: shot.scene==='road'?`/art/oppression/${drama.visual.startsWith('relative-')?'road-red-sedan':'road-open-truck'}.svg`:`/art/sister/${shot.scene}.png`,
+      hero: drama.heroineAsset ?? (drama.preDisguise ? drama.visual === 'market-warning' ? '/art/sister-v2/hero-market.png' : '/art/sister-v2/hero-cloak.png' : staging.assets.hero),
+      mother: drama.motherAsset ?? staging.assets.mother,
+      father: drama.fatherAsset ?? staging.assets.father,
+      friend: drama.friendAsset ?? staging.assets.friend,
+      sister: `/art/sister-v2/sister${shot.scene === 'road' ? '-outdoor' : shot.scene === 'home' ? '' : '-covered'}.png`,
+    },
   };
 }

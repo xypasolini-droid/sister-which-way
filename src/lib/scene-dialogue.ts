@@ -310,7 +310,7 @@ export function getSceneDialogue(state: BranchState): SceneDialogueLine[] {
       ];
       if (state.father === 'free') return [
         line('父亲', 'father', '阿明冒着炮火，把我从侧门带出来了。'),
-        hero('父亲，靠着我。母亲，你们怎么回来了？'),
+        hero('父亲，推车停稳了。母亲，你们怎么回来了？'),
         mother('贾维德逼我们走。我不能丢下你。'),
         sister(has('sisterHurt') || has('sisterTreated') ? '坐到我旁边。我的脚也还疼，先歇一歇。' : '先坐下喝水。今晚，我们终于都在。'),
       ];
