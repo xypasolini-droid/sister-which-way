@@ -1,0 +1,22 @@
+[
+  {
+    "file": "father-market.png",
+    "tool": "built-in image_gen",
+    "prompt": "Edit the supplied original game character into a seated market-stall pose. Preserve exactly his identity, gray pakol cap, black beard, beige long tunic and loose trousers, olive vest, flat hand-drawn cut-paper 2D style and muted colors. Afghan adult father circa 2001, seated on the ground cross-legged, slightly facing LEFT, reading one worn paper letter held naturally in both hands in front of his chest. Calm tired attentive expression, only the single man and paper. Full seated body visible, feet visible, no amputations or new injuries (this is an original fictional character). Transparent background, no floor, no mat, no shadow rectangle, no text. Vertical canvas, body at bottom, head about 40% down from the top, feet near bottom, generous empty transparent space above. This asset will replace the standing father in a layered videogame stage."
+  },
+  {
+    "file": "hero-market.png",
+    "tool": "built-in image_gen",
+    "prompt": "Create a transparent sprite variant of this same illustrated game protagonist, keeping the existing face, green headscarf, long gray tunic, loose trousers, brown shoes and exact hand-drawn flat-color style. Change only the pose: she is sitting on her heels at a market stall, calmly sorting folded cloth and buttons in front of her. A modest everyday working scene, covered clothing unchanged. Full figure with the small wares, no background, no other people, no text. Portrait composition, seated figure near the bottom of the canvas with generous empty transparent area above. She should turn slightly to the right toward the seller."
+  },
+  {
+    "file": "mother-stop.png",
+    "tool": "built-in image_gen",
+    "prompt": "Edit this original illustrated adult mother into a standing protective pose for a narrative game. Keep her exact face, middle-aged features, olive gray headscarf, burgundy long loose tunic, cream loose trousers, brown shoes, flat paper-cut drawing style and muted colors. She has stood up from the stool and is leaning towards the RIGHT, both arms extended forward at chest height with open hands to plead for someone to stop. Worried determined expression. Full standing figure, no stool or furniture, no wounds, no other people, no background, no text. Transparent background. Portrait 1:2 canvas with her head near top and shoes near bottom, identical scale to a standing game sprite."
+  },
+  {
+    "file": "father-rescued.png",
+    "tool": "built-in image_gen",
+    "prompt": "Create a transparent alternate sprite of the supplied original illustrated father for the final rescue scene of a hand-drawn narrative game. Preserve exact identity, black beard, gray cap, beige tunic and loose trousers, olive vest, brown shoes, flat layered-paper 2D illustration style. He is very weak and exhausted after captivity, reclining/slumped on a simple low two-wheel wooden handcart, leaning against a folded blanket with knees slightly bent, eyes half open, clothing dusty and worn, no blood or graphic wounds. The entire father and small cart are visible. His daughter will be a separate sprite, so no other people. The cart handles project a little toward LEFT where someone can push. Transparent background, no ground, no backdrop, no text. Portrait 1:2 canvas: keep this seated reclining composition within the bottom 60 percent of the canvas, transparent area above. This must communicate that a rescued man still needs care and cannot walk unaided."
+  }
+]

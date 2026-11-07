@@ -1,0 +1,360 @@
+[
+  {
+    "file": "clinic-exterior.png",
+    "width": 1280,
+    "height": 720,
+    "alpha": false
+  },
+  {
+    "file": "dream-guardian.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      70,
+      9,
+      424,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.5487
+  },
+  {
+    "file": "dream-land.png",
+    "width": 1280,
+    "height": 720,
+    "alpha": false
+  },
+  {
+    "file": "father.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      121,
+      29,
+      370,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6877
+  },
+  {
+    "file": "friend-worker.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      132,
+      59,
+      367,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.7037
+  },
+  {
+    "file": "guard-amin.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      87,
+      24,
+      414,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.5832
+  },
+  {
+    "file": "hero-cloak.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      132,
+      49,
+      370,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6716
+  },
+  {
+    "file": "hero-travel-girl.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      132,
+      48,
+      409,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6621
+  },
+  {
+    "file": "hero-travel-indoor.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      132,
+      45,
+      410,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6883
+  },
+  {
+    "file": "hero-travel.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      132,
+      52,
+      410,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6895
+  },
+  {
+    "file": "hero-worker-indoor.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      133,
+      47,
+      369,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.7079
+  },
+  {
+    "file": "hero-worker.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      132,
+      52,
+      369,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.708
+  },
+  {
+    "file": "mother-injured.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      73,
+      257,
+      419,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6827
+  },
+  {
+    "file": "mother-outdoor.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      65,
+      255,
+      455,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6181
+  },
+  {
+    "file": "mother.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      73,
+      258,
+      419,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6882
+  },
+  {
+    "file": "sister-covered-injured.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      94,
+      267,
+      408,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.7104
+  },
+  {
+    "file": "sister-covered.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      118,
+      40,
+      356,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6723
+  },
+  {
+    "file": "sister-injured.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      94,
+      270,
+      407,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.7163
+  },
+  {
+    "file": "sister-outdoor-injured.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      84,
+      273,
+      455,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6587
+  },
+  {
+    "file": "sister-outdoor.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      52,
+      77,
+      460,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.5219
+  },
+  {
+    "file": "sister.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      123,
+      45,
+      356,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.6828
+  },
+  {
+    "file": "tale-flame.png",
+    "width": 512,
+    "height": 768,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      22,
+      32,
+      477,
+      738
+    ],
+    "foot_baseline_y": 737,
+    "transparent_pixel_fraction": 0.6759
+  },
+  {
+    "file": "young-brother.png",
+    "width": 512,
+    "height": 1024,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      105,
+      505,
+      399,
+      1011
+    ],
+    "foot_baseline_y": 1010,
+    "transparent_pixel_fraction": 0.8093
+  },
+  {
+    "file": "father-market.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      42,
+      526,
+      839,
+      1744
+    ],
+    "transparent_pixel_fraction": 0.6331
+  },
+  {
+    "file": "hero-market.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      15,
+      805,
+      873,
+      1763
+    ],
+    "transparent_pixel_fraction": 0.7332
+  },
+  {
+    "file": "mother-stop.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      28,
+      43,
+      876,
+      1760
+    ],
+    "transparent_pixel_fraction": 0.5864
+  },
+  {
+    "file": "father-rescued.png",
+    "width": 887,
+    "height": 1774,
+    "alpha": true,
+    "visible_bbox_alpha_over_127": [
+      8,
+      811,
+      882,
+      1743
+    ],
+    "transparent_pixel_fraction": 0.7351
+  }
+]

@@ -1,0 +1,77 @@
+import { describe, expect, it } from 'vitest';
+import { choose, createInitialState, getEnding, getNode, type BranchState } from './branch-story';
+import { getSceneDialogue } from './scene-dialogue';
+import { buildReadingBeats, getCompanionStatus, getHeroDisplayName, storyPresentationKey, MAX_SUBTITLE_CHARACTERS } from './story-presentation';
+
+import { NODE_TEST_ROUTES as NODE_ROUTES, ENDING_TEST_ROUTES as ENDING_ROUTES } from './story-test-routes';
+function play(path:string[]):BranchState {
+  return path.reduce((state,id)=>{const next=choose(state,id);if(!next)throw new Error(`Invalid route ${state.nodeId}/${id}`);return next.state},createInitialState());
+}
+
+describe('performed scenes and a separate full journal',()=>{
+  it('performs 2–4 authored lines, without turning consequences into another reading queue',()=>{
+    const state=createInitialState();
+    const beats=buildReadingBeats(state,'Long consequences belong in the journal. '.repeat(50));
+    expect(beats).toHaveLength(getSceneDialogue(state).length);
+    expect(beats.map(({speaker,actor,text})=>({speaker,actor,text}))).toEqual(getSceneDialogue(state));
+    expect(beats.every(beat=>beat.kind==='dialogue')).toBe(true);
+  });
+  it('keeps every reachable node short and leaves its full journal prose and history untouched',()=>{
+    expect(Object.keys(NODE_ROUTES)).toHaveLength(30);
+    for(const path of Object.values(NODE_ROUTES)){
+      const state=play(path), node=getNode(state), before=JSON.stringify(state), prose=[...node.paragraphs];
+      const beats=buildReadingBeats(state,state.history.at(-1)?.consequence);
+      const dialogue=beats.filter(b=>b.kind==='dialogue'), tales=beats.filter(b=>b.kind==='tale');
+      expect(dialogue.length).toBeGreaterThanOrEqual(2);expect(dialogue.length).toBeLessThanOrEqual(4);
+      expect(tales.length).toBeLessThanOrEqual(3);expect(beats.length).toBeLessThanOrEqual(7);
+      expect(beats.every(b=>Array.from(b.text).length<=MAX_SUBTITLE_CHARACTERS)).toBe(true);
+      expect(beats.every(b=>b.actor)).toBe(true);
+      expect(new Set(beats.map(b=>b.id)).size).toBe(beats.length);
+      expect(getNode(state).paragraphs).toEqual(prose);
+      expect(JSON.stringify(state)).toBe(before);
+      expect(prose.join('').length).toBeGreaterThan(dialogue.map(b=>b.text).join('').length);
+    }
+  });
+  it('performs five linked fairy-tale interludes while preserving each longer tale in the journal',()=>{
+    const episodes=['n05','n07','n20','n25','n30'];
+    for(const [id,path] of Object.entries(NODE_ROUTES)){
+      const state=play(path),tale=getNode(state).tale;
+      const beats=buildReadingBeats(state).filter(b=>b.kind==='tale');
+      expect(beats.length>0).toBe(episodes.includes(id));
+      if(beats.length){expect(beats.length).toBeGreaterThanOrEqual(2);expect(tale.length).toBeGreaterThan(70);}
+      expect(getNode(state).tale).toBe(tale);
+    }
+    const original=play(NODE_ROUTES.n07);
+    const shared={...original,flags:[...original.flags,'brotherStory']};
+    expect(buildReadingBeats(original).filter(b=>b.kind==='tale')).not.toEqual(buildReadingBeats(shared).filter(b=>b.kind==='tale'));
+  });
+  it('gives all ten saved endings a brief coda without discarding their authored prose',()=>{
+    for(const [id,path]of Object.entries(ENDING_ROUTES)){
+      const state=play(path);expect(state.endingId).toBe(id);
+      const original=getEnding(state)!,beats=buildReadingBeats(state);
+      expect(beats.length).toBeGreaterThanOrEqual(2);expect(beats.length).toBeLessThanOrEqual(3);
+      expect(beats.every(b=>b.kind==='ending'&&b.text.length<=40)).toBe(true);
+      expect(getEnding(state)).toEqual(original);expect(original.paragraphs.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+  it('separates physical presence, memory and a face-to-face meeting during separation',()=>{
+    expect(getCompanionStatus(play(NODE_ROUTES.n01)).presence).toBe('offstage');
+    expect(getCompanionStatus(play(NODE_ROUTES.n03)).presence).toBe('offstage');
+    const apart={...play(NODE_ROUTES.n18),sister:'apart' as const};
+    expect(getCompanionStatus(apart).presence).toBe('apart');
+    expect(getCompanionStatus({...apart,nodeId:'n23'}).presence).toBe('present');
+    expect(getCompanionStatus({...apart,nodeId:'n29'}).presence).toBe('present');
+  });
+  it('uses the chosen flame name in public and the family name at home',()=>{
+    const state={...play(NODE_ROUTES.n09),flags:['disguise','aliasAatish']};
+    expect(getHeroDisplayName(state)).toBe('阿提什');
+    expect(getHeroDisplayName({...state,nodeId:'n13'})).toBe('努拉');
+    expect(getHeroDisplayName(createInitialState())).toBe('努拉');
+  });
+  it('distinguishes converging paths and preserves the cursor key when replayed',()=>{
+    const a=play(['work']),b=play(['neighbor']);
+    expect(a.nodeId).toBe(b.nodeId);
+    expect(storyPresentationKey(a)).not.toBe(storyPresentationKey(b));
+    expect(storyPresentationKey(a)).toBe(storyPresentationKey(play(['work'])));
+  });
+});
