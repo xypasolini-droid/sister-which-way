@@ -1,0 +1,1226 @@
+{
+  "version": "0.5.1",
+  "contentRevision": 6,
+  "source": "Actual createInitialState/getChoices/choose traversal",
+  "stateCount": 1210,
+  "completeRouteCount": 768,
+  "endingCounts": {
+    "reunited": 96,
+    "caravan": 192,
+    "lantern": 288,
+    "dream_commons": 96,
+    "dream_guardian": 96
+  },
+  "disabledActions": 0,
+  "earlyPrefixCount": 96,
+  "allEarlyPrefixesReachAllFive": true,
+  "nodes": [
+    {
+      "id": "n01",
+      "step": 1,
+      "title": "巡查停在父亲的摊前",
+      "titles": [
+        "巡查停在父亲的摊前"
+      ],
+      "scene": "market",
+      "paragraphs": [
+        "清晨，父亲借着腋拐在市场的旧毯上坐下，慢慢收拢双腿，把拐靠在身旁。他走路有些跛，站起时需要支撑，仍替不识字的人读信、卖家里能割舍的东西。你十二岁，坐在他身旁数纽扣。一个加入武装巡查的年轻旧生认出了他，却不肯再叫老师。",
+        "那人指着你的脸，呵斥父亲不该带女孩来摆摊。父亲叫出他从前的名字，他的脸涨红了。同来的年长看守阿明站在几步外，没有阻止他把手伸向武器。",
+        "父亲把你挡到身后，提醒你不要争辩。你把话咽下去，攥紧故事册。那人说会记住你们住在哪里；父亲收毯子的手停了一下，再把掉落的纽扣一颗颗拾起来。"
+      ],
+      "sisterLine": "姐姐出门前说：“跟着父亲。东西拿不回来也没关系，你们得回来。”",
+      "choices": [
+        {
+          "id": "work",
+          "label": "蹲下来，帮父亲捡起摊上的东西",
+          "detail": "纽扣滚到了巡查脚边。父亲低声叫你别争，先把毯子收起来。",
+          "declaredNext": "n02",
+          "requires": [],
+          "targets": [
+            "n02"
+          ],
+          "effect": {
+            "stats": {
+              "trust": 1
+            },
+            "add": [
+              "fatherPromise"
+            ]
+          },
+          "consequence": "你蹲下捡纽扣，伸到巡查靴边的手又缩回来。父亲把最后几件旧物裹进毯子，撑着腋拐站起：“走吧。”那人一直盯着你们离开的方向。傍晚，全家围着饭碗坐下，门外响起白天那人的声音。"
+        },
+        {
+          "id": "neighbor",
+          "label": "看向卖饼的熟人：“能帮帮我们吗？”",
+          "detail": "你认得他，也认得他忽然移开的目光。巡查还站在摊前。",
+          "declaredNext": "n02",
+          "requires": [],
+          "targets": [
+            "n02"
+          ],
+          "effect": {
+            "stats": {
+              "hope": 1,
+              "exposure": 1
+            },
+            "add": [
+              "neighbors",
+              "fatherPromise"
+            ]
+          },
+          "consequence": "卖饼的熟人看了看武器，低下头，把捡到的布包悄悄递还父亲。他没敢再说话。父亲牵你离开，你没有再叫他。傍晚回到家，饭刚端上来，白天威胁你们的人就在门外喊父亲的名字。"
+        },
+        {
+          "id": "mother",
+          "label": "靠近父亲，小声问：“是我的错吗？”",
+          "detail": "巡查说女孩不该来。你把故事册抱紧，不敢再抬头。",
+          "declaredNext": "n02",
+          "requires": [],
+          "targets": [
+            "n02"
+          ],
+          "effect": {
+            "stats": {
+              "hope": 1,
+              "exposure": 1
+            },
+            "add": [
+              "book",
+              "fatherPromise"
+            ]
+          },
+          "consequence": "父亲把手放在你的肩上：“不是你的错。”他没再与巡查争辩，收好故事册和旧物，撑拐带你回家。你以为关上家门就能躲过那道目光。傍晚，萨米刚挨到父亲身旁，门却被狠狠踢响。"
+        }
+      ]
+    },
+    {
+      "id": "n02",
+      "step": 2,
+      "title": "傍晚，被踢开的门",
+      "titles": [
+        "傍晚，被踢开的门"
+      ],
+      "scene": "home",
+      "paragraphs": [
+        "饭刚放下，家门就被踢开。白天在市场威胁父亲的年轻巡查带人闯进来，指着他喊要带走。母亲从地毯旁扑过去，玛莉安把三岁的萨米抱紧，你挡在父亲身前。",
+        "武装者把父亲拉向门口，没让他稳住腋拐。母亲抓住他的衣袖，又被推回；水碗翻了，父亲的外衣还搭在墙边。你喊他们放手，父亲隔着伸来的手让你退到母亲身旁。他是在全家眼前被强行带走的。",
+        "门外的人丢下一句父亲会被关进拘留院。脚步声远去后，母亲捡起写着丈夫名字的纸，说明早去要求放人。姐姐答应留在屋里看萨米；你要跟母亲一起去。"
+      ],
+      "sisterLine": "他们把父亲抓走了。我看着萨米，你跟紧母亲去监所。要是被拦住，先托人告诉我你们在哪儿。",
+      "choices": [
+        {
+          "id": "cut",
+          "label": "跟上母亲：“我和你一起去找爸爸。”",
+          "detail": "母亲要去监所要求放人；姐姐留下照看萨米。",
+          "declaredNext": "n06",
+          "requires": [],
+          "targets": [
+            "n06"
+          ],
+          "effect": {
+            "father": "missing",
+            "stats": {
+              "trust": 1,
+              "exposure": 1,
+              "health": -2,
+              "food": -1
+            },
+            "add": [
+              "motherSearch",
+              "motherHurt",
+              "brotherStory",
+              "book"
+            ],
+            "remove": []
+          },
+          "consequence": "你陪母亲去拘留院要求放人，姐姐留家照看萨米。街口巡查指责母女没有成年男性亲属陪同，母亲的话没说完，棍子已落下来。你扶她回家养伤，随后独自买饼，却被推回零钱、追赶着空手归来。萨米问有钱为什么没有饭，你答不上来，只陪他讲完火苗守住名字的故事。姐姐打开亡兄的衣箱，把剪刀放在你面前。"
+        },
+        {
+          "id": "sew",
+          "label": "抱抱姐姐：“要是晚了，别出来找我们。”",
+          "detail": "请她托法里达打听，再跟上母亲。你怕她也走到巡查面前。",
+          "declaredNext": "n06",
+          "requires": [],
+          "targets": [
+            "n06"
+          ],
+          "effect": {
+            "father": "missing",
+            "stats": {
+              "trust": 2,
+              "hope": 1,
+              "exposure": 1,
+              "health": -2,
+              "food": -1
+            },
+            "add": [
+              "motherSearch",
+              "pact",
+              "motherHurt",
+              "brotherStory",
+              "book"
+            ],
+            "remove": []
+          },
+          "consequence": "出门前，你抱住姐姐，约好晚了就请法里达传话，别独自走到街上。街口巡查指责母女没有成年男性亲属陪同，母亲的话没说完，棍子已落下来。你扶她回家养伤，随后独自买饼，却被推回零钱、追赶着空手归来。萨米问有钱为什么没有饭，你答不上来，只陪他讲完火苗守住名字的故事。姐姐打开亡兄的衣箱，把剪刀放在你面前。"
+        }
+      ]
+    },
+    {
+      "id": "n06",
+      "step": 3,
+      "title": "姐姐把剪刀放在你面前",
+      "titles": [
+        "姐姐把剪刀放在你面前"
+      ],
+      "scene": "home",
+      "paragraphs": [
+        "这几天，母亲带你要求释放父亲，被巡查以没有成年男性亲属陪同为由殴打；她回家养伤。你偷偷买饼，被拒绝、追赶，带着仍未花掉的钱空手回家。萨米听完火苗的故事，还是饿。",
+        "姐姐打开亡兄阿里的衣箱。灰白长衫、宽裤和朴素小帽压在最下面。穿成男孩或许能接过一枚钱，却不能让饥饿、武器和战争消失。她把剪刀放低，等你决定怎样开始。"
+      ],
+      "sisterLine": "我们借阿里的衣服，不把你变成阿里。回来以后，我还是叫你努拉。",
+      "choices": [
+        {
+          "id": "buy",
+          "label": "把剪刀递给姐姐：“你来吧。”",
+          "detail": "你闭上眼睛，请她先握一会儿你的手，再剪下发辫。",
+          "declaredNext": "n07",
+          "requires": [],
+          "targets": [
+            "n07"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "stats": {
+              "trust": 1,
+              "exposure": -1
+            },
+            "add": [
+              "disguise"
+            ]
+          },
+          "consequence": "发辫落下时你哭了。姐姐等你哭完，用红线扎好，把原来的衣服收进箱子。你穿上阿里的长衫、宽裤和小帽，准备借一个被当作男孩的名字出门；母亲伸手叫住你，仍叫努拉。"
+        },
+        {
+          "id": "help",
+          "label": "接过剪刀：“最后这一下，我自己来。”",
+          "detail": "姐姐先剪下一束，再陪着你剪完。亡兄的长衫、宽裤和小帽就在身旁。",
+          "declaredNext": "n07",
+          "requires": [],
+          "targets": [
+            "n07"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "stats": {
+              "hope": 1,
+              "trust": 1,
+              "exposure": -1
+            },
+            "add": [
+              "disguise",
+              "selfCut"
+            ]
+          },
+          "consequence": "姐姐先剪一束，再把剪刀交给你。最后几刀并不齐，你也没有重新剪到完美。阿里的旧衣服有些大，小帽却戴稳了；你把真名留在家人的声音里，没有答应从此不再害怕。"
+        }
+      ]
+    },
+    {
+      "id": "n07",
+      "step": 4,
+      "title": "莱拉认出了你",
+      "titles": [
+        "莱拉认出了你"
+      ],
+      "scene": "market",
+      "paragraphs": [
+        "这次，摊主把饼和零钱递给了你。一个戴小帽的小帮工却叫出了你的真名，直到认出是以前一起上课的莱拉，你才松开攥紧的钱。她也借男孩的身份跑腿挣钱。",
+        "莱拉说在街上还得有一个名字。你想起讲给弟弟的火苗，决定叫阿提什——火焰。回家以后仍叫努拉，这两个名字都装着你想活下去的心愿。",
+        "莱拉指给你看几处肯雇小帮工的门。她自己也要送货、养家，不能一直陪着你。你把饼藏好：姐姐和萨米还在等。"
+      ],
+      "sisterLine": "你记着姐姐的叮嘱：“姐姐临行的叮嘱：“有人愿意帮你，就把约定说清。别因为终于能买到东西，就忘了你还只有十二岁。””",
+      "choices": [
+        {
+          "id": "truth",
+          "label": "跟莱拉去市场，替人送货读信",
+          "detail": "你们结伴跑腿。先把买到的饼送回家，再去摆摊。",
+          "declaredNext": "n09",
+          "requires": [],
+          "targets": [
+            "n09"
+          ],
+          "effect": {
+            "stats": {
+              "coins": 2,
+              "food": 2,
+              "trust": 1
+            },
+            "add": [
+              "friendMet",
+              "friendHelp",
+              "bread",
+              "honest",
+              "aliasAatish",
+              "storyShared"
+            ]
+          },
+          "consequence": "莱拉带你绕开拦人的街口，一起送完几份货。你把挣来的饼送回家，再回到摊前替人读信。阿明捏着一封信等在那里；你认出他曾站在抓走父亲的人身旁，脚先退了半步。"
+        },
+        {
+          "id": "hide",
+          "label": "跟莱拉去作坊，问问有没有修补活",
+          "detail": "你会缝几针。莱拉带你敲后门，再去送她自己的货。",
+          "declaredNext": "n10",
+          "requires": [],
+          "targets": [
+            "n10"
+          ],
+          "effect": {
+            "stats": {
+              "coins": 1,
+              "food": 1,
+              "hope": 1
+            },
+            "add": [
+              "friendMet",
+              "craft",
+              "needle",
+              "bread",
+              "aliasAatish"
+            ]
+          },
+          "consequence": "莱拉把你领到裁缝后门。老板让你坐下补衣，她去别处送货，答应回来接你。你先把买到的饼送回家，再坐到后间的矮凳上；学校里的同学，如今只能这样在街上相认。"
+        },
+        {
+          "id": "pact",
+          "label": "先把饼带回家，告诉姐姐遇见了莱拉",
+          "detail": "她还不知道你在外面叫阿提什。回去时，你想让她先吃一点。",
+          "declaredNext": "n13",
+          "requires": [],
+          "targets": [
+            "n13"
+          ],
+          "effect": {
+            "stats": {
+              "food": 1,
+              "trust": 1,
+              "hope": 1
+            },
+            "add": [
+              "friendMet",
+              "neighbors",
+              "bread",
+              "pact",
+              "aliasAatish",
+              "storyShared"
+            ]
+          },
+          "consequence": "莱拉带你认过愿意开后门的熟人，再去照顾她自己的家。你把饼带回去，告诉姐姐在外面叫阿提什——火焰。她没有因你能挣钱便放心，先问下次要去哪儿、几点回来。"
+        }
+      ]
+    },
+    {
+      "id": "n09",
+      "step": 5,
+      "title": "他想再听一次妻子的名字",
+      "titles": [
+        "他想再听一次妻子的名字"
+      ],
+      "scene": "market",
+      "paragraphs": [
+        "面包摊后门，阿明递来一封信。你认出他曾站在年轻巡查身旁，脚先往后退了半步。信里说，他的妻子哈拉去参加妹妹婚礼，乘坐的巴士触了地雷；她受了重伤，几个小时后去世。你读到这里，声音慢下来。",
+        "阿明削苹果的手停住了。过了很久，他才让你把哈拉的名字再念一遍。你没有接着问父亲，只把那几个字指给他看，陪他坐了一会儿。莱拉在门边等你，姐姐留在私宅照顾母亲和萨米。",
+        "他把信重新折好，贴身收起。你没有忘记他曾站在哪些人身旁，也没有因为看见他的悲痛就相信他。可此刻他想念的是一个再也不能回家的人，你愿意让她的名字被好好念完。"
+      ],
+      "sisterLine": "你记着姐姐的叮嘱：“我也想现在就说一定是他。可是我怕我们把希望说得太满，最后连坏消息都不敢听。先问清楚。”",
+      "choices": [
+        {
+          "id": "verify",
+          "label": "把信还给他，轻声问起父亲",
+          "detail": "等他缓过来，再另拿一张纸写父亲的名字；别催他拿这封信做交换。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "father": "located",
+            "stats": {
+              "hope": 2,
+              "exposure": 1
+            },
+            "add": [
+              "letter",
+              "guardKnown"
+            ]
+          },
+          "consequence": "你把信还给阿明，陪他静坐了一会儿。稍后再见，才在另一张纸上写下父亲的名字。他对照轮值纸，确认父亲仍在北门拘留院，没有答应探视。哈拉的信仍由阿明收着，你把问得的地点带回家；知道关在哪里，和能把人救回家，仍隔着一道铁门。"
+        },
+        {
+          "id": "courier",
+          "label": "再念一遍哈拉的名字，陪他认字",
+          "detail": "接下来的几次送货都停一会儿。你少接了几份活，阿明才慢慢愿意与你说话。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "stats": {
+              "coins": 1,
+              "hope": 1
+            },
+            "add": [
+              "letter",
+              "courier",
+              "evidence",
+              "guardKnown",
+              "guardBond",
+              "literacyPractice"
+            ],
+            "remove": []
+          },
+          "consequence": "接下来的几次送货，阿明都请你再念一次妻子哈拉的名字。你陪他练写，他终于能自己认出来。后来你才另拿一张纸写下父亲的姓名，他记下了，阿齐兹也愿意递消息。你回家商量，有了几次真实的往来，仍没有放人的保证。"
+        },
+        {
+          "id": "sister",
+          "label": "今天先不问父亲，收摊回家",
+          "detail": "把哈拉的信还给阿明。你不知道该怎样安慰他，也想回去看看母亲。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "stats": {
+              "trust": 1
+            },
+            "add": [
+              "letter",
+              "guardKnown"
+            ]
+          },
+          "consequence": "你把信还给阿明，带着自己的见闻回家，告诉姐姐他想念妻子哈拉。她与你沉默了一会儿，再核对下一次能找谁问父亲。母亲把夜里写给远亲的信推到灯下，另一个求生的办法也需要有人说清代价。"
+        }
+      ]
+    },
+    {
+      "id": "n10",
+      "step": 5,
+      "title": "工钱与名字",
+      "titles": [
+        "工钱与名字"
+      ],
+      "scene": "workshop",
+      "paragraphs": [
+        "莱拉介绍的作坊后间堆着从各家收来的衣服。拉希德让你避开前窗做活；留着女孩身份的妇人只能隔着帘子交货，一笔报酬又被送货人扣下了。莱拉送完货回到后门，与你一起听见女工争辩。",
+        "你能先挣自己的钱，也能征得女工同意后帮她把账说清。莱拉也等着她那一份，她提醒你老板肯用小帮工，不等于会公平付钱，更不等于孩子从此不受胁迫。",
+        "送货人把她做坏一针的衣服摊开，说整件都不能算钱。衣领早被别人穿脏了。女工隔着门帘问是不是连线的钱也没有，对方让她小声些，别给自己招来麻烦。"
+      ],
+      "sisterLine": "你记着姐姐的叮嘱：“帮她之前先问她愿不愿意。我们明天还能换一条街走，她还得靠这个人把衣服送出去。”",
+      "choices": [
+        {
+          "id": "wage",
+          "label": "扶住被推的女工，和她一起退到门外",
+          "detail": "老板伸手推她，你扶住她往门外退；自己今天的报酬也可能拿不到。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "stats": {
+              "coins": -1,
+              "trust": 1
+            },
+            "add": [
+              "protectedSomeone",
+              "workerProtected"
+            ]
+          },
+          "consequence": "老板伸手推搡不肯认账的女工。你挡到她身前，莱拉拉开门，三个人一起退进巷子。她稳住身体后让你别再回去争；你的活也没拿到报酬。你把遭遇照实告诉家人，母亲摊开那封寄给远亲的信：她已向优素福求接应，却还没收到回话。"
+        },
+        {
+          "id": "ledger",
+          "label": "拉开后门，叫莱拉过来帮忙",
+          "detail": "先让她们进出有路。你不想再与老板争下去，也知道这份活可能做不成了。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "stats": {
+              "coins": -1,
+              "trust": 1
+            },
+            "add": [
+              "workerHelped"
+            ]
+          },
+          "consequence": "你拉开后门，叫回刚送完货的莱拉。她扶住女工，你从另一边护着她退出作坊。老板在身后骂你们别再回来。女工不肯丢下那件缝好的衣服，你替她包起，送她走到熟悉的街角才回家；母亲还在等你带回晚饭。"
+        }
+      ]
+    },
+    {
+      "id": "n13",
+      "step": 5,
+      "title": "姐姐也有不能答应的事",
+      "titles": [
+        "姐姐也有不能答应的事"
+      ],
+      "scene": "home",
+      "paragraphs": [
+        "姐姐发现你把一张纸藏在床垫下。她没有先看内容，而是坐到你对面：“明天你还准备瞒我什么？”母亲的咳嗽从隔壁传来。",
+        "你忽然觉得，姐姐的担心和街上的命令一样，都在拦着你。她却第一次说出了自己的计划：找一个能让女孩继续读书的地方。",
+        "你冲她喊：“你又不是母亲！”话出去以后屋里很静。姐姐去捡掉在地上的线，捡了两次才拿起来。她十七岁，昨夜也曾躲在水盆边哭，只是你没有看见。"
+      ],
+      "sisterLine": "我不是母亲，也没学过怎么把一个家撑住。你说我只会拦着你，可你不回来时，留在门边数脚步的人是我。",
+      "choices": [
+        {
+          "id": "listen",
+          "label": "坐到姐姐身旁：“你也很害怕吧？”",
+          "detail": "先听她把话说完。你们一起说好，下次要去哪里、什么时候回来。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "stats": {
+              "trust": 3,
+              "hope": 1
+            },
+            "add": [
+              "honest",
+              "pact",
+              "listenedSister"
+            ],
+            "remove": [
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "你先道歉，再把纸摊开。姐姐没有立刻原谅，只把自己想继续读书的地方也写上去。你们仍不同意同一条路，但第一次没有用提高声音来逼对方把愿望划掉。"
+        },
+        {
+          "id": "secret",
+          "label": "把饼放下：“我还得出去一趟。”",
+          "detail": "你不愿再说街上发生的事。姐姐叫你等等，你还是走向了门口。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "sister": "apart",
+            "stats": {
+              "trust": -3,
+              "exposure": 1
+            },
+            "add": [
+              "missingSister",
+              "hiddenRisk",
+              "leftUnsaid"
+            ],
+            "remove": [
+              "pact"
+            ]
+          },
+          "consequence": "你没有把话说清。姐姐、母亲和萨米先住法里达相连的里间，你去作坊做工，不能再把她会等在原处当成理所当然。广播说路快封了；法里达转来母亲的信，你才知道她还试着用一桩婚事向远亲求照应。"
+        },
+        {
+          "id": "care",
+          "label": "接过水盆：“你歇一会儿，我来照看母亲。”",
+          "detail": "姐姐一夜没睡。你留下换水喂药，今天不再出去找活。",
+          "declaredNext": "n18",
+          "requires": [],
+          "targets": [
+            "n18"
+          ],
+          "effect": {
+            "stats": {
+              "trust": 2,
+              "health": 1
+            },
+            "add": [
+              "careFirst",
+              "carePractice",
+              "protectedSomeone",
+              "pact"
+            ],
+            "remove": []
+          },
+          "consequence": "你接过水盆，让姐姐终于坐下。母亲喝了水，伤仍在；关于明天的争执也没有消失。夜里广播说道路快封锁，母亲把写给远亲的信拿出来，这一次不能再只让一个人决定全家的去路。"
+        }
+      ]
+    },
+    {
+      "id": "n18",
+      "step": 6,
+      "title": "母亲说，舅舅的车快到了",
+      "titles": [
+        "母亲说，舅舅的车快到了"
+      ],
+      "scene": "home",
+      "paragraphs": [
+        "你赶回法里达的里间时，母亲和姐姐都在。母亲曾想用玛莉安的婚事求贾维德照应，姐姐不肯答应。如今贾维德借战事上门逼人走，母亲终于回绝了他。亲弟优素福传来消息：他今天能先接一趟，封关前还会再跑最后一趟，之后就不能折返。",
+        "父亲还在北门。去那里不能敲一次门就把人接出来：你得和姐姐约好接应，再花几天与阿明读信、教字，家人也要承受等待。莱拉托人说市场开始拦人，她仍没能回家。你可以先赶回家人的车，也可以回街上找她。"
+      ],
+      "sisterLine": "我不答应嫁过去。你要去哪里，现在告诉我；封关以前，我们得知道彼此会不会回来。",
+      "choices": [
+        {
+          "id": "plan",
+          "label": "和姐姐约好接应，再去北门找阿明",
+          "detail": "想救父亲，得先不随今天的车走。接下来用几次送货的时间陪阿明读信、教字，等侧门出现机会；家人也得多等几天。",
+          "declaredNext": "n25",
+          "requires": [],
+          "targets": [
+            "n25"
+          ],
+          "effect": {
+            "stats": {
+              "hope": 1,
+              "exposure": 1,
+              "food": -1
+            },
+            "add": [
+              "marriageOffer",
+              "sisterRefused",
+              "rescueRoute",
+              "relativePressure",
+              "pact",
+              "guardKnown",
+              "guardBond",
+              "rescuePrepared"
+            ],
+            "remove": [
+              "caravan"
+            ]
+          },
+          "consequence": "你向姐姐把去向说清，补上此前没有守住的约定；她确认会守着法里达的后门接应。母亲拒绝贾维德的强迫，告诉优素福今天先不走。接下来的几次送货，你从替阿明读信开始，陪他一笔笔认写妻子哈拉的名字，等他愿意谈起自己的家。几次往来以后，你才在另一张纸上写下父亲的姓名。这些天你少接了许多活，家人分着剩下的饼，错过较早的离城车。直到炮火逼近、关口将封的那一夜，阿明才托人带来侧门换岗的消息；优素福也来跑最后一趟。"
+        },
+        {
+          "id": "find",
+          "label": "陪母亲上车，和家人一起离开",
+          "detail": "不再往北门跑，父亲暂时接不出来。帮母亲摆脱贾维德，和姐姐、萨米随优素福离开。",
+          "declaredNext": "n21",
+          "requires": [],
+          "targets": [
+            "n21"
+          ],
+          "effect": {
+            "outfit": "travel",
+            "stats": {
+              "hope": 1
+            },
+            "add": [
+              "caravan",
+              "relativePressure",
+              "marriageOffer",
+              "sisterRefused"
+            ],
+            "remove": [
+              "rescueRoute"
+            ]
+          },
+          "consequence": "你去问母亲的亲弟优素福有没有回信，家人留在关门的住处。贾维德却趁你不在开着红色轿车提前到了，借战事催母亲、姐姐和萨米上车。母亲反复说还有一个女儿没回来，他不肯等；接下来的决定，由她们自己作出。"
+        },
+        {
+          "id": "rush",
+          "label": "告诉家人别等我，回街上找莱拉",
+          "detail": "莱拉被堵在市场。你要回去接她，就得放下去监所和跟家人登车的机会。",
+          "declaredNext": "n22",
+          "requires": [],
+          "targets": [
+            "n22"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "sister": "apart",
+            "add": [
+              "familyDeparted",
+              "escortConfirmed",
+              "motherReturned",
+              "marriageRefused",
+              "heroStayed",
+              "friendTogether",
+              "stayRoute",
+              "relativePressure",
+              "sisterRefused"
+            ],
+            "remove": [
+              "boarded",
+              "familyTogether",
+              "missingSister",
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "优素福亲自赶到私院，母亲拒绝贾维德的逼婚，决定带姐姐和萨米跟亲弟离城。你告诉她们自己要去找被堵住的莱拉：“封关了就走，不要等。”姐姐先与你确认这真是你的决定，再把手松开。你沿市场侧巷去找莱拉。家人的车已经出发，父亲仍在监所。"
+        }
+      ]
+    },
+    {
+      "id": "n21",
+      "step": 7,
+      "title": "车在等，另一头有人叫你",
+      "titles": [
+        "车在等，另一头有人叫你"
+      ],
+      "scene": "road",
+      "paragraphs": [
+        "母亲拿起灶边的木棍，逼贾维德退开：“我女儿没有答应！”她带姐姐和萨米回到私院，与你会合。优素福已经到场，确认过落脚处，不拿婚约作交换。",
+        "露天货斗里有母亲和幼弟坐的位置。姐姐伸手拉你，送信人却跑来，说莱拉被截在市场侧巷。车得在封关前走。你若回头，家人不能留下来替你承担同一次危险。"
+      ],
+      "sisterLine": "我想你跟我们走。可若你一定回头，先把话说清楚——我不会假装这不痛。",
+      "choices": [
+        {
+          "id": "register",
+          "label": "握住姐姐的手，四个人一起上车",
+          "detail": "与母亲、姐姐、幼弟随优素福离城，父亲仍在监所。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:caravan"
+          ],
+          "effect": {
+            "outfit": "travel",
+            "sister": "beside",
+            "add": [
+              "caravan",
+              "documents",
+              "registered",
+              "escortConfirmed",
+              "boarded",
+              "familyTogether",
+              "motherReturned",
+              "marriageRefused",
+              "fateDeparture"
+            ],
+            "remove": [
+              "missingSister",
+              "hiddenRisk",
+              "fateGuide",
+              "fateGuardian",
+              "fateCommons"
+            ]
+          },
+          "consequence": "你先回到约定的私院。母亲已经带着姐姐和萨米拒绝贾维德的强迫，优素福本人也赶到了。他核对去向与家人，替母亲找好能坐低的地方。你们四人登上露天后斗货车，握住栏板；父亲仍被关着。莱拉托人说会与熟悉的同伴走另一条路，你们不能保证她也能离开。"
+        },
+        {
+          "id": "child",
+          "label": "先送家人上车，我回头接莱拉",
+          "detail": "告诉姐姐封关就走。把被堵住的莱拉接回来，可能赶不上这趟车。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:lantern"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "sister": "apart",
+            "add": [
+              "familyDeparted",
+              "escortConfirmed",
+              "motherReturned",
+              "marriageRefused",
+              "heroStayed",
+              "friendTogether",
+              "fateGuide"
+            ],
+            "remove": [
+              "boarded",
+              "familyTogether",
+              "missingSister",
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "你先把母亲、姐姐和萨米送到优素福亲自接应的露天货车旁。街口传来莱拉被堵住的消息。你告诉姐姐：“我去接她。封关了就走，不要回头等我。”她反复确认你的话，紧握过你的手才上车。你折返把莱拉拉进侧巷；关卡随即封闭，车已不得不开走。母亲、姐姐与幼弟离了城，你与莱拉留在另一边，父亲仍未获救。"
+        }
+      ]
+    },
+    {
+      "id": "n22",
+      "step": 7,
+      "title": "两个女孩，和一扇还开着的门",
+      "titles": [
+        "两个女孩，和一扇还开着的门"
+      ],
+      "scene": "courtyard",
+      "paragraphs": [
+        "你找到莱拉时，她正护着两个被巡查赶离街口的女孩。法里达让侧门开了一线，屋里只能暂时藏身。你们得先把人带进去。",
+        "家人的车已经走了，父亲仍被囚。莱拉看着你：“先带她们躲进去。然后呢？”你想起那个讲给萨米的火苗故事：接下来是继续找路，还是在门后讲一段长大以后、不必再躲藏的童话？成年童话里的自由不会改变现实中的分别。"
+      ],
+      "sisterLine": "你记着临别时姐姐的话：“你还得活着。帮别人时，也把自己的手牵好。”",
+      "choices": [
+        {
+          "id": "school",
+          "label": "教女孩写下真名，让她们自己讲故事",
+          "detail": "先带她们藏进门里。等脚步远去，再教她们写名字，续讲火苗长大、与女人们一起办学校的成年童话。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:dream_commons"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "sister": "apart",
+            "add": [
+              "familyDeparted",
+              "escortConfirmed",
+              "motherReturned",
+              "marriageRefused",
+              "heroStayed",
+              "friendTogether",
+              "fateCommons",
+              "namesShared"
+            ],
+            "remove": [
+              "boarded",
+              "familyTogether",
+              "missingSister",
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "你和莱拉先把女孩们安顿进受邀请的里间，听她们说出自己的名字，再陪不会写字的孩子画第一笔。母亲、姐姐和萨米已随优素福离城，父亲仍在监所。你续写火苗和许多人一起建城的故事，把学校、市场与议事的长桌放进成年之梦；梦没有让现实家人突然团聚。"
+        },
+        {
+          "id": "father",
+          "label": "挡在女孩身前，让莱拉带她们进门",
+          "detail": "你留下挡住追来的目光，让她们先进去。门合上后，接着讲火苗长大、守护女孩的成年童话。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:dream_guardian"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "sister": "apart",
+            "add": [
+              "familyDeparted",
+              "escortConfirmed",
+              "motherReturned",
+              "marriageRefused",
+              "heroStayed",
+              "friendTogether",
+              "fateGuardian",
+              "girlsProtected"
+            ],
+            "remove": [
+              "boarded",
+              "familyTogether",
+              "missingSister",
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "你挡住侧门，让莱拉先把两个女孩送进里间，再一起把门关上。母亲、姐姐和萨米已随优素福离城，父亲仍在监所。你们躲在门后续写火苗的故事：如果有一天不必再退开，长大的她会怎样守住这条路？故事把时间带到成年，没有替现实的人撤去伤和失散。"
+        },
+        {
+          "id": "send",
+          "label": "牵住莱拉，带女孩们先穿过这条巷子",
+          "detail": "家人的车不再等你。你和莱拉留下相互接应，接着学会怎样带人过路。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:lantern"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "sister": "apart",
+            "add": [
+              "familyDeparted",
+              "escortConfirmed",
+              "motherReturned",
+              "marriageRefused",
+              "heroStayed",
+              "friendTogether",
+              "fateGuide"
+            ],
+            "remove": [
+              "boarded",
+              "familyTogether",
+              "missingSister",
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "你与莱拉把女孩们带到受邀请的里间，自己再退回侧巷找下一条路。优素福的车在封关前带母亲、姐姐和萨米离开；没有人答应你们何时重逢。你没有救出父亲，也没有赶上车，留下的两个人开始一起认路、一起活下去。"
+        }
+      ]
+    },
+    {
+      "id": "n25",
+      "step": 7,
+      "title": "在铁门和战火之间",
+      "titles": [
+        "在铁门和战火之间"
+      ],
+      "scene": "prison",
+      "paragraphs": [
+        "几天过去。哈拉的信仍由阿明收着，你教过的字，他已经能慢慢读出来。父亲的姓名另写在一张纸上。他终于打听到侧门的换岗，约你在炮火间歇时等；这次帮忙仍可能让他丢掉性命。",
+        "姐姐收到了你再次确认的回话，守着法里达的后门。优素福最后一趟车也到了，莱拉却被堵在市场另一头。你现在留在侧门救父，就会错过车；赶回去仍能登车，回头接莱拉则要让家人先走。"
+      ],
+      "sisterLine": "你记着姐姐的叮嘱：“你想起姐姐叮嘱：“把名字说清，别再往武器跟前冲。能回来时就回来，我们会找你。””",
+      "choices": [
+        {
+          "id": "release",
+          "label": "留在侧门，接住阿明带出来的父亲",
+          "detail": "几天的准备等到了这一刻。接父亲上木车，就赶不上舅舅最后一趟车；家人会在后门等你。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:reunited"
+          ],
+          "effect": {
+            "father": "free",
+            "sister": "beside",
+            "stats": {
+              "hope": 3,
+              "health": -1
+            },
+            "add": [
+              "released",
+              "motherReturned",
+              "marriageRefused",
+              "familyTogether",
+              "battle",
+              "relativePressure",
+              "fateRescue"
+            ],
+            "remove": [
+              "missingSister",
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "阿明认出了你教过的字。炮火与调动声中，他负伤把父亲带出侧门，安置到借来的木推车上。父亲平日跛行，需要腋拐支撑，如今添了重伤，暂时不能自己撑拐行走。你握紧车把，朝先前与姐姐约定的门推去。母亲拒绝贾维德的强迫，已带萨米返回，姐姐也守在那里。"
+        },
+        {
+          "id": "letter",
+          "label": "离开北门，赶回去与家人一起登车",
+          "detail": "放弃今天的救父机会，四人随优素福离城；父亲仍留在铁门后。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:caravan"
+          ],
+          "effect": {
+            "outfit": "travel",
+            "sister": "beside",
+            "add": [
+              "caravan",
+              "documents",
+              "registered",
+              "escortConfirmed",
+              "boarded",
+              "familyTogether",
+              "motherReturned",
+              "marriageRefused",
+              "fateDeparture"
+            ],
+            "remove": [
+              "missingSister",
+              "hiddenRisk",
+              "fateGuide",
+              "fateGuardian",
+              "fateCommons"
+            ]
+          },
+          "consequence": "你先回到约定的私院。母亲已经带着姐姐和萨米拒绝贾维德的强迫，优素福本人也赶到了。他核对去向与家人，替母亲找好能坐低的地方。你们四人登上露天后斗货车，握住栏板；父亲仍被关着。莱拉托人说会与熟悉的同伴走另一条路，你们不能保证她也能离开。"
+        },
+        {
+          "id": "leave",
+          "label": "送家人上车，回头去接被堵住的莱拉",
+          "detail": "先明确告诉家人不要等。回头接她，可能让你再也赶不上这趟车。",
+          "declaredNext": "n30",
+          "requires": [],
+          "targets": [
+            "ending:lantern"
+          ],
+          "effect": {
+            "outfit": "worker",
+            "sister": "apart",
+            "add": [
+              "familyDeparted",
+              "escortConfirmed",
+              "motherReturned",
+              "marriageRefused",
+              "heroStayed",
+              "friendTogether",
+              "fateGuide"
+            ],
+            "remove": [
+              "boarded",
+              "familyTogether",
+              "missingSister",
+              "hiddenRisk"
+            ]
+          },
+          "consequence": "你先把母亲、姐姐和萨米送到优素福亲自接应的露天货车旁。街口传来莱拉被堵住的消息。你告诉姐姐：“我去接她。封关了就走，不要回头等我。”她反复确认你的话，紧握过你的手才上车。你折返把莱拉拉进侧巷；关卡随即封闭，车已不得不开走。母亲、姐姐与幼弟离了城，你与莱拉留在另一边，父亲仍未获救。"
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "reunited",
+      "number": "01",
+      "title": "这次，我带你回家",
+      "scene": "road",
+      "summary": "你推着受伤的父亲穿过夜路。姐姐接住另一边车把，母亲与幼弟就在约好的门内。五个人重新聚齐。",
+      "cost": "父亲和阿明仍有重伤；你们错过离城的车，必须在战事中共同照护家人。",
+      "unlockedBy": "选择去北门：先与姐姐约好接应，花几天反复读信、教字，再在换岗时留在侧门接父亲。",
+      "paragraphs": [
+        "木车轮子陷进夜路的浅坑，你用肩膀抵住车把。父亲睁开眼，叫了你的名字。你俯下身：“这次，我带你回家。”他两条腿完整，平日跛行时用的木腋拐收在车边；如今添了重伤，还不能自己撑拐走。",
+        "约定的门开了。姐姐跑来握住另一边车把，母亲牵着萨米让开门槛，伸手摸了摸父亲的脸。你终于重新数到五个人，才发现自己的手一直在抖。姐姐说：“松一点，我接住了。”",
+        "这些天教阿明认妻子哈拉的名字，使他愿意再听父亲的名字；你与姐姐约好的门和时限，让家人没有在炮火里错开。少接的活、分着吃的饼和错过的车，都没有白白消失。你从躲在父亲身旁的孩子，成了能带他过夜路、也肯让家人接手的人。照护与下一顿饭仍要一起面对。"
+      ],
+      "routeCount": 96,
+      "exampleRoute": [
+        {
+          "nodeId": "n01",
+          "choiceId": "work",
+          "label": "蹲下来，帮父亲捡起摊上的东西"
+        },
+        {
+          "nodeId": "n02",
+          "choiceId": "cut",
+          "label": "跟上母亲：“我和你一起去找爸爸。”"
+        },
+        {
+          "nodeId": "n06",
+          "choiceId": "buy",
+          "label": "把剪刀递给姐姐：“你来吧。”"
+        },
+        {
+          "nodeId": "n07",
+          "choiceId": "truth",
+          "label": "跟莱拉去市场，替人送货读信"
+        },
+        {
+          "nodeId": "n09",
+          "choiceId": "verify",
+          "label": "把信还给他，轻声问起父亲"
+        },
+        {
+          "nodeId": "n18",
+          "choiceId": "plan",
+          "label": "和姐姐约好接应，再去北门找阿明"
+        },
+        {
+          "nodeId": "n25",
+          "choiceId": "release",
+          "label": "留在侧门，接住阿明带出来的父亲"
+        }
+      ]
+    },
+    {
+      "id": "caravan",
+      "number": "02",
+      "title": "离城的四个人",
+      "scene": "road",
+      "summary": "你拉住姐姐的手，随母亲与萨米坐进亲舅舅的露天货斗。四个人越过关口，父亲留在铁门后。",
+      "cost": "父亲没有获救，莱拉也没有与你登上同一辆车。离开保住了四个人，没有把留下的人一并救走。",
+      "unlockedBy": "拒绝以姐姐的婚事换路，核实优素福本人接应，最后选择按时与家人一起登车。",
+      "paragraphs": [
+        "车轮碾过碎石，你差一点又站起来。姐姐把你拉低，母亲护住膝边的萨米。没有车窗，也没有遮住所有目光的车厢，只有露天后斗的栏板。优素福在驾驶室里把车开过最后一个关口。",
+        "你回望那座城：“父亲还在里面。”姐姐没有说他很快就会来，只把手握得更紧。母亲没有把她交给贾维德，四个人离开也没有以一桩婚约作交换。莱拉没有跟上这辆车，你还不知道她走没走出侧巷。",
+        "过去你以为，只要再跑快一点，就能把每个人都带上。如今你选择留在车里，承认自己没有救回父亲，也没有跳回去惩罚自己。你开始成为能够决定去向的人；这份决定的痛，要在四个人的新生活里继续承担。"
+      ],
+      "routeCount": 192,
+      "exampleRoute": [
+        {
+          "nodeId": "n01",
+          "choiceId": "work",
+          "label": "蹲下来，帮父亲捡起摊上的东西"
+        },
+        {
+          "nodeId": "n02",
+          "choiceId": "cut",
+          "label": "跟上母亲：“我和你一起去找爸爸。”"
+        },
+        {
+          "nodeId": "n06",
+          "choiceId": "buy",
+          "label": "把剪刀递给姐姐：“你来吧。”"
+        },
+        {
+          "nodeId": "n07",
+          "choiceId": "truth",
+          "label": "跟莱拉去市场，替人送货读信"
+        },
+        {
+          "nodeId": "n09",
+          "choiceId": "verify",
+          "label": "把信还给他，轻声问起父亲"
+        },
+        {
+          "nodeId": "n18",
+          "choiceId": "plan",
+          "label": "和姐姐约好接应，再去北门找阿明"
+        },
+        {
+          "nodeId": "n25",
+          "choiceId": "letter",
+          "label": "离开北门，赶回去与家人一起登车"
+        }
+      ]
+    },
+    {
+      "id": "lantern",
+      "number": "03",
+      "title": "回头的人",
+      "scene": "road",
+      "summary": "你折返接住莱拉，错过家人的车。几年后的原创延展里，你们成为秘密山路上的引路人。",
+      "cost": "母亲、姐姐和幼弟已随舅舅离城；父亲未能救出。你与莱拉留下，重逢没有保证，接应他人也始终危险。",
+      "unlockedBy": "先向家人明确告别、让她们不要等，再选择折返莱拉所在的封锁街巷；与她共同求生。",
+      "paragraphs": [
+        "你告诉姐姐：“我去接莱拉。封关了就走，不要回头等我。”她看着你，确认过这真是你的决定，才松开手。你折返把莱拉拉进侧巷；关卡随即落下，优素福的车已带母亲、姐姐和萨米离城。父亲仍未被救出。",
+        "以下是游戏原创的几年后。你与莱拉已长成年轻女人。山隘里，莱拉守住队尾，你伏低身体，把一个滑到石阶边缘的女孩拉起来。路要绕开巡查，起风就得停，谁也不许拿走在前面的勇敢催后面的人冒险。",
+        "你们从相互找饭、相互留门，走到记住可以落脚的门与山路，把这些路交给仍在躲藏的女孩。母亲和姐姐没有被安排在山口等你，你也没有因此得知父亲获释。你没能把自己的家完整带出来，却不再只是那个等别人告诉自己往哪儿走的孩子。现在有人握住你的手，跟你过这一段路。"
+      ],
+      "routeCount": 288,
+      "exampleRoute": [
+        {
+          "nodeId": "n01",
+          "choiceId": "work",
+          "label": "蹲下来，帮父亲捡起摊上的东西"
+        },
+        {
+          "nodeId": "n02",
+          "choiceId": "cut",
+          "label": "跟上母亲：“我和你一起去找爸爸。”"
+        },
+        {
+          "nodeId": "n06",
+          "choiceId": "buy",
+          "label": "把剪刀递给姐姐：“你来吧。”"
+        },
+        {
+          "nodeId": "n07",
+          "choiceId": "truth",
+          "label": "跟莱拉去市场，替人送货读信"
+        },
+        {
+          "nodeId": "n09",
+          "choiceId": "verify",
+          "label": "把信还给他，轻声问起父亲"
+        },
+        {
+          "nodeId": "n18",
+          "choiceId": "plan",
+          "label": "和姐姐约好接应，再去北门找阿明"
+        },
+        {
+          "nodeId": "n25",
+          "choiceId": "leave",
+          "label": "送家人上车，回头去接被堵住的莱拉"
+        }
+      ]
+    },
+    {
+      "id": "dream_commons",
+      "number": "05",
+      "title": "没有锁的明天",
+      "scene": "courtyard",
+      "dream": true,
+      "summary": "成年童话：姐姐打开学校，莱拉经营铺子，你与女人们建立议事庭。女孩可以当街写下自己的真名。",
+      "cost": "现实中，母亲、姐姐与幼弟已离城，父亲仍被囚，你与莱拉留在城里；梦中的团聚与自由没有被当作已经发生的历史。",
+      "unlockedBy": "告诉家人不要等，回头找到莱拉；带女孩进门，陪她们写下真名，再续讲一起办学校的成年童话。",
+      "paragraphs": [
+        "门关上以后，一个女孩仍只肯说她借来的男孩名字。你先说出自己的真名，等她慢慢开口，再陪她画下不会写的第一笔。莱拉坐在另一边，问她长大想做什么。家人已经离城，父亲仍被囚，你们没有得到一所学校；那段一起办学校的成年童话，就从这张小纸上开始。",
+        "明确的成年梦境里，姐姐把教室的门推开，莱拉翻起自己铺前的木牌。你坐在公共庭院的长桌旁，一个女人站起来说：“我不同意。”你把已经抬起的手放下，让出说话的位置：“把你的办法说完。”窗外买卖没有停，女孩在自己的本子上写真名。",
+        "学校、市场和议事庭由这里的女性共同建设；她们决定自己的教育、经营与生活，男性来访须经共同许可。你从替别人读出名字的人，成为让每个人都能认写、讲述自己的人，也建设了一个连自己都不能独占答案的地方。"
+      ],
+      "routeCount": 96,
+      "exampleRoute": [
+        {
+          "nodeId": "n01",
+          "choiceId": "work",
+          "label": "蹲下来，帮父亲捡起摊上的东西"
+        },
+        {
+          "nodeId": "n02",
+          "choiceId": "cut",
+          "label": "跟上母亲：“我和你一起去找爸爸。”"
+        },
+        {
+          "nodeId": "n06",
+          "choiceId": "buy",
+          "label": "把剪刀递给姐姐：“你来吧。”"
+        },
+        {
+          "nodeId": "n07",
+          "choiceId": "truth",
+          "label": "跟莱拉去市场，替人送货读信"
+        },
+        {
+          "nodeId": "n09",
+          "choiceId": "verify",
+          "label": "把信还给他，轻声问起父亲"
+        },
+        {
+          "nodeId": "n18",
+          "choiceId": "rush",
+          "label": "告诉家人别等我，回街上找莱拉"
+        },
+        {
+          "nodeId": "n22",
+          "choiceId": "school",
+          "label": "教女孩写下真名，让她们自己讲故事"
+        }
+      ]
+    },
+    {
+      "id": "dream_guardian",
+      "number": "04",
+      "title": "守护之地",
+      "scene": "courtyard",
+      "dream": true,
+      "summary": "成年童话：你成为全女性卫队的首领，守住女性自己决定生活的土地，让女孩从你身后走向学校。",
+      "cost": "现实中，母亲、姐姐与幼弟随舅舅离城，父亲未获救，你与莱拉仍留在城里；成年梦境没有改写这些事实。",
+      "unlockedBy": "告诉家人不要等，回头找到莱拉；挡在女孩身前，让她先送人进门，再续讲火苗守护女孩的成年童话。",
+      "paragraphs": [
+        "母亲挨打时，你只能扶着她往后退。这次你在侧门前挡住追来的目光，让莱拉先把受困的女孩带进去，再一起关上门。家人的车已经走了，父亲仍在监所。门后，你们把火苗的故事讲下去：如果长大以后，她有力量让女孩不必再退开呢？",
+        "明确的成年梦境里，山口传来急报。你已经是全女性卫队的首领，抬手示意队伍守住石墙。擅自逼近的武装者停下，最后一队女孩从你身后走向开着门的学校。你没有追着威胁跑下山，先确认女孩已经通过。",
+        "女性可以受教育、经营铺子、自由长大。男性未经这里女性共同许可，不得踏入领土。你把守门的位置交给下一班女性：“守住路，让她们长大。”你拥有指挥的力量，也接受这里女性共同制定的规则；这片土地无需依赖你永不疲惫才能存在。"
+      ],
+      "routeCount": 96,
+      "exampleRoute": [
+        {
+          "nodeId": "n01",
+          "choiceId": "work",
+          "label": "蹲下来，帮父亲捡起摊上的东西"
+        },
+        {
+          "nodeId": "n02",
+          "choiceId": "cut",
+          "label": "跟上母亲：“我和你一起去找爸爸。”"
+        },
+        {
+          "nodeId": "n06",
+          "choiceId": "buy",
+          "label": "把剪刀递给姐姐：“你来吧。”"
+        },
+        {
+          "nodeId": "n07",
+          "choiceId": "truth",
+          "label": "跟莱拉去市场，替人送货读信"
+        },
+        {
+          "nodeId": "n09",
+          "choiceId": "verify",
+          "label": "把信还给他，轻声问起父亲"
+        },
+        {
+          "nodeId": "n18",
+          "choiceId": "rush",
+          "label": "告诉家人别等我，回街上找莱拉"
+        },
+        {
+          "nodeId": "n22",
+          "choiceId": "father",
+          "label": "挡在女孩身前，让莱拉带她们进门"
+        }
+      ]
+    }
+  ]
+}
