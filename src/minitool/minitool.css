@@ -1,0 +1,23 @@
+/* Container overrides. The story and colour artwork share the web game's UI. */
+:root{--safe-area-inset-top:0px;--safe-area-inset-right:0px;--safe-area-inset-bottom:0px;--safe-area-inset-left:0px;--minitool-toolbar-top:var(--safe-area-inset-top,0px);--glass:rgba(17,17,17,.92)}
+html,body,#root{min-height:100%;width:100%}
+body{-webkit-text-size-adjust:100%;-webkit-user-select:none;user-select:none}
+button,a,summary{touch-action:manipulation}
+button:focus,a:focus,summary:focus,textarea:focus{outline:2px solid #fff;outline-offset:3px}
+.story-hud{padding-top:calc(20px + var(--minitool-toolbar-top,0px));padding-left:calc(20px + var(--safe-area-inset-left,0px));padding-right:calc(20px + var(--safe-area-inset-right,0px))}
+.story-sheet{max-height:calc(var(--app-height,100vh) - 40px - var(--safe-area-inset-top,0px) - var(--safe-area-inset-bottom,0px));min-height:0}
+.story-sheet:not([open]){display:none}
+.story-sheet.dialog-fallback[open]{position:fixed;left:0;right:0;top:calc(20px + var(--minitool-toolbar-top,0px));bottom:auto;margin:auto;z-index:100;box-shadow:0 0 0 100vmax rgba(0,0,0,.65)}
+.story-export-text{display:block;width:100%;height:45vh;min-height:180px;padding:14px;border:1px solid #ffffff50;border-radius:5px;background:#111;color:#eee;font:13px/1.8 var(--sans);resize:vertical;-webkit-user-select:text;user-select:text;white-space:pre-wrap}
+.no-aspect-ratio .narrative-actor{transition:none!important}
+.no-aspect-ratio .tale-halo{height:55vw;max-height:720px}
+.no-flex-gap .text-button svg{margin-right:8px}
+.no-flex-gap .continue-button svg,.no-flex-gap .begin-button svg{margin-left:10px}
+@supports ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){:root{--glass:rgba(17,17,17,.74)}}
+@supports (padding:env(safe-area-inset-top)){
+ :root{--safe-area-inset-top:env(safe-area-inset-top,0px);--safe-area-inset-right:env(safe-area-inset-right,0px);--safe-area-inset-bottom:env(safe-area-inset-bottom,0px);--safe-area-inset-left:env(safe-area-inset-left,0px)}
+}
+@media(max-width:760px){.story-hud{padding-top:calc(14px + var(--minitool-toolbar-top,0px))}.no-aspect-ratio .tale-halo{height:90vw}.story-sheet.dialog-fallback[open]{top:calc(12px + var(--minitool-toolbar-top,0px))}}
+@media(max-height:560px) and (orientation:landscape){.story-hud{padding-top:calc(10px + var(--minitool-toolbar-top,0px))}}
+
+.minitool-image-retry{position:fixed;left:50%;top:calc(70px + var(--minitool-toolbar-top,0px));transform:translateX(-50%);z-index:110;max-width:calc(100% - 40px);min-height:40px;padding:8px 14px;border:1px solid #ffffff50;border-radius:8px;background:rgba(20,20,20,.94);color:#eee;font:12px/1.6 var(--sans);text-align:center}

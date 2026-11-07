@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, BookOpen, Feather, LockKeyhole, MoonStar, RotateCcw } from 'lucide-react';
+import { ArrowRight, BookOpen, LockKeyhole, MoonStar, RotateCcw } from 'lucide-react';
 import { getChoices, type BranchState } from '@/lib/branch-story';
 import { getSceneEncounter } from '@/lib/scene-encounter';
 import './scene-encounter.css';
@@ -9,14 +9,13 @@ type Props = {
   state: BranchState;
   onChoose: (choiceId: string) => void;
   onRead: () => void;
-  onCompose: () => void;
   onDream?: () => void;
   onReplay?: () => void;
   reducedMotion: boolean;
 };
 
 /** Every visible option is a story branch. No preparation or arithmetic gates. */
-export default function SceneEncounter({ state, onChoose, onRead, onCompose, onDream, onReplay, reducedMotion }: Props) {
+export default function SceneEncounter({ state, onChoose, onRead, onDream, onReplay, reducedMotion }: Props) {
   const closing = state.nodeId === 'n30';
   const choices = getChoices(state).filter(choice => state.storyRevision === 5 || closing || !choice.id.startsWith('dream_'));
   const encounter = getSceneEncounter(state);
@@ -30,7 +29,7 @@ export default function SceneEncounter({ state, onChoose, onRead, onCompose, onD
           {choice.enabled && <ArrowRight size={16} aria-hidden="true"/>}
         </button></li>)}
       </ol>
-      <div className="encounter-footer"><button className="encounter-tool" onClick={onCompose}><Feather size={14}/>写自己的决定</button>{onReplay && <button className="encounter-tool" onClick={onReplay}><RotateCcw size={13}/>重看这一幕</button>}{onDream && state.storyRevision !== 5 && !closing && <button className="encounter-tool" onClick={onDream}><MoonStar size={14}/>做一个梦</button>}</div>
+      <div className="encounter-footer">{onReplay && <button className="encounter-tool" onClick={onReplay}><RotateCcw size={13}/>重看这一幕</button>}{onDream && state.storyRevision !== 5 && !closing && <button className="encounter-tool" onClick={onDream}><MoonStar size={14}/>做一个梦</button>}</div>
     </div>
   </section>;
 }

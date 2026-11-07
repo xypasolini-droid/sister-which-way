@@ -29,6 +29,21 @@ function explore() {
 const explored = explore();
 
 describe('seven decisions and five genuinely different fates', () => {
+  it('keeps every fate discoverable from all 96 early routes through the visible later actions', () => {
+    expect(explored.states).toHaveLength(1210);
+    expect(explored.terminal).toHaveLength(768);
+    const counts = Object.fromEntries(ENDINGS.map(ending => [ending.id, explored.terminal.filter(state => state.endingId === ending.id).length]));
+    expect(counts).toEqual({ reunited: 96, caravan: 192, lantern: 288, dream_guardian: 96, dream_commons: 96 });
+  });
+  it('starts with a child’s immediate response, never asking her to identify or record her persecutor', () => {
+    const state = createInitialState('short');
+    const node = getNode(state), encounter = getSceneEncounter(state);
+    expect(node.title).toBe(encounter.title);
+    expect(encounter.points.map(point => point.label)).toEqual(getChoices(state).map(choice => choice.label));
+    const text = [encounter.goal, ...node.choices.flatMap(choice => [choice.label, choice.detail, choice.consequence])].join('');
+    expect(text).not.toMatch(/留下见证|记下.*名字|保住.*线索|请熟客记住/);
+    expect(node.choices.map(choice => choice.label)).toEqual(['蹲下来，帮父亲捡起摊上的东西', '看向卖饼的熟人：“能帮帮我们吗？”', '靠近父亲，小声问：“是我的错吗？”']);
+  });
   it('settles every legal route on its seventh chosen action, without an eighth next button', () => {
     expect(ENDINGS).toHaveLength(5);
     expect([...new Set(explored.terminal.map(state => state.endingId))].sort()).toEqual(ENDINGS.map(ending => ending.id).sort());
@@ -69,41 +84,58 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(getEnding(turningBack)!.paragraphs.join('')).toContain('几年后');
     expect(before.endingId).toBeNull();
   });
-  it('makes the early sister promise and repeated literacy visits independently necessary for rescue', () => {
-    const bonded = play(['work','sew','buy','truth','courier','plan']);
-    const noPromise = play(['work','cut','buy','truth','courier','plan']);
-    const noLessons = play(['work','sew','buy','truth','verify','plan']);
-    expect(getChoices(bonded).find(choice => choice.id === 'release')!.enabled).toBe(true);
-    for (const state of [noPromise, noLessons]) {
-      expect(getChoices(state).find(choice => choice.id === 'release')!.enabled).toBe(false);
-      expect(choose(state, 'release')).toBeNull();
+  it('lets every prior route choose the costly, performed preparation before rescue', () => {
+    const waiting = explored.states.filter(state => state.nodeId === 'n25');
+    expect(waiting).toHaveLength(96);
+    for (const state of waiting) {
+      expect(state.flags).toEqual(expect.arrayContaining(['pact', 'guardKnown', 'guardBond', 'rescuePrepared']));
+      expect(getChoices(state).find(choice => choice.id === 'release')!.enabled).toBe(true);
+      const preparation = state.history.at(-1)!.consequence;
+      expect(preparation).toContain('几次');
+      expect(preparation).toContain('少接了许多活');
+      expect(preparation).toContain('错过较早的离城车');
+      expect(preparation).toContain('最后一趟');
+      expect(getNode(state).paragraphs.join('')).toContain('几天过去');
+      expect(getSceneDialogue(state).map(line => line.text).join('')).not.toMatch(/没答应|晚了一步|补送消息/);
+      expect(choose(state, 'release')!.state.endingId).toBe('reunited');
       expect(choose(state, 'letter')!.state.endingId).toBe('caravan');
       expect(choose(state, 'leave')!.state.endingId).toBe('lantern');
     }
-    const rescued = choose(bonded, 'release')!.state;
+    const rescued = play(SHORT_ENDING_TEST_ROUTES.reunited);
     expect(rescued.father).toBe('free');
     expect(rescued.flags).toContain('familyTogether');
     expect(rescued.history.at(-1)!.consequence).toMatch(/跛行，需要腋拐支撑/);
-    expect(rescued.history.at(-1)!.consequence).toContain('木推车');
     expect(rescued.flags).not.toContain('boarded');
   });
-  it('does not let a late decision magically repair an earlier broken promise', () => {
-    const afterSilence = play(['work','sew','buy','pact','secret']);
+  it('repairs an earlier silence through a shown return and several visits, rather than an invisible flag', () => {
+    const afterSilence = play(['work','cut','buy','pact','secret']);
     expect(afterSilence.flags).not.toContain('pact');
+    expect(afterSilence.flags).not.toContain('guardBond');
     const atNorthGate = choose(afterSilence, 'plan')!.state;
-    expect(atNorthGate.flags).not.toContain('pact');
-    expect(atNorthGate.history.at(-1)!.consequence).toContain('错过');
+    expect(atNorthGate.flags).toEqual(expect.arrayContaining(['pact', 'guardBond', 'rescuePrepared']));
+    expect(atNorthGate.history.at(-1)!.consequence).toContain('补上此前没有守住的约定');
+    expect(atNorthGate.history.at(-1)!.consequence).toContain('几次往来以后');
+    expect(atNorthGate.history.at(-1)!.consequence).toContain('另一张纸');
+    expect(atNorthGate.history.at(-1)!.consequence).not.toMatch(/一次请求|拿信换/);
   });
-  it('unlocks the two adult dreams through different earlier actions, never through an arbitrary last menu', () => {
-    const protection = play(['work','cut','buy','hide','wage','rush']);
-    const records = play(['neighbor','cut','buy','hide','ledger','rush']);
-    expect(getChoices(protection).find(choice => choice.id === 'father')!.enabled).toBe(true);
-    expect(getChoices(protection).find(choice => choice.id === 'school')!.enabled).toBe(false);
-    expect(getChoices(records).find(choice => choice.id === 'father')!.enabled).toBe(false);
-    expect(getChoices(records).find(choice => choice.id === 'school')!.enabled).toBe(true);
-    expect(choose(protection, 'father')!.state.endingId).toBe('dream_guardian');
-    expect(choose(records, 'school')!.state.endingId).toBe('dream_commons');
-    for (const state of [protection, records]) expect(getChoices(state).find(choice => choice.id === 'send')!.enabled).toBe(true);
+  it('offers three distinct present actions at every alley arrival without a hidden early morality gate', () => {
+    const arrivals = explored.states.filter(state => state.nodeId === 'n22');
+    expect(arrivals).toHaveLength(96);
+    for (const state of arrivals) {
+      const actions = getChoices(state);
+      expect(actions.map(choice => choice.id)).toEqual(['school', 'father', 'send']);
+      expect(actions.every(choice => choice.enabled)).toBe(true);
+      const escort = choose(state, 'send')!.state;
+      const guard = choose(state, 'father')!.state;
+      const teacher = choose(state, 'school')!.state;
+      expect(escort.endingId).toBe('lantern');
+      expect(guard.endingId).toBe('dream_guardian');
+      expect(teacher.endingId).toBe('dream_commons');
+      expect(guard.flags).toContain('girlsProtected');
+      expect(teacher.flags).toContain('namesShared');
+      expect(getEnding(guard)!.dream).toBe(true);
+      expect(getEnding(teacher)!.dream).toBe(true);
+    }
   });
   it('preserves the real family departure, father’s captivity and injuries inside both dream endings', () => {
     for (const id of ['dream_guardian', 'dream_commons']) {
@@ -163,15 +195,14 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(choose(alley,'father')!.state.flags).toContain('girlsProtected');
     expect(choose(alley,'school')!.state.flags).toContain('namesShared');
   });
-  it('lets the market witness lead to the building dream without inventing literacy lessons or a care visit', () => {
-    const dream = play(['neighbor','cut','buy','hide','wage','rush','school']);
+  it('starts the building dream with the current lesson without inventing earlier records or care', () => {
+    const dream = play(['mother','cut','buy','pact','secret','rush','school']);
     expect(dream.endingId).toBe('dream_commons');
-    expect(dream.flags).toContain('recordPractice');
-    expect(dream.flags).not.toContain('literacyPractice');
-    expect(dream.flags).not.toContain('carePractice');
+    for (const flag of ['recordPractice','literacyPractice','carePractice']) expect(dream.flags).not.toContain(flag);
+    expect(dream.flags).toContain('namesShared');
     const text = getEnding(dream)!.paragraphs.join('');
-    expect(text).toContain('让一段遭遇被记住');
-    expect(text).not.toMatch(/你曾陪阿明|获准留下被扣报酬的记录|接过姐姐的水盆/);
+    expect(text).toContain('再陪她画下不会写的第一笔');
+    expect(text).not.toMatch(/你曾陪阿明|获准留下被扣报酬的记录|接过姐姐的水盆|你曾选择让一段遭遇被记住/);
   });
   it('knows the heroine is back beside the truck and is grown in the mountain ending', () => {
     const truck = play(SHORT_ENDING_TEST_ROUTES.caravan.slice(0,-1));
@@ -190,7 +221,7 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(validateBranchState({...state, edition:undefined})).toBeNull();
   });
   it('keeps completed old stories explicitly archived rather than pretending the new mountain story happened', () => {
-    const initial = createInitialState('short'); delete initial.storyRevision;
+    const initial = createInitialState('short'); delete initial.storyRevision; delete initial.storyContentRevision;
     const old = play(['work','sew','buy','pact','care','rush','school','live'], initial);
     expect(old.storyRevision).toBeUndefined();
     const restored = validateBranchState(old)!;
@@ -201,28 +232,58 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(getEnding(restored)!.paragraphs.join('')).not.toContain('秘密山路');
   });
   it('does not reinterpret an old wage-taking action as consenting to physical confrontation', () => {
-    const initial = createInitialState('short'); delete initial.storyRevision;
+    const initial = createInitialState('short'); delete initial.storyRevision; delete initial.storyContentRevision;
     const old = play(['neighbor','sew','buy','hide','wage'], initial);
     expect(old.history).toHaveLength(5);
     const restored = validateBranchState(old)!;
-    expect(restored.nodeId).toBe('n10');
-    expect(restored.history).toHaveLength(4);
+    expect(restored.nodeId).toBe('n01');
+    expect(restored.history).toHaveLength(0);
     expect(restored.flags).not.toContain('workerProtected');
     expect(restored.flags).not.toContain('protectedSomeone');
   });
   it('migrates active old short saves without consenting to newly changed late choices', () => {
-    const initial = createInitialState('short'); delete initial.storyRevision;
+    const initial = createInitialState('short'); delete initial.storyRevision; delete initial.storyContentRevision;
     const early = play(['work','sew'], initial);
     const migratedEarly = validateBranchState(early)!;
-    expect(migratedEarly.nodeId).toBe('n06');
-    expect(migratedEarly.history.map(step=>step.choiceId)).toEqual(['work','sew']);
+    expect(migratedEarly.nodeId).toBe('n01');
+    expect(migratedEarly.history).toHaveLength(0);
     expect(migratedEarly.storyRevision).toBe(5);
     const late = play(['work','sew','buy','pact','care','rush','school'], initial);
     const migratedLate = validateBranchState(late)!;
-    expect(migratedLate.nodeId).toBe('n18');
-    expect(migratedLate.history).toHaveLength(5);
+    expect(migratedLate.nodeId).toBe('n01');
+    expect(migratedLate.history).toHaveLength(0);
     expect(migratedLate.endingId).toBeNull();
     expect(migratedLate.flags).not.toContain('familyDeparted');
     expect(getChoices(migratedLate).some(choice=>choice.enabled)).toBe(true);
+  });
+  it('authenticates and preserves completed 0.5.0 revision-five fates without counting them as current content', () => {
+    const initial = createInitialState('short'); delete initial.storyContentRevision;
+    for (const route of [
+      ['work','sew','buy','truth','courier','plan','release'],
+      ['work','sew','buy','pact','care','find','register'],
+      ['work','sew','buy','pact','care','find','child'],
+      ['work','sew','buy','pact','care','rush','father'],
+      ['neighbor','sew','buy','truth','courier','rush','school'],
+    ]) {
+      const old = play(route, initial);
+      const restored = validateBranchState(old)!;
+      expect(restored).toEqual(old);
+      expect(restored.storyContentRevision).toBeUndefined();
+      expect(getEnding(restored)!.title).toContain('旧版结局');
+      expect(restored.endingId).toBe(old.endingId);
+      expect(validateBranchState({ ...old, stats: { ...old.stats, coins: 99 } })).toBeNull();
+      expect(validateBranchState({ ...old, storyContentRevision: 6 })).toBeNull();
+    }
+  });
+  it('never treats an old unprepared north-gate choice as consent to the new multi-day preparation', () => {
+    const initial = createInitialState('short'); delete initial.storyContentRevision;
+    const old = play(['work','cut','buy','pact','secret','plan'], initial);
+    expect(getChoices(old).find(choice => choice.id === 'release')!.enabled).toBe(false);
+    const restored = validateBranchState(old)!;
+    expect(restored.nodeId).toBe('n01');
+    expect(restored.storyContentRevision).toBe(6);
+    expect(restored.history).toHaveLength(0);
+    expect(restored.flags).not.toContain('rescuePrepared');
+    expect(validateBranchState(restored)).toEqual(restored);
   });
 });

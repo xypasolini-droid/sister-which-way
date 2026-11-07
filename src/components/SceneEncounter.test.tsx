@@ -7,7 +7,7 @@ vi.mock('@/lib/scene-encounter', () => import('../lib/scene-encounter'));
 import SceneEncounter from './SceneEncounter';
 
 const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#x27;');
-const render = (state: BranchState) => renderToStaticMarkup(<SceneEncounter state={state} onChoose={() => {}} onRead={() => {}} onCompose={() => {}} onDream={() => {}} onReplay={() => {}} reducedMotion={true}/>);
+const render = (state: BranchState) => renderToStaticMarkup(<SceneEncounter state={state} onChoose={() => {}} onRead={() => {}} onDream={() => {}} onReplay={() => {}} reducedMotion={true}/>);
 const reach = (nodeId: string) => NODE_TEST_ROUTES[nodeId].reduce((state, id) => choose(state, id)!.state, createInitialState());
 
 describe('direct single-choice story interface', () => {
@@ -40,7 +40,7 @@ describe('direct single-choice story interface', () => {
       expect(html).not.toMatch(/<(?:input|textarea|select)\b|role="checkbox"|aria-pressed|data-pack-item/);
       expect(html).not.toMatch(/encounter-(?:packing|wage|items|confirm|go)/);
       expect(html).not.toMatch(/选择下一步|确认选择|直接决定|应付工钱|4 件|每件 2 枚/);
-      expect(html).toContain('写自己的决定');
+      expect(html).not.toMatch(/写自己的决定|写下我的决定|decision-form/);
       expect(html).toContain('听他们说');
       expect(html).toContain('重看这一幕');
       if (nodeId === 'n30') {

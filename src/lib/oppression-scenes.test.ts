@@ -100,10 +100,10 @@ describe('automatic scenes of coercion', () => {
     expect(shots[2].caption).toMatch(/拒绝强迫带离/);
   });
 
-  it('makes Amin’s willingness depend on prior contact without opening the rescue gate', () => {
+  it('keeps the archived unprepared refusal separate from the current prepared rescue', () => {
     const bonded = shortRoute(['work', 'sew', 'buy', 'truth', 'courier', 'plan']);
     expect(bonded.nodeId).toBe('n25');
-    const unbonded = { ...bonded, flags: bonded.flags.filter(flag => flag !== 'guardBond') };
+    const unbonded = { ...bonded, storyContentRevision: undefined, flags: bonded.flags.filter(flag => flag !== 'guardBond') };
     const refusal = getOppressionShots(unbonded);
     const signal = getOppressionShots(bonded);
     expect(refusal.map(shot => shot.visual)).toEqual(['prison-gunfire', 'prison-shelter', 'prison-signal']);
@@ -119,8 +119,10 @@ describe('automatic scenes of coercion', () => {
     expect(unbonded.father).not.toBe('free');
   });
 
-  it('does not promise rescue after a late message misses the side-gate window', () => {
-    const late = shortRoute(['work', 'cut', 'buy', 'truth', 'courier', 'plan']);
+  it('preserves an old missed window while the new route visibly prepares its own opportunity', () => {
+    const initial = createInitialState('short'); delete initial.storyContentRevision;
+    const route = ['work', 'cut', 'buy', 'truth', 'courier', 'plan'];
+    const late = route.reduce((state, id) => choose(state, id)!.state, initial);
     expect(late.flags).toContain('guardBond');
     expect(late.flags).not.toContain('pact');
     const last = getOppressionShots(late).at(-1)!;
@@ -128,8 +130,11 @@ describe('automatic scenes of coercion', () => {
     expect(last.caption).toContain('错过');
     expect(`${last.line}${last.caption}`).not.toContain('进去找他');
     expect(getChoices(late).find(choice => choice.id === 'release')!.enabled).toBe(false);
-    const old = { ...late, storyRevision: undefined };
-    expect(getOppressionShots(old).at(-1)!.line).toContain('进去找他');
+    const current = shortRoute(route);
+    expect(current.flags).toContain('rescuePrepared');
+    expect(current.flags).toContain('pact');
+    expect(getOppressionShots(current).at(-1)!.line).toContain('进去找他');
+    expect(getChoices(current).find(choice => choice.id === 'release')!.enabled).toBe(true);
   });
 
   it('labels the relative scene as earlier before the new truck-side reunion', () => {
@@ -157,15 +162,15 @@ describe('automatic scenes of coercion', () => {
     expect(state.history).toHaveLength(2);
   });
 
-  it('removes arithmetic and records physical protection or an authorised record', () => {
+  it('offers immediate physical help or opening the door without arithmetic or bookkeeping', () => {
     const state = shortRoute(['work', 'sew', 'buy', 'hide']);
     expect(state.nodeId).toBe('n10');
     const choices = getNode(state).choices;
     const ledger = choices.find(choice => choice.id === 'ledger')!;
     const wage = choices.find(choice => choice.id === 'wage')!;
-    expect(ledger.label).toMatch(/征求.*同意.*记录/);
+    expect(ledger.label).toContain('拉开后门，叫莱拉');
     expect(`${ledger.label}${ledger.detail}${ledger.consequence}`).not.toMatch(/核算|核账|算出|乘|四件|八枚/);
-    expect(wage.label).toContain('挡到女工身前');
+    expect(wage.label).toContain('扶住被推的女工');
     expect(wage.effect!.add).toContain('protectedSomeone');
     for (const choice of [ledger, wage]) {
       expect(choice.requires).toEqual([]);
@@ -173,7 +178,8 @@ describe('automatic scenes of coercion', () => {
       const result = choose(state, choice.id);
       expect(result?.state.nodeId).toBe('n18');
     }
-    expect(ledger.effect!.add).toContain('recordPractice');
+    expect(ledger.effect!.add).toContain('workerHelped');
+    expect(ledger.effect!.add).not.toContain('evidence');
     expect(wage.effect!.add).not.toContain('paid');
     expect(wage.effect!.stats!.coins).toBe(-1);
   });

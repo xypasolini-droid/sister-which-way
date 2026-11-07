@@ -28,7 +28,7 @@ export function endingEcho(state: BranchState): string {
     return `旧版记录：${moment.echo}`;
   }
   if (final?.startsWith('dream_')) return getDreamEndingPresentation(state).echo;
-  if (final === 'reunited') return '早先的姐妹联络与几次教字，分别保住了接应的门与愿意开侧门的人。';
+  if (final === 'reunited') return '和姐姐约接应、花几天读信教字，再留在侧门等人；你为救父放下日工和离城车，家人也承担了等待。';
   if (final === 'caravan') return '你选择按时上车，四个人离城；父亲和没有登车的莱拉没有被一句团圆补进画面。';
   return getStayEndingPresentation(state).echo;
 }

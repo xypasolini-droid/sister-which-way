@@ -1,13 +1,15 @@
 {
   "name": "sister-which-way",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3000",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1 --port 3000",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:minitool": "node scripts/build-minitool.mjs",
+    "check:minitool": "node scripts/validate-minitool.mjs dist/minitool"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.85",
@@ -24,6 +26,10 @@
     "@types/node": "^25.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "esbuild": "^0.28.2",
+    "lightningcss": "1.33.0",
+    "postcss": "8.5.23",
+    "sharp": "0.35.5",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },

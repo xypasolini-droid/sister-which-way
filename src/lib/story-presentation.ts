@@ -19,13 +19,14 @@ export const MAX_SUBTITLE_CHARACTERS = 40;
 /** A node id or step count alone cannot distinguish converging branches. */
 export function storyPresentationKey(state: BranchState): string {
   const path = state.history.map(step => `${step.nodeId}:${step.choiceId}`).join('>');
-  return `v${state.version}${state.edition === 'short' ? '-short' : ''}-r${state.storyRevision ?? 'legacy'}|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
+  return `v${state.version}${state.edition === 'short' ? '-short' : ''}-r${state.storyRevision ?? 'legacy'}-c${state.storyContentRevision ?? 'legacy'}|${path}|${state.nodeId}|${state.endingId ?? 'open'}`;
 }
 
 /** Physical presence is separate from the long-term relationship stored by the engine. */
-export function getCompanionStatus(state: Pick<BranchState, 'nodeId' | 'endingId' | 'sister' | 'storyRevision'> & { stats: Pick<BranchState['stats'], 'trust'> }): CompanionStatus {
+export function getCompanionStatus(state: Pick<BranchState, 'nodeId' | 'endingId' | 'sister' | 'storyRevision' | 'storyContentRevision'> & { stats: Pick<BranchState['stats'], 'trust'> }): CompanionStatus {
   const injured = state.sister === 'injured';
   const tone = state.stats.trust <= 3 ? 'guarded' : state.stats.trust >= 7 ? 'warm' : 'neutral';
+  if (state.storyContentRevision === 6 && state.nodeId === 'n18') return { presence: 'present', label: '你已回到法里达的里间，母亲、姐姐和幼弟都在。', speaker: '玛莉安', injured, tone };
   if (state.storyRevision === 5 && state.nodeId === 'n21') return { presence: 'present', label: '母亲拒绝强迫后，你已回到姐姐和舅舅的车旁。', speaker: '玛莉安', injured, tone };
   if (state.storyRevision === 5 && state.sister === 'apart' && ['n22', 'n30'].includes(state.nodeId)) return { presence: 'apart', label: '姐姐、母亲与幼弟已随舅舅离城。你与莱拉留在封锁的另一边。', speaker: '姐姐临别的话', injured, tone };
   if (state.nodeId === 'n21' && !state.endingId) {

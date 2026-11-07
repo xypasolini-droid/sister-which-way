@@ -4,6 +4,8 @@ node_modules/
 !.env.example
 *.tsbuildinfo
 coverage/
+dist/
+.minitool-build/
 
 .DS_Store
 *.log

@@ -21,11 +21,11 @@ describe('five growth endings remember the actions that caused them',()=>{
     expect(endingEcho(state)).toContain('折返接住莱拉');
     expect(endingEcho(state)).not.toMatch(/课堂|一小时|暂借/);
   });
-  it('anchors the adult commander and builder in distinct performed earlier work',()=>{
+  it('anchors the adult commander and builder in their distinct performed present actions',()=>{
     const guardian=play(SHORT_ENDING_TEST_ROUTES.dream_guardian,true);
     const commons=play(SHORT_ENDING_TEST_ROUTES.dream_commons,true);
-    expect(endingEcho(guardian)).toContain('真正保护过别人');
-    expect(endingEcho(commons)).toContain('留住见证、记下遭遇、教字或共担照护');
+    expect(endingEcho(guardian)).toContain('挡在女孩身前');
+    expect(endingEcho(commons)).toContain('陪女孩写下她自己的名字');
     expect(endingEcho(guardian)).toContain('现实');
     expect(endingEcho(commons)).toContain('现实');
   });
@@ -43,7 +43,7 @@ describe('five growth endings remember the actions that caused them',()=>{
     expect(endingEcho(state)).not.toContain('走出城');
   });
   it('keeps an authentic finished old short story archived without inventing the new third ending',()=>{
-    const initial=createInitialState('short');delete initial.storyRevision;
+    const initial=createInitialState('short');delete initial.storyRevision; delete initial.storyContentRevision;
     const state=['work','sew','buy','truth','courier','rush','father','live'].reduce((current,id)=>choose(current,id)!.state,initial);
     const restored=validateBranchState(state)!;
     expect(restored).not.toBeNull();

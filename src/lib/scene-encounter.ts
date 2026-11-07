@@ -172,9 +172,21 @@ const SHORT_SCENES: Partial<Record<string, SceneSpec>> = {
 
 export function getSceneEncounter(state: BranchState): SceneEncounterData {
   const node = getNode(state);
-  if (state.storyRevision === 5 && ['n10', 'n18', 'n21', 'n22', 'n25', 'n30'].includes(state.nodeId)) return {
+  if (state.storyContentRevision === 6) return {
     title: node.title,
-    goal: state.endingId ? '这一程的行动已经改变了你和家人的去向。' : node.id === 'n22' ? '家人的车已经出发。护住眼前的人，或续写有来处的成年童话。' : node.id === 'n25' ? '读字往来和早先的接应约定，决定侧门能否打开；别的路仍要放下另一些人。' : node.id === 'n21' ? '家人的车与被堵住的莱拉，只能先赶向一边。' : node.id === 'n10' ? '老板推搡女工。你要护她退出，还是获准留下记录？' : '封关正在逼近。先前做过的事，会决定接下来的路。',
+    goal: state.endingId ? '这段路走完了。你还记得，自己先握住了谁的手。' : ({
+      n01: '年轻巡查举棍拦摊，父亲叫你别争。你缩在他身旁，想怎样回应？',
+      n02: '父亲在全家眼前被抓走。天快亮了，母亲要去监所。',
+      n06: '母亲寻父挨打，你买饼受拒。换上亡兄衣服，借男孩的名字出门。',
+      n07: '莱拉也藏着女孩的名字。买到饼以后，你今天跟谁走？',
+      n09: '信里是哈拉的死讯。阿明不认字，想再听一次妻子的名字。',
+      n10: '老板推了女工一下。莱拉刚回到后门，你能先做什么？',
+      n13: '饼带回来了。姐姐终于坐下，却还在等你把话说完。',
+      n18: '封关前还有车。去北门要等几天；莱拉还被堵在街上。',
+      n21: '舅舅催你坐低，姐姐伸出手。莱拉却还没能走出市场。',
+      n22: '先让女孩们进门。之后继续找路，还是在门后接着讲火苗长大的童话？',
+      n25: '几天的准备换来了侧门的机会。你还来得及赶车，但接父亲就会错过。',
+    } as Record<string, string>)[node.id] ?? '看一眼身边的人，再做决定。',
     points: node.choices.map((choice, index) => ({ id: `${node.id}-r5-${index}`, label: choice.label, speaker: node.id === 'n22' ? '莱拉' : '努拉', response: choice.detail, choiceId: choice.id })),
   };
   const short = 'edition' in state && state.edition === 'short';
