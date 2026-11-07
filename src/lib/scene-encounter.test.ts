@@ -77,10 +77,28 @@ describe('scene context for direct story branches', () => {
     const state = reach('n25');
     expect(state.flags).not.toContain('guardBond');
     const point = getSceneEncounter(state).points.find(item => item.choiceId === 'release')!;
-    expect(point.response).toContain('还没答应');
+    expect(point.response).toMatch(/还没答应|没有答应|不能答应|不敢保证/);
+    expect(point.response).not.toMatch(/先替我读信|读完.{0,8}救|教我.{0,8}救/);
     expect(getChoices(state).find(choice => choice.id === point.choiceId)?.enabled).toBe(false);
     const bonded = { ...state, flags: [...state.flags, 'guardBond'] };
     expect(getSceneEncounter(bonded).points.find(item => item.choiceId === 'release')?.response).toContain('我试着带他出来');
+  });
+
+  it('treats Amin’s letter as his memory of Hala rather than a family document to take away', () => {
+    const encounter = getSceneEncounter(reach('n09'));
+    const text = `${encounter.goal}${encounter.points.map(point => `${point.label}${point.response}`).join('')}`;
+    expect(text).toContain('哈拉');
+    expect(text).toContain('妻子');
+    expect(text).not.toMatch(/失去的亲人|带回去和姐姐一起看|带信回家|把信带回家/);
+  });
+
+  it('does not claim that an unknown Amin recognises the heroine’s handwriting at n20', () => {
+    const unknown: BranchState = { ...reach('n20'), flags: ['disguise', 'aliasAatish', 'friendMet'] };
+    const first = getSceneEncounter(unknown).points.find(point => point.choiceId === 'submit')!;
+    expect(`${first.label}${first.response}`).not.toMatch(/他认得|写过的|再写/);
+    const known = { ...unknown, flags: [...unknown.flags, 'guardKnown'] };
+    const remembered = getSceneEncounter(known).points.find(point => point.choiceId === 'submit')!;
+    expect(`${remembered.label}${remembered.response}`).not.toMatch(/初次|第一次|不认识|陌生的阿明/);
   });
 
   it('keeps the short edition’s three destinations as ordinary story choices', () => {

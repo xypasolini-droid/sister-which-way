@@ -43,7 +43,7 @@ const HANDOFF_CUES: Record<string, string> = {
   'n05:flour': '阿里去世', 'n05:names': '阿里去世',
   'n06:buy': '剪了头发', 'n06:help': '自己剪的',
   'n07:truth': '跑腿挣了饭', 'n07:hide': '莱拉介绍', 'n07:pact': '饼带回来了',
-  'n08:queue': '推疼你了吗', 'n08:alley': '错过送信人', 'n08:neighbor': '送水人传了话',
+  'n08:queue': '纸捡回来了', 'n08:alley': '错过送信人', 'n08:neighbor': '送水人传了话',
   'n09:verify': '阿明说父亲被押进这里', 'n09:courier': '阿明学了几个字', 'n09:sister': '没答应放人',
   'n10:wage': '工钱拿到了', 'n10:ledger': '工钱却还没讨回来',
   'n11:testimony': '邻居看见父亲被押进北门', 'n11:school': '只开一小时', 'n11:medicine': '药我原样带回来了',
@@ -174,9 +174,9 @@ describe('scene dialogue pacing and continuity', () => {
 
   it('distinguishes meeting Amin for the first time from asking for him when he is off duty', () => {
     const firstMeeting = getSceneDialogue(at('n12'));
-    expect(actorText(firstMeeting, 'guard')).toContain('信');
-    expect(actorText(firstMeeting, 'hero')).toContain('死于战火');
-    expect(actorText(firstMeeting, 'guard')).toContain('妻子');
+    expect(actorText(firstMeeting, 'guard')).toMatch(/信|消息/);
+    expect(spoken(firstMeeting)).toContain('妻子');
+    expect(spoken(firstMeeting)).toContain('哈拉');
     expect(spoken(firstMeeting)).not.toContain('今天不在');
 
     const alreadyKnown = getSceneDialogue(at('n12', { flags: ['guardKnown'] }));
@@ -187,18 +187,41 @@ describe('scene dialogue pacing and continuity', () => {
 
   it('shows literacy building the guard relationship before using established trust', () => {
     const firstLesson = getSceneDialogue(at('n17'));
-    expect(actorText(firstLesson, 'guard')).toContain('教我认');
-    expect(actorText(firstLesson, 'guard')).toContain('他还在名册上');
-    expect(actorText(firstLesson, 'hero')).toContain('父亲的名字');
+    expect(spoken(firstLesson)).toMatch(/认|写|念|读/);
+    expect(spoken(firstLesson)).toContain('妻子');
+    expect(spoken(firstLesson)).toContain('哈拉');
 
     const knownGuard = getSceneDialogue(at('n17', { flags: ['guardBond'] }));
     expect(actorText(knownGuard, 'friend')).toContain('队伍');
     expect(spoken(knownGuard)).not.toContain('教我认');
   });
 
+  it.each(['n09', 'n12', 'n17', 'n25'])('identifies Hala as Amin’s wife at a first meeting through %s', nodeId => {
+    const lines = getSceneDialogue(at(nodeId));
+    const text = spoken(lines);
+    expect(text).toContain('妻子');
+    expect(text).toContain('哈拉');
+    expect(text).not.toMatch(/失去的亲人|亲人死/);
+    assertShortExchange(at(nodeId));
+  });
+
+  it('lets Amin mourn before the heroine asks for her father instead of joining both in one breath', () => {
+    const lines = getSceneDialogue(at('n09'));
+    expect(spoken(lines)).toMatch(/名字|想|念|记|陪/);
+    for (const entry of lines) {
+      if (/妻子|哈拉/.test(entry.text)) expect(entry.text).not.toMatch(/父亲|爸爸|救父/);
+    }
+  });
+
+  it.each(['n17', 'n25'])('remembers a known but not yet trusted Amin at %s without announcing a new death', nodeId => {
+    const lines = getSceneDialogue(at(nodeId, { flags: ['guardKnown'] }));
+    expect(spoken(lines)).not.toMatch(/死于|死在|去世|触雷|地雷|噩耗|我叫阿明/);
+    assertShortExchange(at(nodeId, { flags: ['guardKnown'] }));
+  });
+
   it('does not promise a rescue before trust or after the heroine has been identified', () => {
     const noBond = getSceneDialogue(at('n25'));
-    expect(actorText(noBond, 'guard')).toContain('不能答应');
+    expect(actorText(noBond, 'guard')).toMatch(/不能答应|还没答应|没有答应|不敢保证/);
     expect(actorText(noBond, 'guard')).not.toContain('我进去找');
     const identified = getSceneDialogue(at('n25', {
       flags: ['guardBond'], stats: { ...createInitialState().stats, exposure: 9 },

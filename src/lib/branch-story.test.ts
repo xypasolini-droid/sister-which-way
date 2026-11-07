@@ -97,6 +97,74 @@ describe('姐姐，我该怎么走：v3 branch story', () => {
     expect(getChoices(exposed).find(choice => choice.id === 'release')?.enabled).toBe(false);
     expect(getChoices(exposed).find(choice => choice.id === 'letter')?.enabled).toBe(true);
   });
+
+  it.each(['n09', 'n12', 'n17', 'n25'])('keeps Hala’s identity in the journal when the first reading happens at %s', nodeId => {
+    const state: BranchState = { ...createInitialState(), nodeId, father: 'located', outfit: 'worker', flags: ['disguise'] };
+    const text = getNode(state).paragraphs.join('');
+    expect(text).toContain('妻子');
+    expect(text).toContain('哈拉');
+    expect(text).not.toMatch(/亲人死|读完亲人的消息/);
+  });
+
+  it('remembers every first meeting at n12 without making a delivered petition equal to trust', () => {
+    const firstMeeting = walk(NODE_TEST_ROUTES.n12);
+    expect(firstMeeting.flags).not.toContain('guardKnown');
+    expect(firstMeeting.flags).not.toContain('guardBond');
+    for (const choiceId of ['petition', 'forms', 'wait']) {
+      const after = choose(firstMeeting, choiceId)!.state;
+      expect(after.flags, choiceId).toContain('guardKnown');
+      expect(after.flags, choiceId).not.toContain('guardBond');
+      expect(validateBranchState(after), choiceId).toEqual(after);
+    }
+    const nextMeeting = choose(firstMeeting, 'petition')!.state;
+    expect(nextMeeting.nodeId).toBe('n17');
+    for (const choiceId of ['copy', 'family']) {
+      const after = choose(nextMeeting, choiceId)!.state;
+      expect(after.flags).toContain('guardKnown');
+      expect(after.flags).toContain('guardBond');
+    }
+  });
+
+  it('returns Amin’s personal letter on all n09 paths and carries separate family information', () => {
+    const state = walk(NODE_TEST_ROUTES.n09);
+    const scene = getNode(state);
+    for (const choice of getChoices(state)) {
+      const result = choose(state, choice.id)!;
+      const text = `${choice.label}${choice.detail}${result.consequence}`;
+      expect(text, choice.id).not.toMatch(/带着信去拘留|把信带回家|带信回家/);
+      expect(`${scene.paragraphs.join('')}${result.consequence}`, choice.id).toMatch(/(?:信|来信).{0,12}(?:还给|交还|递还|归还)|(?:还给|交还|递还|归还).{0,12}阿明|(?:他|阿明)把信.{0,12}(?:收好|收起|收回)/);
+      expect(result.state.flags).toContain('guardKnown');
+    }
+  });
+
+  it('does not invent an earlier reading relationship when n20 is the first personal contact', () => {
+    const unknown = walk([...NODE_TEST_ROUTES.n14, 'teach', 'plan', 'rescue']);
+    expect(unknown.nodeId).toBe('n20');
+    expect(unknown.flags).not.toContain('guardKnown');
+    expect(unknown.flags).not.toContain('guardBond');
+    const firstChoice = getChoices(unknown).find(choice => choice.id === 'submit')!;
+    expect(`${firstChoice.label}${firstChoice.detail}`).not.toMatch(/再写|认得|熟悉|往来让/);
+    const firstReading = choose(unknown, 'submit')!;
+    expect(firstReading.consequence).toContain('哈拉');
+    expect(firstReading.consequence).toContain('妻子');
+
+    const known = walk([...NODE_TEST_ROUTES.n09, 'verify', 'forms', 'route', 'plan', 'rescue']);
+    expect(known.nodeId).toBe('n20');
+    expect(known.flags).toContain('guardKnown');
+    expect(known.flags).not.toContain('guardBond');
+    const remembered = choose(known, 'submit')!;
+    expect(remembered.consequence).not.toMatch(/初次|第一次见|我叫阿明|死于|死在|去世|触雷|地雷/);
+    expect(remembered.state.flags).toContain('guardBond');
+  });
+
+  it('does not narrate a promised rescue in the unbonded n25 journal or tale', () => {
+    const state = walk(NODE_TEST_ROUTES.n25);
+    expect(state.flags).not.toContain('guardBond');
+    const node = getNode(state);
+    expect(node.paragraphs.join('')).not.toMatch(/现在他愿意冒险去找父亲|已经答应.{0,8}(?:救|带出)/);
+    expect(node.tale).not.toMatch(/决定(?:走进|进去)|答应.{0,8}救出/);
+    expect(getChoices(state).find(choice => choice.id === 'release')?.enabled).toBe(false);
+  });
   it('requires confirmed family escort as well as documents before boarding', () => {
     const before = walk(ENDING_TEST_ROUTES.caravan.slice(0, -2));
     expect(before.nodeId).toBe('n26');

@@ -1,5 +1,6 @@
 import { getEnding, getNode, SISTER_OFFSTAGE_NODES, type BranchState } from './branch-story';
 import { getSceneDialogue, type SceneDialogueLine } from './scene-dialogue';
+import { getDreamEndingPresentation, getStayEndingPresentation } from './ending-content';
 
 export type ReadingBeat = {
   id: string;
@@ -64,16 +65,12 @@ function taleDialogue(state: BranchState): string[] {
 }
 
 function endingDialogue(state: BranchState): string[] {
-  const has = (flag: string) => state.flags.includes(flag);
   switch (state.endingId) {
     case 'reunited': return ['父亲：“努拉？”　“这次，我带你回家。”', state.sister === 'apart' ? '你把推车停在作坊后间，第一次主动开口请求帮手。' : '姐姐握住车把：“现在，可以松开手了。”'];
     case 'caravan': return ['姐姐：“上这辆车，不等于答应那桩婚事。”', '“我知道。”你看向城门，“这条路，是我们选的。”'];
-    case 'dream_guardian': return ['成年阿提什：“放她们过去。她们是去上学的。”', '女兵让开路。你守住山口，让女孩们走进校门。'];
-    case 'dream_commons': return ['“我不同意你的办法。”年轻女人站起来。', '成年阿提什让出话的位置：“把你的办法说完。”'];
-    default:
-      if (state.sister === 'apart') return ['作坊收工了。你放下没做完的活，给自己留下休息的时间。', '你不再把累垮自己，当成独立长大的证明。'];
-      if (has('sustained')) return ['门外脚步远了，姐姐把粉笔递给你：“接着读。”', '你坐进上课那一栏，第一次没有起身去端水。'];
-      return ['你和家人重新分担照护与生计，不再把自己当作唯一的出路。', '姐姐：“你也有长大的时间。”这一次，你留下了自己的位置。'];
+    case 'dream_guardian':
+    case 'dream_commons': return getDreamEndingPresentation(state).dialogue;
+    default: return getStayEndingPresentation(state).dialogue;
   }
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BranchState } from './branch-story';
+import { choose, createInitialState, getEnding, type BranchState } from './branch-story';
 import { ENDINGS, projectEnding } from './ending-content';
 
 const state = (patch: Partial<BranchState> = {}): BranchState => ({
@@ -69,5 +69,37 @@ describe('five original ending projections', () => {
     const privateLetter = projectEnding(state({ history: [{ nodeId: 'n30', choiceId: 'pages', label: '', consequence: '' }] }), ending('lantern'));
     expect(text(rescued)).not.toContain('仍等父亲的消息');
     expect(text(privateLetter)).not.toContain('交出获准传递的记录');
+  });
+  it('makes five actual stay-in-city results visibly different without adding saved ending IDs', () => {
+    const prefix = ['work','sew','buy','pact','care'];
+    const cases = [
+      { route: ['rush','school','live'], scene: 'courtyard', fact: /一小时课|粉笔/, cost: /谋生|禁令/ },
+      { route: ['rush','send','live'], scene: 'workshop', fact: /分别|分住/, cost: /距离|团聚/ },
+      { route: ['plan','letter','live'], scene: 'home', fact: /没能救出父亲|没有父亲/, cost: /铁门|救援/ },
+      { route: ['find','child','live'], scene: 'home', fact: /婚事|暂借/, cost: /今夜|永久住处/ },
+      { route: ['rush','father','live'], scene: 'home', fact: /烧水|天亮/, cost: /劳动|食物/ },
+    ];
+    const results = cases.map(({ route, scene, fact, cost }) => {
+      const saved = [...prefix, ...route].reduce((current, id) => {
+        const result = choose(current, id);
+        if (!result) throw new Error(`${current.nodeId}/${id}`);
+        return result.state;
+      }, createInitialState('short'));
+      const snapshot = structuredClone(saved), result = getEnding(saved)!;
+      expect(saved.endingId).toBe('lantern');
+      expect(saved.history).toHaveLength(8);
+      expect(result.scene).toBe(scene);
+      expect(text(result)).toMatch(fact);
+      expect(result.cost).toMatch(cost);
+      expect(text(result)).not.toMatch(/禁令已经撤去|伤已经好了|永远安全|救出了父亲/);
+      expect(saved).toEqual(snapshot);
+      return result;
+    });
+    for (const field of ['title','summary','cost'] as const) expect(new Set(results.map(result => result[field])).size).toBe(5);
+  });
+  it('cannot claim a failed rescue or refused marriage from an unvisited branch', () => {
+    const notVisited = projectEnding(state({ flags: ['rescueRoute','shelter'] }), ending('lantern'));
+    expect(notVisited.title).not.toContain('没能带他回来');
+    expect(text(notVisited)).not.toMatch(/你从北门退回来|拒绝了那份有条件的接应|不用为这一床被褥嫁人/);
   });
 });

@@ -42,10 +42,10 @@ const SCENES: Record<string, SceneSpec> = {
     ['作坊小巷', '努拉', '绕路会晚到。我得守住报平安的约定。', 'alley'],
     ['送水人的脚步', '送水人', '我可以传话。可我不能代替你的亲属。', 'neighbor'],
   ] },
-  n09: { goal: '阿明把一封信递来。先听清里面失去了谁。', points: [
-    ['信上的消息', '努拉', '信里是他失去的亲人。不是交换父亲的价钱。', 'courier'],
+  n09: { goal: '阿明想再听一遍妻子哈拉的名字。你愿意留下吗？', points: [
+    ['信上的名字', '阿明', '哈拉……我想自己认得妻子的名字。', 'courier'],
     ['拘留院的方向', '努拉', '我仍想核实父亲的去向，也可能被盘问。', 'verify'],
-    ['折好的信', '努拉', '带回去和姐姐一起看，不再只由我猜。', 'sister'],
+    ['回家的小巷', '努拉', '信还给他，把这次相遇告诉姐姐。', 'sister'],
   ] },
   n10: { goal: '一笔工钱被扣了。先问女工是否愿意让你帮忙。', points: [
     ['自己的活计', '努拉', '我也得把今天的工钱带回家。', 'wage'],
@@ -175,13 +175,14 @@ export function getSceneEncounter(state: BranchState): SceneEncounterData {
   const short = 'edition' in state && state.edition === 'short';
   const spec = (short && SHORT_SCENES[state.nodeId]) || SCENES[state.nodeId] || { goal: '点选身边的人与物，走出今天的一步。', points: [] };
   let goal = spec.goal;
-  if (short && state.nodeId === 'n30') goal = state.father === 'free'
-    ? '阿明救出了父亲。现在，你能带他回家，也让家人接住你。'
-    : state.sister === 'apart' ? '你们仍分住两处。独立长大，也可以承认自己需要帮助。'
-    : state.flags.includes('boarded') ? '家人已坐上接应的货车，父亲尚未获救。这次，认领自己选择的路。'
-    : state.flags.includes('sustained') ? '一小时课堂已开起来。你也能学习，不必永远独自供养别人。'
-    : state.flags.includes('settled') ? '暂借的屋檐下，父亲仍未归来。你不再是家里唯一的出路。'
-    : '母亲拒绝婚事，家人重新会合。接下来的担子，不再只属于你。';
+  if (state.nodeId === 'n30') goal = state.father === 'free'
+    ? '阿明救出了父亲。木推车在你手里，他仍需要照护。'
+    : state.flags.includes('boarded') ? '家人坐上了露天货斗，父亲仍留在城里。'
+    : state.sister === 'apart' ? '你们仍分住两处。今夜，你要回作坊后间生活。'
+    : state.flags.includes('sustained') ? '一小时课堂已经开起来。父亲未归，你也有一张凳子。'
+    : state.flags.includes('rescueRoute') && state.history.some(step => step.nodeId === 'n25') ? '你去了北门，父亲没能出来。你活着回到约定的门。'
+    : state.flags.includes('settled') || state.flags.includes('shelter') ? '法里达只答应借住一夜。父亲未归，明早仍要找活。'
+    : '母亲拒绝了婚事，家人重新会合。父亲的位置仍空着。';
   let points = spec.points.map(([label, speaker, response, choiceId], i) => ({ id: `${state.nodeId}-${i}`, label, speaker, response, choiceId }));
   const previous = state.history.at(-1);
   if (short && state.nodeId === 'n07') points = points.map(point => point.choiceId === 'truth' ? { ...point, response: '一起核对工钱，也留心退路。少年也会被逼去替队伍搬军需。' } : point.choiceId === 'pact' ? { ...point, response: '把饼和今天的遭遇带回去，也听姐姐怎样想。' } : point);
@@ -189,14 +190,18 @@ export function getSceneEncounter(state: BranchState): SceneEncounterData {
     points = points.map(point => point.choiceId === 'flour' ? { ...point, label: '弟弟面前的碗', response: '你带饼回来了？我可以吃一口吗？' } : point);
   }
   if (state.nodeId === 'n30' && state.father === 'free') points = points.filter(point => point.choiceId !== 'wait');
+  if (state.nodeId === 'n20' && !state.flags.includes('guardBond')) points = points.map(point => point.choiceId === 'submit' ? { ...point,
+    label: state.flags.includes('guardKnown') ? '阿明熟悉的身影' : '墙边的看守阿明',
+    response: state.flags.includes('guardKnown') ? '他记得我读过妻子哈拉的名字。还得慢慢谈。' : '他攥着一封信。先问他愿不愿听我说话。',
+  } : point);
   if (state.nodeId === 'n18' && state.sister === 'apart') {
     goal = short ? '母亲曾提婚事，姐姐托话拒绝。你们分住两处，先说清去向。' : '母亲与姐姐托来了话。先看清信里写了什么。';
     points = points.map(point => point.speaker === '母亲' ? { ...point, label: short ? '母亲托来的接应消息' : '母亲捎来的婚事信', speaker: '母亲托来的话' }
       : point.speaker === '玛莉安' ? { ...point, speaker: '姐姐托来的话' } : point);
   }
   if (state.nodeId === 'n25' && !state.flags.includes('guardBond')) {
-    goal = '避开路口的枪声，先把信里的名字读清。';
-    points = points.map(point => point.choiceId === 'release' ? { ...point, label: '阿明手里的信', response: '先替我读信，教我认名字。救人的事，我还没答应。' } : point);
+    goal = '先躲开枪声。阿明仍收着关于妻子哈拉的信。';
+    points = points.map(point => point.choiceId === 'release' ? { ...point, label: '阿明护着的信', response: '我记着哈拉。救人的事，我还没答应。' } : point);
   }
   if (short && state.nodeId === 'n25') points = points.map(point => point.choiceId === 'leave' ? { ...point, label: '今夜能借住的门', response: '先确认私宅夜宿，带着能核实的证据离开。' } : point);
   return { title: node.title, goal, points: points.slice(0, 3) };

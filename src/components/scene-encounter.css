@@ -10,6 +10,7 @@
 .encounter-branches button:hover:not(:disabled){background:#ffffff14;border-color:#ffffffb0}.encounter-branches button:focus-visible{outline-offset:2px}.encounter-branches button:disabled{opacity:.6}
 .encounter-index{font:10px/1.5 var(--sans);color:#aaa79f;align-self:flex-start;padding-top:3px;font-variant-numeric:tabular-nums;flex:0 0 16px}.encounter-choice-copy{flex:1;min-width:0}.encounter-choice-copy strong{display:block;font:400 14px/1.65 var(--serif);text-wrap:pretty}.encounter-choice-copy small{display:block;font:11px/1.6 var(--sans);color:#c7c4bd;margin-top:4px}
 .encounter-footer{display:flex;align-items:center;gap:16px;margin-top:3px;flex-wrap:wrap}
+.encounter-choice-copy .encounter-ending-kind{margin:0 0 3px;font-size:10px;letter-spacing:.12em;color:#b8b5ae}
 .scene-encounter--still *{transition:none!important}
 .is-large-text .encounter-choice-copy strong{font-size:17px}.is-large-text .encounter-heading>p{font-size:16px}
 @media(max-width:760px){.encounter-dock{width:calc(100% - 24px);bottom:calc(27px + env(safe-area-inset-bottom));padding:10px 14px 5px;max-height:39dvh}.encounter-heading{gap:10px}.encounter-heading>p{font-size:12px}.encounter-tool{font-size:11px;padding-inline:4px}.encounter-branches{grid-template-columns:1fr;gap:5px;margin-top:6px}.encounter-branches button{min-height:44px;padding:7px 10px;gap:8px}.encounter-choice-copy strong{font-size:13px;line-height:1.55}.encounter-choice-copy small{font-size:11px}.encounter-index{align-self:center;padding:0}.encounter-footer{gap:12px}}

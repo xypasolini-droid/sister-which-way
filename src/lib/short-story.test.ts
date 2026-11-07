@@ -144,6 +144,32 @@ describe('the eight-decision short edition', () => {
     }
   });
 
+  it('keeps Hala’s letter with Amin and builds trust through the chosen repeated lessons', () => {
+    const firstMeeting = explored.states.find(state => state.nodeId === 'n09')!;
+    const scene = getNode(firstMeeting);
+    expect(scene.paragraphs.join('')).toContain('妻子');
+    expect(scene.paragraphs.join('')).toContain('哈拉');
+    for (const choiceId of ['verify', 'courier', 'sister']) {
+      const result = choose(firstMeeting, choiceId)!;
+      const choice = getChoices(firstMeeting).find(choice => choice.id === choiceId)!;
+      expect(`${choice.label}${choice.detail}${result.consequence}`).not.toMatch(/带着信去拘留|把信带回家|带信回家/);
+      expect(`${scene.paragraphs.join('')}${result.consequence}`).toMatch(/(?:信|来信).{0,12}(?:还给|交还|递还|归还)|(?:还给|交还|递还|归还).{0,12}阿明|(?:他|阿明)把信.{0,12}(?:收好|收起|收回)/);
+      expect(result.state.flags).toContain('guardKnown');
+      expect(result.state.flags.includes('guardBond'), choiceId).toBe(choiceId === 'courier');
+    }
+  });
+
+  it('does not promise a rescue when the short route reaches Amin without earlier lessons', () => {
+    const unbonded = explored.states.find(state => state.nodeId === 'n25' && !state.flags.includes('guardBond'))!;
+    expect(unbonded).toBeDefined();
+    const node = getNode(unbonded);
+    expect(node.paragraphs.join('')).toContain('妻子');
+    expect(node.paragraphs.join('')).toContain('哈拉');
+    expect(node.paragraphs.join('')).not.toMatch(/现在他愿意冒险去找父亲|已经答应.{0,8}(?:救|带出)/);
+    expect(node.tale).not.toMatch(/决定(?:走进|进去)|答应.{0,8}救出/);
+    expect(getChoices(unbonded).find(choice => choice.id === 'release')?.enabled).toBe(false);
+  });
+
   it('reunites the sister before shared classroom or household endings after an earlier disagreement', () => {
     const afterDisagreement = explored.states.filter(state => state.nodeId === 'n22' && state.history.some(step => step.nodeId === 'n13' && step.choiceId === 'secret'));
     expect(afterDisagreement.length).toBeGreaterThan(0);

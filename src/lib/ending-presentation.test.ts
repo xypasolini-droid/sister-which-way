@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { choose, createInitialState, getEnding, validateBranchState, type BranchState } from './branch-story';
-import { endingEcho } from './ending-presentation';
+import { endingEcho, endingGrowth } from './ending-presentation';
 import { NODE_TEST_ROUTES } from './story-test-routes';
 
 function play(route: string[], short = false): BranchState {
@@ -68,5 +68,29 @@ describe('ending echoes report completed actions rather than available contacts'
     for (const state of cases) expect(endingEcho(state)).not.toContain('送信人');
     endingEcho(contact);
     expect(contact).toEqual(snapshot);
+  });
+  it('gives a different growth and remembered cost to each actual city outcome', () => {
+    const prefix = ['work','sew','buy','pact','care'];
+    const states = [
+      ['rush','school','live'], ['rush','send','live'], ['plan','letter','live'],
+      ['find','child','live'], ['rush','father','live'],
+    ].map(tail => play([...prefix, ...tail], true));
+    expect(new Set(states.map(endingGrowth)).size).toBe(5);
+    expect(new Set(states.map(endingEcho)).size).toBe(5);
+    expect(endingEcho(states[0])).toMatch(/上课|一小时/);
+    expect(endingEcho(states[1])).toMatch(/分住|今夜/);
+    expect(endingEcho(states[2])).toContain('去过北门');
+    expect(endingEcho(states[3])).toContain('拒绝了婚事');
+    expect(endingEcho(states[4])).toContain('明天的劳动');
+  });
+  it('anchors each adult dream in a witnessed experience rather than a shared generic slogan', () => {
+    const prefix = ['work','sew','buy','truth','courier'];
+    const guardian = play([...prefix,'plan','letter','dream_guardian'], true);
+    const commons = play([...prefix,'rush','father','dream_commons'], true);
+    const school = play(['work','sew','buy','pact','care','rush','school','dream_commons'], true);
+    expect(endingEcho(guardian)).toContain('母亲挨打');
+    expect(endingEcho(commons)).toContain('思念妻子');
+    expect(endingEcho(school)).toContain('一小时');
+    expect(new Set([guardian, commons, school].map(endingEcho)).size).toBe(3);
   });
 });

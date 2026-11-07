@@ -123,3 +123,5 @@ button{color:inherit;cursor:pointer;border:0;background:none}button:disabled{cur
 .ending-scene .ending-echo{font:11px/1.65 var(--sans);color:#c7c7c7;margin:9px 0 0}
 .ending-actions{margin-top:12px;margin-bottom:3px}.ending-actions .continue-button{min-height:44px}
 @media(max-width:760px){.story-dialogue--ending{max-height:45dvh;padding:13px 16px 8px}.ending-scene h2{font-size:22px}.ending-scene .ending-growth{font-size:12px;margin-bottom:7px}.ending-vignette p{font-size:14px}.ending-scene .ending-echo{font-size:11px;margin-top:6px}.ending-actions{margin-top:8px;gap:8px}.ending-scene>.text-button{min-height:36px}}
+
+.ending-scene .ending-cost{font:11px/1.65 var(--sans);color:#bfb8ae;margin:5px 0 0}

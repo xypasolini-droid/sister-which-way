@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { NODES, choose, createInitialState, getChoices, type BranchState } from '../lib/branch-story';
-import { NODE_TEST_ROUTES } from '../lib/story-test-routes';
+import { NODES, choose, createInitialState, getChoices, getNode, type BranchState } from '../lib/branch-story';
+import { NODE_TEST_ROUTES, SHORT_ENDING_TEST_ROUTES } from '../lib/story-test-routes';
 vi.mock('@/lib/branch-story', () => import('../lib/branch-story'));
 vi.mock('@/lib/scene-encounter', () => import('../lib/scene-encounter'));
 import SceneEncounter from './SceneEncounter';
@@ -24,7 +24,7 @@ describe('direct single-choice story interface', () => {
     for (const state of states) {
       const html = render(state);
       const rows = [...html.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(match => match[1]);
-      const choices = getChoices(state).filter(choice => !choice.id.startsWith('dream_'));
+      const choices = getChoices(state).filter(choice => state.nodeId === 'n30' || !choice.id.startsWith('dream_'));
       expect(rows.length, state.nodeId).toBe(choices.length);
       choices.forEach((choice, index) => {
         expect(rows[index], `${state.nodeId}/${choice.id}`).toContain(`<strong>${escape(choice.label)}</strong>`);
@@ -43,7 +43,48 @@ describe('direct single-choice story interface', () => {
       expect(html).toContain('写自己的决定');
       expect(html).toContain('听他们说');
       expect(html).toContain('重看这一幕');
-      expect(html).toContain('做一个梦');
+      if (nodeId === 'n30') {
+        expect(html).toContain('现实终章');
+        expect(html.match(/成年梦境/g)).toHaveLength(2);
+        expect(html).not.toContain('做一个梦');
+      } else expect(html).toContain('做一个梦');
     }
+  });
+});
+
+const play = (route: string[]) => route.reduce((state, id) => {
+  const result = choose(state, id);
+  if (!result) throw new Error(`Unavailable action ${state.nodeId}/${id}`);
+  return result.state;
+}, createInitialState('short'));
+
+
+describe('the last decision shows the reality and adult dreams together', () => {
+  it('exposes both dreams as direct choices without a separate dream menu', () => {
+    const state = play(SHORT_ENDING_TEST_ROUTES.reunited.slice(0, -1));
+    const markup = render(state);
+    for (const choice of getChoices(state)) expect(markup).toContain(choice.label);
+    expect(markup.match(/成年梦境/g)).toHaveLength(2);
+    expect(markup).toContain('现实终章');
+    expect(markup).not.toContain('做一个梦');
+    expect(markup).not.toContain('选择下一步');
+  });
+
+  it('shows different completed facts before the last choice on rescue, departure and classroom routes', () => {
+    const routes = ['reunited', 'caravan', 'lantern'];
+    const pages = routes.map(id => render(play(SHORT_ENDING_TEST_ROUTES[id].slice(0, -1))));
+    expect(pages[0]).toContain('阿明救出了父亲');
+    expect(pages[1]).toContain('露天货斗');
+    expect(pages[2]).toContain('课堂已经开起来');
+    expect(new Set(pages).size).toBe(3);
+  });
+
+  it('keeps final choices isolated when previewing another route', () => {
+    const original = structuredClone(NODES.n30);
+    const rescue = play(SHORT_ENDING_TEST_ROUTES.reunited.slice(0, -1));
+    const first = getNode(rescue);
+    getNode(play(SHORT_ENDING_TEST_ROUTES.caravan.slice(0, -1)));
+    expect(first.choices.find(choice => choice.id === 'live')!.label).toContain('父亲回家');
+    expect(NODES.n30).toEqual(original);
   });
 });

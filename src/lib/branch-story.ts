@@ -123,14 +123,14 @@ export const NODES: Record<string, StoryNode> = {
     ],
   },
   n09: {
-    id: 'n09', title: '他也需要有人读完一封信', act: 2, day: 2, scene: 'market',
-    paragraphs: ["面包摊后门，阿明等着有人替他读一封信。你认出他曾站在那名年轻巡查身旁，脚先往后退了半步。信里说他的亲人死在另一处战火里，他听完很久没有说话。","阿明把父亲的名字念了一遍，记得这个替人读信的男人。你不相信一封信就能让他成为可靠的人，仍愿意把自己知道的读完。莱拉在门边等你，姐姐留在私宅照顾母亲和萨米。","你教阿明辨认信上的几个字，他又来问了第二遍。你没有忘记他当时没有阻拦暴力；眼前这个沉默的人，却也第一次愿意记住你想找的人是谁。"],
+    id: 'n09', title: '再念一次她的名字', act: 2, day: 2, scene: 'market',
+    paragraphs: ['面包摊后门，阿明递来一封信。你认出他曾站在年轻巡查身旁，脚先往后退了半步。信里说，他的妻子哈拉去参加妹妹婚礼，乘坐的巴士触了地雷；她受了重伤，几个小时后去世。你读到这里，声音慢下来。', '阿明削苹果的手停住了。过了很久，他才让你把哈拉的名字再念一遍。你没有接着问父亲，只把那几个字指给他看，陪他坐了一会儿。莱拉在门边等你，姐姐留在私宅照顾母亲和萨米。', '他把信重新折好，贴身收起。你没有忘记他曾站在哪些人身旁，也没有因为看见他的悲痛就相信他。可此刻他想念的是一个再也不能回家的人，你愿意让她的名字被好好念完。'],
     sisterLine: "我也想现在就说一定是他。可是我怕我们把希望说得太满，最后连坏消息都不敢听。先问清楚。",
-    tale: '女孩把月亮装进信封，信封却不会自己找到收信人。于是她开始学习问路。',
+    tale: '看门人说，山那边曾有一盏为他留的灯。火苗没有假装那盏灯还亮着，只陪他把点灯人的名字念了一遍。',
     choices: [
-      c('verify', '带着信去拘留院核实', '追索父亲的去向，接受一次近距离盘问。', 'n12', "你替阿明读完信，又把父亲的名字写给他。阿明对照刚交接的轮值纸，确认父亲被押进了北门这处拘留院，却不肯答应你能够探视。你回家把确认的地点告诉姐姐，再独自去北门；不是因为已经相信他，而是不想让父亲只剩一个没人敢念的名字。", {"father":"located","stats":{"hope":2,"exposure":1},"add":["letter","guardKnown"]}, ['核实', '拘留', '父亲', '找爸爸', '地址']),
-      c('courier', "替阿明读信、练字，再托他问父亲", "用真实的往来建立一份脆弱信任，不用礼物买一份放人保证。", 'n16', "阿明指着几个字，让你再教一次。你照做，也把父亲的名字写得清楚。阿齐兹答应替你递消息；这条联系依赖具体的人愿意冒险，不是一张钱付够就能兑现的单子。", {"stats":{"coins":1,"hope":1},"add":["letter","courier","evidence","guardKnown","guardBond"]}, ['名册', '送信', '递信', '核对', '帮忙']),
-      c('sister', '把信带回家，让姐姐一起判断', '暂缓寻父，重新分配家里的责任。', 'n13', "你回家告诉姐姐，市场上那个曾与年轻巡查同行的阿明请你读了一封信。她没有替你宣布他从此可靠，只和你核对他说过的话、父亲的名字和下一次能找谁问。", {"stats":{"trust":1},"add":["letter","guardKnown"]}, ['回家', '姐姐', '商量', '判断']),
+      c('verify', '另写父亲的名字，请他查明去向', '等这次读信结束，再为自己的家人问一条线索。', 'n12', '你把信还给阿明，陪他静坐了一会儿。稍后再见，你在另一张纸上写下父亲的名字。他对照刚交接的轮值纸，确认父亲被押进北门，却不肯答应探视。你带回自己的纸和问得的地点，告诉姐姐后再去核实；哈拉的信仍由阿明收着。', {"father":"located","stats":{"hope":2,"exposure":1},"add":["letter","guardKnown"]}, ['核实', '拘留', '父亲', '找爸爸', '地址']),
+      c('courier', '留下来，教他认妻子的名字', '几次送货时陪他练字，再慢慢谈起自己的家人。', 'n16', '接下来的几次送货，阿明都把信展开，指着哈拉的名字请你再读一次。你陪他练写，他终于能独自认出妻子的名字。后来你才在另一张纸上写下父亲的姓名；阿明记下了，阿齐兹也愿意递消息。你们有了几次真实的往来，还没有放人的保证。', {"stats":{"coins":1,"hope":1},"add":["letter","courier","evidence","guardKnown","guardBond"]}, ['名册', '送信', '递信', '核对', '帮忙', '妻子', '哈拉', '认字']),
+      c('sister', '先回家，把相遇告诉姐姐', '把信还给阿明，带回自己的见闻。', 'n13', '你把信还给阿明，在自己的纸上记下这次见面，回家告诉姐姐他一直想再听一遍妻子哈拉的名字。她与你一起沉默了一会儿，再核对下一次能找谁问父亲。阿明的哀痛没有替他过去的沉默开脱，你也不必把一次读信当成已经赢得信任。', {"stats":{"trust":1},"add":["letter","guardKnown"]}, ['回家', '姐姐', '商量', '判断']),
     ],
   },
   n10: {
@@ -160,9 +160,9 @@ export const NODES: Record<string, StoryNode> = {
     sisterLine: "你记得姐姐问：“他肯留下什么能核实的东西？别把母亲的药钱交给一句没人负责的话。”",
     tale: '女孩在童话里掀起铁门。姐姐停了停：现实中，我们先得知道哪一把钥匙真的存在。',
     choices: [
-      c('petition', "留下名字，请阿明回来时再看", "先把可辨认的线索交给愿意转达的人，不把门房收纸当成受理保证。", 'n17', "你把姓名、旧职和能辨认父亲的记号写好，托清洁工交给阿明。门房没有承诺；离开时他仍把你推了一下。你带回的是下一次可以再问谁，不是已经排好的释放日期。", {"father":"located","stats":{"exposure":1,"hope":1},"add":["transfer","evidence","guardKnown","guardBond"]}, ['递交', '证词', '日期', '申请'], []),
-      c('forms', '不付陌生人钱，去找正式文书', '先弄清需要谁的签字和什么证明。', 'n16', "你没有交钱，把必须问的材料逐项记下，带回去让姐姐核对。没上当不等于受到保护，门房仍不许探视。你们准备下一封能递进去的信，母亲和萨米听到的仍不是父亲回来的脚步。", { stats: { trust: 1 }, add: ['letter'], father: 'located' }, ['文书', '签字', '材料', '不付', '正式']),
-      c('wait', '等到关门，确认父亲是否在里面', '守到最后，失去做工和买饭的时间。', 'n13', "最后一声关门响了，你没见到父亲。清洁工悄悄点头，说他还在。你饿得站不稳，走回关门的院子才让姐姐扶住；她等到的是你，不是因为自己没有冲到门前就欠下的一次救援。", { father: 'located', stats: { food: -2, health: -1, hope: 2 }, add: ['confirmed'] }, ['等', '确认', '关门', '活着']),
+      c('petition', "留下名字，请阿明回来时再看", "先把可辨认的线索交给愿意转达的人，不把门房收纸当成受理保证。", 'n17', "你把姓名、旧职和能辨认父亲的记号写好，托清洁工交给阿明。门房没有承诺；离开时他仍把你推了一下。你带回的是下一次可以再问谁，不是已经排好的释放日期。", {"father":"located","stats":{"exposure":1,"hope":1},"add":["transfer","evidence","guardKnown"]}, ['递交', '证词', '日期', '申请'], []),
+      c('forms', '不付陌生人钱，去找正式文书', '先弄清需要谁的签字和什么证明。', 'n16', "你没有交钱，把必须问的材料逐项记下，带回去让姐姐核对。没上当不等于受到保护，门房仍不许探视。你们准备下一封能递进去的信，母亲和萨米听到的仍不是父亲回来的脚步。", { stats: { trust: 1 }, add: ['letter', 'guardKnown'], father: 'located' }, ['文书', '签字', '材料', '不付', '正式']),
+      c('wait', '等到关门，确认父亲是否在里面', '守到最后，失去做工和买饭的时间。', 'n13', "最后一声关门响了，你没见到父亲。清洁工悄悄点头，说他还在。你饿得站不稳，走回关门的院子才让姐姐扶住；她等到的是你，不是因为自己没有冲到门前就欠下的一次救援。", { father: 'located', stats: { food: -2, health: -1, hope: 2 }, add: ['confirmed', 'guardKnown'] }, ['等', '确认', '关门', '活着']),
     ],
   },
   n13: {
@@ -381,9 +381,15 @@ export const SISTER_OFFSTAGE_NODES = new Set(['n01', 'n03', 'n04', 'n07', 'n08',
 /** The full journal remembers facts; the screen dialogue is separately authored. */
 export function getNode(state: BranchState): StoryNode {
   const original = NODES[state.nodeId] ?? NODES.n01;
-  const node = { ...original, paragraphs: [...original.paragraphs] };
-  if (state.nodeId === 'n12' && !has(state, 'guardKnown')) node.paragraphs[0] = '你在监所门外认出阿明。他曾与年轻巡查同行，此刻却在问有没有人认得来信上的字。你隔着几步替他读完亲人的消息，教他把信上的几个字写下来，再把父亲的名字说给他；他听着，没让你靠近铁门。';
-  if (state.nodeId === 'n17' && !has(state, 'guardBond')) node.paragraphs[0] = '你在北门遇见阿明。他递来一封看不懂的信，你先读完，再教他写下几个字，最后才把父亲的名字写在纸背。阿明随后拿来交接的轮值纸，对照出父亲的姓名和编号，让你抄下。他仍不许你进门，也不承诺下一次还能见到这张纸。';
+  const node = { ...original, paragraphs: [...original.paragraphs], choices: original.choices.map(choice => ({ ...choice })) };
+  if (state.nodeId === 'n12' && !has(state, 'guardKnown')) node.paragraphs[0] = '你在监所门外遇见阿明。他请你读信：妻子哈拉去参加妹妹婚礼，乘坐的巴士触雷，重伤后去世。他沉默了很久，才请你再念一遍哈拉的名字。你把信还给他，稍后在另一张纸上留下父亲的姓名。阿明收好信，被喊回里院；换来的门房只问钱，不准你进去。';
+  if (state.nodeId === 'n17' && !has(state, 'guardBond')) node.paragraphs[0] = has(state, 'guardKnown')
+    ? '你在北门又见到阿明。他还把那封信贴身收着，想学会认妻子哈拉的名字。你陪他重读、练写，没有重新宣读一次死讯。几次短暂的往来后，他拿来轮值纸，让你在自己的纸上抄下父亲的姓名和编号。他仍不许你进门，也不承诺下一次还能见面。'
+    : '你在北门遇见阿明。他请你读一封信，信里说妻子哈拉乘坐的巴士触雷、重伤后去世。他反复问哈拉的名字该怎样认，你陪他读完，把信还给他。随后几次来往，你仍教他认字，才慢慢谈起自己的家人。后来他拿来轮值纸，让你把父亲的姓名和编号抄在自己的纸上，仍不许你进门。';
+  if (state.nodeId === 'n20' && !has(state, 'guardBond')) node.choices = node.choices.map(choice => choice.id === 'submit' ? { ...choice,
+    label: has(state, 'guardKnown') ? '再找阿明，留下父亲的名字' : '找看守阿明，留下父亲的名字',
+    detail: has(state, 'guardKnown') ? '他记得读信的孩子，还没有答应替你冒险。' : '先听他是否愿意交谈，一次见面不能保证救人。',
+  } : choice);
   if (state.nodeId === 'n07' && !has(state, 'brotherStory')) node.tale = '莱拉听说你把饼分给弟弟，让火苗先把一点热留给饿着的人。它遇见另一粒藏起名字的火，两粒火轮流照路。你想让它烧开石门，她摇头：山里还有人住。于是你改写下一步，让它们先分清门、窗和愿意伸来的手。';
   if (state.nodeId === 'n13' && has(state, 'honest')) node.paragraphs[0] = '姐姐把共同保管的纸铺到床上。你曾经坦白过遇到的危险，可她仍担心你独自打听父亲的下落。你以为那是不相信自己，脱口而出的话却先刺痛了最愿意听你的人。';
   if (state.nodeId === 'n18') {
@@ -401,13 +407,19 @@ export function getNode(state: BranchState): StoryNode {
     node.sisterLine = '母亲没有不要你。她说还有一个女儿没回来，怎么都不肯随他走。我们先让她知道你已经到了。';
   }
   if (state.nodeId === 'n24') node.paragraphs.push(has(state, 'rescueRoute') ? '母亲和萨米仍在法里达家。你托人报信，没有让她们为再确认一次伤势又走到街上。' : '母亲和萨米也退进后屋。你把弟弟抱到远离门口的地方，再去扶姐姐坐稳。');
-  if (state.nodeId === 'n25' && !has(state, 'guardBond')) node.paragraphs[0] = '你在战事逼近时到了北门，认出阿明。此前还没建立足够的信任，他只肯先听你读完来信、记下父亲的名字，没有立即替一个刚来的人冒险开门。';
+  if (state.nodeId === 'n25' && !has(state, 'guardBond')) {
+    node.paragraphs[0] = has(state, 'guardKnown')
+      ? '你在战事逼近时又见到阿明。他让你先避开路口的枪声，仍收着那封关于妻子哈拉的信。你陪他再认一次她的名字，随后另纸留下父亲的姓名。你们见过面，还没有建立能让他冒险进门救人的信任。'
+      : '你在北门遇见看守阿明。他先让你躲开枪声，墙影里仍攥着一封关于妻子哈拉的信。他想再听一遍她的名字，你慢慢读给他听，把信还给他；稍后在另一张纸上留下父亲的姓名。这次见面还不能让他答应救人。';
+    node.paragraphs[1] = '他仍在这个武装体系里，也仍记着妻子。你没有忘记他曾经没有阻止过伤害；他听见父亲的名字，却没有答应进去找人。你先说清能把回话送到哪里，再退回墙后。';
+  }
   if (state.nodeId === 'n25' && (has(state, 'sisterHurt') || has(state, 'sisterTreated'))) {
     node.paragraphs[2] = '母亲拒绝随贾维德强行离开，托相邻妇人先照应萨米，沿约过的后门返回找你的消息。姐姐仍在诊疗内院照护脚踝，没有被再拖上街。你还不知道她们的消息，继续讲火苗等在石门前的故事。';
     node.paragraphs.push('姐姐把核对好的副本留给你，自己在帘后等回话。治疗没有抹掉伤，接应不能再靠她奔跑。');
   }
   if (state.nodeId === 'n25' && state.stats.exposure > 8) node.paragraphs.push('门边有人认出了你，要求你离开。阿明示意别再靠近；今天不能把几次侥幸当成仍有的退路。');
   if (state.nodeId === 'n25' && !has(state, 'storyShared')) node.tale = '火苗独自在石门前等，想起另一粒火说过要给自己留一点热。看门人曾请它照亮来信，这一次认出了它，决定进去找那个旅人。火苗讲着名字，没有把自己的小身体烧完。它还不知道门会不会再开，先把下一句话留住。';
+  if (state.nodeId === 'n25' && !has(state, 'guardBond')) node.tale = '看门人把旧信护在衣襟里，记着另一盏再也不会亮的灯。火苗陪他念完点灯人的名字，才说起门里的旅人。看门人没有答应开门。风大了，火苗退回墙后，留下能传回消息的方向。';
   if (state.nodeId === 'n26' && !state.history.some(step => step.nodeId === 'n21' || step.nodeId === 'n25')) node.paragraphs[0] = '法里达确认私院今晚仍愿意留人。你先托人把会合的门告诉母亲，再和姐姐清点药与口粮。大家重新在门内见到彼此时，谁也没有催家人马上走回街上。';
   if (state.nodeId === 'n30') {
     node.scene = has(state, 'boarded') ? 'road' : state.sister === 'apart' ? 'workshop' : has(state, 'sustained') ? 'courtyard' : 'home';
@@ -419,7 +431,11 @@ export function getNode(state: BranchState): StoryNode {
   if (state.nodeId === 'n30') {
     const live = node.choices.find(choice => choice.id === 'live');
     if (live) {
-      live.label = state.father === 'free' ? '这次，换我带父亲回家' : has(state, 'boarded') ? '不等别人允许，走我们选择的路' : '把担子分出去，也给自己留一个位置';
+      live.label = state.father === 'free' ? '这次，换我带父亲回家' : has(state, 'boarded') ? '不等别人允许，走我们选择的路'
+        : has(state, 'sustained') ? '坐进课堂，把粉笔接过来'
+        : state.sister === 'apart' ? '回到作坊，给自己留下生活'
+        : has(state, 'rescueRoute') && state.history.some(step => step.nodeId === 'n25') ? '承认没能救回，先护住回来的人'
+        : has(state, 'settled') || has(state, 'shelter') ? '接过这一夜，让家人也照顾我' : '留在城里，和她们一起谋生';
       live.detail = state.father === 'free' ? '父亲已经获救。你还会害怕，却已能牵住回家的方向。' : has(state, 'boarded') ? '家人在露天货斗里，父亲仍未归。你决定往前走，也带着这份牵挂。' : '命令还在，父亲未归；你不再用一个人硬撑，证明自己值得被爱。';
     }
   }
@@ -470,7 +486,9 @@ export function mapLegacyEndingId(id: string): string | null {
 
 /** The consequence is kept in the journal; current facts are never overwritten. */
 function consequenceFor(state: BranchState, choice: StoryChoice): string {
-  if (state.nodeId === 'n20' && choice.id === 'submit' && !has(state, 'guardBond')) return '阿明问谁认得来信上的字，你替他读完，再慢慢教他把那几个字写下来。之后你才提出父亲的名字。他没有立刻答应，但让你留下辨认人的线索，在换岗时再来问。';
+  if (state.nodeId === 'n20' && choice.id === 'submit' && !has(state, 'guardBond')) return has(state, 'guardKnown')
+    ? '阿明认出替他读信的孩子。接下来几次往来，你陪他练写妻子哈拉的名字，也慢慢说起父亲。他把你的另纸姓名收好，让你换岗时再来问；他仍没有保证能救人。'
+    : '阿明请你读信。妻子哈拉乘坐的巴士触雷、重伤后去世，他沉默着，又请你念她的名字。你把信还给他。接下来的几次往来，你陪他认字，后来才另纸写下父亲的姓名。他让你换岗时再来问，仍没有保证能救人。';
   if (state.nodeId === 'n23' && choice.id === 'ask' && !has(state, 'guardBond')) return '姐姐核对父亲的名字，你托阿齐兹先把纸递给阿明，再按约定去北门。你还没有同这个看守建立足够往来，不能把手里的证词当成他会冒险帮忙的承诺。';
   if (state.nodeId === 'n29' && choice.id === 'evidence' && state.sister === 'apart') return '你与姐姐在私院核对记录，交给阿齐兹。她和母亲、萨米留在法里达家，你按约定去作坊后间借宿。记录先走一步，家人没有被送到街上等一辆来历不明的车。';
   if (state.nodeId === 'n26' && choice.id === 'board' && has(state, 'sisterHurt')) return '优素福本人到场后，家人才离开私院。姐姐经照护能慢慢挪到车边，脚踝仍不能使力；你等她坐稳，再把萨米抱上去。母亲又数清每个人，记下下一处仍要复查的地址。';

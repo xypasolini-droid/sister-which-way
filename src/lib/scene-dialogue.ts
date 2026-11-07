@@ -80,10 +80,10 @@ export function getSceneDialogue(state: BranchState): SceneDialogueLine[] {
       ];
     case 'n09':
       return [
-        friend(state.edition === 'short' ? '工钱收好了。那个人在等谁替他读信。' : '他们推疼你了吗？纸都捡回来了。'),
-        guard('替我读这封信。我叫阿明。'),
-        street('信说你妻子死于战火。能帮我问父亲吗？'),
-        guard('她的名字，教我认认。你父亲的也写下。'),
+        friend(state.edition === 'short' ? '那个人一直攥着信。我们慢一点。' : '纸捡回来了。那个人想请你读信。'),
+        guard('我叫阿明。信里的哈拉，是我妻子。'),
+        street('哈拉坐的巴士触了雷……对不起。'),
+        guard('哈拉……她的名字，再念一遍吧。'),
       ];
     case 'n10':
       return [
@@ -100,10 +100,10 @@ export function getSceneDialogue(state: BranchState): SceneDialogueLine[] {
       ];
     case 'n12':
       if (!has('guardKnown')) return [
-        street('邻居看见父亲被押进北门。这是证词。'),
-        guard('我叫阿明。先替我读信，教我认妻子的名。'),
-        street('信说她死于战火。这几个字，就是她的名。'),
-        guard('字我记住了。名字留下，今天不准进去。'),
+        guard('我叫阿明。能替我读读妻子的消息吗？'),
+        street('哈拉坐的巴士触了雷……对不起。'),
+        guard('哈拉……她的名字，再念一遍吧。'),
+        street('哈拉。我慢慢念，你听着。'),
       ];
       return [
         street(cameFrom('n11') ? '邻居看见父亲被押进北门。这是证词。' : '阿明说父亲被押进这里。今天能见他吗？'),
@@ -141,10 +141,10 @@ export function getSceneDialogue(state: BranchState): SceneDialogueLine[] {
       ];
     case 'n17':
       if (!has('guardBond')) return [
-        street(cameFrom('n16') ? '文书办好了。你的信，我也读给你听。' : '这封信我读给你听。也请你查查父亲。'),
-        guard('她死在战火里……教我认妻子的名字吧。'),
-        street('好。写完，再看我父亲的名字好吗？'),
-        guard('查到了，他还在名册上。别在街口久留。'),
+        guard(has('guardKnown') ? '哈拉……妻子的名字，我总怕认错。' : '我叫阿明。信里的哈拉，是我妻子。'),
+        street(has('guardKnown') ? '这里是哈拉。我陪你再写一次。' : '哈拉坐的巴士触了雷……对不起。'),
+        guard(has('guardKnown') ? '我想自己认得她的名字。' : '她的名字，再念一遍好吗？'),
+        street('哈拉。我慢慢念，你听着。'),
       ];
       return [
         guard(cameFrom('n12') ? '托人送来的名字收到了。父亲还在名册上。' : '文书办好了？你父亲还在名册上。'),
@@ -230,10 +230,10 @@ export function getSceneDialogue(state: BranchState): SceneDialogueLine[] {
         guard('把能回话的地址留下。先退到门后去。'),
       ];
       if (!has('guardBond')) return [
-        cameFrom('n20') || !previous ? street('我来求你放父亲，还能先做些什么？') : entering,
-        guard('这封信读完，我先记下你父亲的名字。'),
-        street('记下以后，你会去找他吗？'),
-        guard('我不能答应。先说清能把回话送到哪里。'),
+        guard('先躲到墙后。别站在枪口前。'),
+        has('guardKnown') ? street('妻子哈拉的名字，你还在练吗？') : guard('信里的哈拉是我妻子。我想再听听。'),
+        has('guardKnown') ? guard('嗯。我想自己认得她的名字。') : street('哈拉。我慢慢念，你听着。'),
+        guard('救人的事我还没答应。留下回话的地址。'),
       ];
       return [
         entering,
