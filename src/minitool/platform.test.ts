@@ -14,6 +14,21 @@ function sdkMock(values = new Map<string, string>()) {
 afterEach(() => { vi.useRealTimers(); });
 
 describe('minitool persistence', () => {
+  it('keeps r7 progress independent from every historical save namespace', async () => {
+    const old = 'sister-which-way.v3';
+    const oldEndings = 'sister-which-way.endings.r6';
+    const values = new Map([[old, 'unfinished-old-story'], [oldEndings, '["dream_guardian"]']]);
+    const native = sdkMock(values);
+    const runtime = createMinitoolRuntime({ xhs: { launchOptions: { miniToolEnv: { buildVersion: 9490000 } }, miniTool: native } });
+    await runtime.prepareRuntime();
+    await runtime.writeLocal('sister-which-way.play.r7', 'new-scissors-opening');
+    await runtime.writeLocal('sister-which-way.endings.r7', '["family_escape"]');
+    expect(values.get(old)).toBe('unfinished-old-story');
+    expect(values.get(oldEndings)).toBe('["dream_guardian"]');
+    expect(PROGRESS_KEYS).toContain('sister-which-way.reading.r7');
+    expect(PROGRESS_KEYS).toContain('sister-which-way.ending-states.r7');
+    expect(runtime.readLocal(old)).toBe('unfinished-old-story');
+  });
   it('hydrates every current and historical progress key from the native SDK before synchronous reads', async () => {
     const native = sdkMock(new Map([[saveKey, '["original"]']]));
     const fallback = localStorageMock();

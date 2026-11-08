@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { choose, createInitialState, getChoices, getNode, NODES, type BranchState } from './branch-story';
+import { choose, createInitialState, createRevisionFiveState, getChoices, getNode, LEGACY_NODES as NODES, type BranchState } from './branch-story';
 import { getOppressionShots } from './oppression-scenes';
 
 const sceneState = (nodeId: string, edition?: 'short', flags: string[] = []) => ({ nodeId, edition, endingId: null, flags });
@@ -9,7 +9,7 @@ function shortRoute(actions: string[]): BranchState {
     const result = choose(state, id);
     if (!result) throw new Error(`Illegal test route: ${state.nodeId}/${id}`);
     return result.state;
-  }, createInitialState('short'));
+  }, createRevisionFiveState());
 }
 
 describe('automatic scenes of coercion', () => {
@@ -120,7 +120,7 @@ describe('automatic scenes of coercion', () => {
   });
 
   it('preserves an old missed window while the new route visibly prepares its own opportunity', () => {
-    const initial = createInitialState('short'); delete initial.storyContentRevision;
+    const initial = createRevisionFiveState(); delete initial.storyContentRevision;
     const route = ['work', 'cut', 'buy', 'truth', 'courier', 'plan'];
     const late = route.reduce((state, id) => choose(state, id)!.state, initial);
     expect(late.flags).toContain('guardBond');

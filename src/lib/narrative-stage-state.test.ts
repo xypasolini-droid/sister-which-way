@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
-import { choose, createInitialState, getEnding, getNode, type BranchState, type SceneId } from './branch-story';
+import { choose, createInitialState, createRevisionFiveState, getEnding, getNode, type BranchState, type SceneId } from './branch-story';
 import { selectNarrativeStage, type NarrativeStageContext } from './narrative-stage-state';
 import { getOppressionShots } from './oppression-scenes';
 import { ENDING_TEST_ROUTES, NODE_TEST_ROUTES, REALITY_VARIANT_TEST_ROUTES, SHORT_ENDING_TEST_ROUTES } from './story-test-routes';
 function stage(patch:Partial<BranchState>,scene?:SceneId,camera:Pick<NarrativeStageContext,'beatIndex'|'phase'>={}){const state={...createInitialState(),...patch};return selectNarrativeStage({...state,...camera,scene:scene??getNode(state).scene,ending:state.endingId});}
 function play(path:string[]){return path.reduce((state,id)=>{const next=choose(state,id);if(!next)throw new Error(`${state.nodeId}/${id}`);return next.state;},createInitialState());}
-function playCurrent(path:string[]){return path.reduce((state,id)=>{const next=choose(state,id);if(!next)throw new Error(`${state.nodeId}/${id}`);return next.state;},createInitialState('short'));}
+function playCurrent(path:string[]){return path.reduce((state,id)=>{const next=choose(state,id);if(!next)throw new Error(`${state.nodeId}/${id}`);return next.state;},createRevisionFiveState());}
 describe('physical presence, clothing and visible story consequences',()=>{
  it('opens on the father and daughter stall, then leaves the father absent after arrest',()=>{
   expect(stage({})).toMatchObject({showHero:true,showFather:true,showMother:false,showSister:false,showBrother:false});

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ACT_TITLES, ENDINGS, NODES, NODE_COUNT, choose, createInitialState, getChoices, getEnding, getNode, interpretChoice, validateBranchState, type BranchState } from './branch-story';
+import { ACT_TITLES, REVISION_FIVE_ENDINGS as ENDINGS, LEGACY_NODES as NODES, NODE_COUNT, choose, createInitialState, getChoices, getEnding, getNode, interpretChoice, validateBranchState, type BranchState } from './branch-story';
 import { ENDING_TEST_ROUTES, LEGACY_ENDING_TEST_ROUTES, NODE_TEST_ROUTES, REALITY_VARIANT_TEST_ROUTES } from './story-test-routes';
 
 function walk(route: string[], seen = new Set<string>()) {

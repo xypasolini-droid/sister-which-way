@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { NODES, choose, createInitialState, getChoices, getNode, type BranchState } from '../lib/branch-story';
+import { LEGACY_NODES as NODES, choose, createInitialState, createRevisionFiveState, getChoices, getNode, type BranchState } from '../lib/branch-story';
 import { NODE_TEST_ROUTES, SHORT_ENDING_TEST_ROUTES } from '../lib/story-test-routes';
 vi.mock('@/lib/branch-story', () => import('../lib/branch-story'));
 vi.mock('@/lib/scene-encounter', () => import('../lib/scene-encounter'));
@@ -13,7 +13,7 @@ const reach = (nodeId: string) => NODE_TEST_ROUTES[nodeId].reduce((state, id) =>
 describe('direct single-choice story interface', () => {
   it('renders every ordinary branch, including each locked branch and its reason', () => {
     const states = Object.keys(NODES).map(reach);
-    const pending = [createInitialState('short')];
+    const pending = [createRevisionFiveState()];
     while (pending.length) {
       const state = pending.pop()!;
       if (state.endingId) continue;
@@ -56,7 +56,7 @@ const play = (route: string[]) => route.reduce((state, id) => {
   const result = choose(state, id);
   if (!result) throw new Error(`Unavailable action ${state.nodeId}/${id}`);
   return result.state;
-}, createInitialState('short'));
+}, createRevisionFiveState());
 
 
 describe('revision 5 uses decisive actions rather than an ending menu', () => {
@@ -96,5 +96,28 @@ describe('revision 5 uses decisive actions rather than an ending menu', () => {
     getNode(state);
     getNode(play(SHORT_ENDING_TEST_ROUTES.caravan.slice(0, -1)));
     expect(NODES.n30).toEqual(before);
+  });
+});
+
+describe('revision 6 has exactly the choices in the approved story graph', () => {
+  it('renders nine enabled actions at four forks, with no input or extra dream menu', () => {
+    const pending = [createInitialState('short')], seen = new Set<string>();
+    let total = 0;
+    while (pending.length) {
+      const state = pending.pop()!;
+      if (state.endingId || seen.has(state.nodeId)) continue;
+      seen.add(state.nodeId);
+      const options = getChoices(state), html = render(state);
+      total += options.length;
+      expect(html.match(/<li>/g)).toHaveLength(options.length);
+      expect(html).not.toMatch(/disabled=""|<(?:input|textarea|select)\b|选择下一步|写自己的决定|做一个梦|成年童话/);
+      expect(html).toContain('读手记');
+      for (const option of options) {
+        expect(html).toContain(`<strong>${escape(option.label)}</strong>`);
+        pending.push(choose(state, option.id)!.state);
+      }
+    }
+    expect([...seen].sort()).toEqual(['v6-marriage', 'v6-opening', 'v6-voices', 'v6-war']);
+    expect(total).toBe(9);
   });
 });

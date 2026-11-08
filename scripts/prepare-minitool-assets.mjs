@@ -62,9 +62,34 @@ for (const url of manifest.paths) {
   } else {
     await fs.writeFile(target,bytes);
     const meta=url.endsWith('.svg')?{}:await sharp(bytes).metadata();
-    images.push({source:url,target:local,encoding:'byte-for-byte copy',width:meta.width,height:meta.height,sourceBytes:bytes.length,bytes:bytes.length,sha256:beforeHash});
+    let masterCheck={};
+    if(url.endsWith('.webp')){
+      // Pre-encoded art must pass the same clarity gate as PNGs encoded here.
+      const masterFile=source.replace(/\.webp$/,'.png');
+      let master;
+      try{master=await fs.readFile(masterFile);}catch(error){
+        if(error.code!=='ENOENT')throw error;
+        if(url.startsWith('/art/sister-v6/'))throw Error(`Missing PNG master for clarity audit ${url}`);
+      }
+      if(master){
+        const before=await sharp(master).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+        const after=await sharp(bytes).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+        if(before.info.width!==after.info.width||before.info.height!==after.info.height||before.data.length!==after.data.length)throw Error(`Pre-encoded dimension mismatch ${url}`);
+        let alphaExact=true,squaredError=0,visibleValues=0;
+        for(let i=0;i<before.data.length;i+=4){
+          if(before.data[i+3]!==after.data[i+3])alphaExact=false;
+          if(before.data[i+3]!==0)for(let c=0;c<3;c++){
+            squaredError+=((before.data[i+c]-after.data[i+c])*before.data[i+3]/255)**2;visibleValues++;
+          }
+        }
+        const alphaCompositedPsnrDb=squaredError===0?null:10*Math.log10(255*255/(squaredError/visibleValues));
+        if(!alphaExact||(alphaCompositedPsnrDb!==null&&alphaCompositedPsnrDb<38))throw Error(`Pre-encoded clarity gate failed ${url}: ${alphaCompositedPsnrDb}`);
+        masterCheck={master:url.replace(/\.webp$/,'.png'),masterSha256:createHash('sha256').update(master).digest('hex'),alphaExact,alphaCompositedPsnrDb};
+      }
+    }
+    images.push({source:url,target:local,encoding:'byte-for-byte copy',width:meta.width,height:meta.height,sourceBytes:bytes.length,bytes:bytes.length,sha256:beforeHash,...masterCheck});
   }
 }
-const report={count:images.length,totalSourceBytes:images.reduce((a,x)=>a+x.sourceBytes,0),totalBytes:images.reduce((a,x)=>a+x.bytes,0),resized:false,lossyReencoded:true,images};
+const report={count:images.length,totalSourceBytes:images.reduce((a,x)=>a+x.sourceBytes,0),totalBytes:images.reduce((a,x)=>a+x.bytes,0),resized:false,lossyReencoded:images.some(x=>x.encoding!=='byte-for-byte copy'),images};
 await fs.writeFile(reportPath,JSON.stringify(report,null,2));
-console.log(JSON.stringify({images:report.count,imageBytes:report.totalBytes,sourceBytes:report.totalSourceBytes,resized:false,lossyReencoded:true}));
+console.log(JSON.stringify({images:report.count,imageBytes:report.totalBytes,sourceBytes:report.totalSourceBytes,resized:false,lossyReencoded:report.lossyReencoded}));

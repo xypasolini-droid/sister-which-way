@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NODES, choose, createInitialState, getChoices, type BranchState } from './branch-story';
+import { LEGACY_NODES as NODES, choose, createInitialState, createRevisionFiveState, getChoices, type BranchState } from './branch-story';
 import { NODE_TEST_ROUTES } from './story-test-routes';
 import { getSceneEncounter } from './scene-encounter';
 
@@ -12,7 +12,7 @@ function reach(nodeId: string): BranchState {
   }
   return state;
 }
-const shortAt = (nodeId: string, patch: Partial<BranchState> = {}): BranchState => ({ ...createInitialState('short'), nodeId, ...patch });
+const shortAt = (nodeId: string, patch: Partial<BranchState> = {}): BranchState => ({ ...createRevisionFiveState(), nodeId, ...patch });
 
 describe('scene context for direct story branches', () => {
   it('projects brief contextual responses without adding preparation, arithmetic or resource changes', () => {
@@ -33,7 +33,7 @@ describe('scene context for direct story branches', () => {
   });
 
   it('makes the oppressor and the reason to leave explicit without requiring object preparation', () => {
-    for (const state of [createInitialState(), createInitialState('short')]) {
+    for (const state of [createInitialState(), createRevisionFiveState()]) {
       const encounter = getSceneEncounter(state);
       expect(encounter.goal).toContain('年轻巡查');
       expect(encounter.goal).toMatch(/举棍|拦摊|赶摊/);

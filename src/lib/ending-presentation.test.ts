@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { choose, createInitialState, getEnding, validateBranchState, type BranchState } from './branch-story';
+import { choose, createInitialState, createRevisionFiveState, getEnding, validateBranchState, type BranchState } from './branch-story';
 import { endingEcho, endingGrowth } from './ending-presentation';
 import { NODE_TEST_ROUTES, SHORT_ENDING_TEST_ROUTES } from './story-test-routes';
-function play(route:string[],short=false):BranchState{return route.reduce((state,id)=>{const result=choose(state,id);if(!result)throw new Error(`${state.nodeId}/${id}`);return result.state;},createInitialState(short?'short':undefined));}
+function play(route:string[],short=false):BranchState{return route.reduce((state,id)=>{const result=choose(state,id);if(!result)throw new Error(`${state.nodeId}/${id}`);return result.state;},short?createRevisionFiveState():createInitialState());}
 
 describe('five growth endings remember the actions that caused them',()=>{
   it('gives each fixed fate its own growth, image and remembered cost',()=>{
@@ -43,7 +43,7 @@ describe('five growth endings remember the actions that caused them',()=>{
     expect(endingEcho(state)).not.toContain('走出城');
   });
   it('keeps an authentic finished old short story archived without inventing the new third ending',()=>{
-    const initial=createInitialState('short');delete initial.storyRevision; delete initial.storyContentRevision;
+    const initial=createRevisionFiveState();delete initial.storyRevision; delete initial.storyContentRevision;
     const state=['work','sew','buy','truth','courier','rush','father','live'].reduce((current,id)=>choose(current,id)!.state,initial);
     const restored=validateBranchState(state)!;
     expect(restored).not.toBeNull();

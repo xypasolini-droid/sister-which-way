@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { choose, createInitialState, getEnding, getNode, type BranchState } from './branch-story';
+import { choose, createInitialState, createRevisionFiveState, getEnding, getNode, type BranchState } from './branch-story';
 import { getSceneDialogue } from './scene-dialogue';
 import { buildReadingBeats, getCompanionStatus, getHeroDisplayName, storyPresentationKey, MAX_SUBTITLE_CHARACTERS } from './story-presentation';
 
@@ -100,7 +100,7 @@ describe('performed scenes and a separate full journal',()=>{
       ['neighbor','sew','buy','truth','courier','rush','school'],
     ];
     const screens=routes.map(route=>{
-      const state=route.reduce((current,id)=>choose(current,id)!.state,createInitialState('short'));
+      const state=route.reduce((current,id)=>choose(current,id)!.state,createRevisionFiveState());
       const beats=buildReadingBeats(state);
       expect(beats).toHaveLength(2);
       expect(beats.every(beat=>beat.kind==='ending'&&beat.text.length<=40)).toBe(true);
@@ -121,7 +121,7 @@ describe('performed scenes and a separate full journal',()=>{
       ['work','sew','buy','pact','care','rush','father'],
       ['neighbor','sew','buy','truth','courier','rush','school'],
     ]){
-      const state=route.reduce((current,id)=>choose(current,id)!.state,createInitialState('short'));
+      const state=route.reduce((current,id)=>choose(current,id)!.state,createRevisionFiveState());
       const lines=buildReadingBeats(state);
       expect(lines).toHaveLength(2);
       expect(lines.every(line=>line.text.length<=40)).toBe(true);

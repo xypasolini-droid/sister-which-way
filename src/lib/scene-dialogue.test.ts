@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NODES, SISTER_OFFSTAGE_NODES, choose, createInitialState, type BranchState } from './branch-story';
+import { LEGACY_NODES as NODES, SISTER_OFFSTAGE_NODES, choose, createInitialState, type BranchState } from './branch-story';
 import { getSceneDialogue, type SceneDialogueLine } from './scene-dialogue';
 
 function at(nodeId: string, changes: Partial<BranchState> = {}): BranchState {

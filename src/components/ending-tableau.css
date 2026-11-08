@@ -16,6 +16,7 @@
 .has-fate-tableau .decision-feedback:empty{display:none}
 @keyframes ending-settle{from{opacity:.3;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
 @media(max-width:760px){
+ .ending-tableau--six::before{content:"";position:absolute;inset:-36px;z-index:-1;background-image:var(--scene-backdrop);background-position:center;background-size:cover;filter:blur(30px) brightness(.55) saturate(.7);opacity:.8;pointer-events:none}
  .ending-tableau-image{height:64dvh;object-fit:contain;object-position:center;animation:ending-settle 1s ease-out both}
  .ending-tableau-time{top:calc(92px + env(safe-area-inset-top));left:22px;font-size:10px}
  .ending-tableau-shade{background:linear-gradient(180deg,#080c1066,transparent 19%,transparent 45%,#101515 66%)}
@@ -30,3 +31,4 @@
 }
 @media(prefers-reduced-motion:reduce){.ending-tableau-image{animation:none}}
 .ending-tableau--still .ending-tableau-image{animation:none}
+.ending-tableau--six .ending-tableau-image{object-fit:contain;animation:none}

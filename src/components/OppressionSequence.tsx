@@ -2,25 +2,36 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Pause, Play, SkipForward } from 'lucide-react';
-import type { DramaShot } from '@/lib/oppression-scenes';
 import './oppression-sequence.css';
 
-type Props = { shots: DramaShot[]; index: number; paused: boolean; suspended: boolean; onTogglePause: () => void; onAdvance: () => void; onSkip: () => void };
+type SequenceShot = { id: string; speaker: string; line: string; caption?: string; durationMs: number };
+type Props = { shots: SequenceShot[]; index: number; paused: boolean; suspended: boolean; onTogglePause: () => void; onAdvance: () => void; onSkip: () => void };
 
 export default function OppressionSequence({ shots, index, paused, suspended, onTogglePause, onAdvance, onSkip }: Props) {
   const shot = shots[index];
   const [visible, setVisible] = useState(true);
   const sequenceRef = useRef<HTMLElement>(null);
   useEffect(() => {
-    const update = () => setVisible(!document.hidden);
+    const update = () => setVisible(!document.hidden && document.hasFocus());
+    const suspend = () => setVisible(false);
     update();
     document.addEventListener('visibilitychange', update);
-    return () => document.removeEventListener('visibilitychange', update);
+    window.addEventListener('blur', suspend);
+    window.addEventListener('focus', update);
+    return () => {
+      document.removeEventListener('visibilitychange', update);
+      window.removeEventListener('blur', suspend);
+      window.removeEventListener('focus', update);
+    };
   }, []);
   useEffect(() => { sequenceRef.current?.focus({ preventScroll: true }); }, []);
   useEffect(() => {
     if (!shot || paused || suspended || !visible) return;
-    const timer = window.setTimeout(onAdvance, shot.durationMs);
+    const timer = window.setTimeout(() => {
+      // A blur may arrive just before this callback and before React has
+      // committed the suspended render. Never advance in that small window.
+      if (!document.hidden && document.hasFocus()) onAdvance();
+    }, shot.durationMs);
     return () => window.clearTimeout(timer);
   }, [shot?.id, shot?.durationMs, paused, suspended, visible, onAdvance]);
   if (!shot) return null;

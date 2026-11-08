@@ -1,12 +1,12 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { createInitialState, type BranchState } from './branch-story';
+import { createInitialState, createRevisionFiveState, type BranchState } from './branch-story';
 import { getOppressionShots, type DramaShot } from './oppression-scenes';
 import { getDramaStaging } from './drama-staging';
 import { selectNarrativeStage } from './narrative-stage-state';
 
-const story = (nodeId: string): BranchState => ({ ...createInitialState('short'), nodeId, outfit: 'worker', father: 'missing', flags: ['motherHurt', 'disguise', 'friendMet'] });
+const story = (nodeId: string): BranchState => ({ ...createRevisionFiveState(), nodeId, outfit: 'worker', father: 'missing', flags: ['motherHurt', 'disguise', 'friendMet'] });
 const shots = (nodeId: string) => getOppressionShots(story(nodeId));
 const cast = (nodeId: string, shot: DramaShot, phase: 'cinematic' | 'explore' | 'reading' = 'cinematic') => selectNarrativeStage({ ...story(nodeId), scene: shot.scene, dramaShot: shot, phase });
 

@@ -16,7 +16,7 @@ export type NarrativeStageProps = {
   stats: { food: number; coins: number; trust: number; hope: number; exposure: number; health: number };
   flags: string[];
   nodeId: string;
-  storyRevision?: 5;
+  storyRevision?: 5 | 6;
   actionLabel?: string;
   reducedMotion: boolean;
   ending?: string | null;

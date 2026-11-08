@@ -1,50 +1,41 @@
 import { writeFileSync } from 'node:fs';
-import { createInitialState, getChoices, getNode, choose, type BranchState } from '../src/lib/branch-story';
-import { getOppressionShots } from '../src/lib/oppression-scenes';
-import { selectNarrativeStage } from '../src/lib/narrative-stage-state';
+import { createInitialState, getChoices, choose, type BranchState } from '../src/lib/branch-story';
+import { SIX_ART, getSixShots } from '../src/lib/six-story-presentation';
+import { SIX_ENDING_IDS } from '../src/lib/six-ending-story';
 
 const paths = new Set<string>();
 const endingCounts: Record<string, number> = {};
+const decisions = new Set<string>();
+const options = new Set<string>();
+const shots = new Set<string>();
+const routes: { ending: string; choices: string[]; durationMs: number }[] = [];
 let stateCount = 0;
-function collect(value: unknown): void {
-  if (typeof value === 'string' && value.startsWith('/art/')) paths.add(value);
-  else if (value && typeof value === 'object') for (const child of Object.values(value)) collect(child);
-}
-function visit(state: BranchState): void {
+function visit(state: BranchState, duration = 0): void {
   stateCount++;
-  const node = getNode(state);
+  // Ending states own consequence shots before their final tableau.
+  for (const shot of getSixShots(state)) {
+    paths.add(SIX_ART[shot.art].src); shots.add(shot.id); duration += shot.durationMs;
+  }
   if (state.endingId) {
     endingCounts[state.endingId] = (endingCounts[state.endingId] ?? 0) + 1;
-    paths.add(`/art/sister-v4/end-${state.endingId}.webp`);
+    routes.push({ ending: state.endingId, choices: state.history.map(item => item.choiceId), durationMs: duration });
     return;
   }
-  // Images on persistent offstage actors also own a src, so include all assets.
-  const context = { ...state, scene: node.scene, phase: 'explore' as const };
-  const staging = selectNarrativeStage(context);
-  collect(staging.assets); collect(staging.drama);
-  getOppressionShots(state).forEach((dramaShot, beatIndex) => {
-    const shot = selectNarrativeStage({ ...context, scene: dramaShot.scene, phase: 'cinematic', dramaShot, beatIndex });
-    collect(shot.assets); collect(shot.drama);
-  });
-  const available = getChoices(state).filter(choice=>choice.enabled);
+  decisions.add(state.nodeId);
+  const available = getChoices(state).filter(choice => choice.enabled);
   if (!available.length) throw Error(`Dead end ${state.nodeId}`);
   for (const choice of available) {
-    const next = choose(state,choice.id);
+    options.add(`${state.nodeId}/${choice.id}`);
+    const next = choose(state, choice.id);
     if (!next) throw Error(`Invalid edge ${state.nodeId}/${choice.id}`);
-    if (next.state.history.length>7) throw Error('More than seven choices');
-    if (next.state.endingId && next.state.history.length!==7) throw Error('Early ending');
-    visit(next.state);
+    if (next.state.history.length > 3) throw Error('More than three decisions in the approved graph');
+    visit(next.state, duration);
   }
 }
 visit(createInitialState('short'));
-for (const name of ['bag','book','bread','medicine','letter','lantern']) paths.add(`/art/sister/${name}.png`);
-for (const name of ['hero-cloak','hero-worker','hero-worker-indoor','hero-travel-girl','mother']) paths.add(`/art/sister-v2/${name}.png`);
-for (const name of ['mother-standing','father-standing-crutch','patrol','armed-patrol','adult-builder']) paths.add(`/art/sister-v3/${name}.png`);
-// Bounded visual coverage for authenticated historical saves. The active graph
-// does not visit the clinic or these older travel/injury poses, but recovery can.
-for (const name of ['hero-travel-indoor','father-rescued','sister-injured','sister-covered-injured','sister-outdoor-injured']) paths.add(`/art/sister-v2/${name}.png`);
-paths.add('/art/sister/clinic.png');
-paths.add('/art/scene-forest.png'); paths.add('/art/sister-v2/tale-flame.png');
-const report = { paths:[...paths].sort(), routeCount:Object.values(endingCounts).reduce((a,b)=>a+b,0), stateCount, endingCounts, method:'Exhaustive legal choose() paths; every cinematic shot, persistent actor and fallback; no injected ending state.' };
-writeFileSync(process.argv[2],JSON.stringify(report,null,2));
-console.log(JSON.stringify({ assets:paths.size,routeCount:report.routeCount,stateCount,endingCounts }));
+if (routes.length !== 6 || decisions.size !== 4 || options.size !== 9) throw Error('Expected exactly six routes, four forks and nine options');
+for (const id of SIX_ENDING_IDS) if (endingCounts[id] !== 1) throw Error(`Ending ${id} must have exactly one complete route`);
+for (const route of routes) if (route.choices.length < 2 || route.choices.length > 3) throw Error(`Unexpected route length ${route.ending}`);
+const report = { storyRevision: 6, storyContentRevision: 7, paths: [...paths].sort(), routeCount: routes.length, decisionCount: decisions.size, optionCount: options.size, shotCount: shots.size, stateCount, endingCounts, routes, method: 'Exhaustive legal choose() routes; every new graph shot including terminal aftermath; historical records remain text-only offline.' };
+writeFileSync(process.argv[2], JSON.stringify(report, null, 2));
+console.log(JSON.stringify({ assets: paths.size, routes: routes.length, forks: decisions.size, options: options.size, shots: shots.size, endingCounts }));

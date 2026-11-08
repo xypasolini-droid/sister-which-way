@@ -5,7 +5,7 @@ import { getDramaStaging } from './drama-staging';
 
 export type NarrativeStageContext = Pick<BranchState, 'nodeId' | 'outfit' | 'sister' | 'father' | 'flags'> & {
   scene: SceneId; ending?: string | null;
-  storyRevision?: 5;
+  storyRevision?: 5 | 6;
   beatIndex?: number; phase?: 'explore' | 'reading' | 'choice' | 'compose' | 'intro' | 'ending' | 'cinematic';
   dramaShot?: DramaShot;
   stats: Pick<BranchState['stats'], 'trust' | 'health' | 'food'>;

@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: '姐姐，我该怎么走 · 一纸童话',
-  description: '一对姐妹，一座被封锁的山城。七次单选，五种不同的命运。你的行动改变她与家人的去路，其中两种结局是明确标示的成年童话。',
+  description: '最后一点粮食，姐姐握着剪刀。四处分叉、六条命运：在战乱中选择生存、家人与朋友。短镜头自动推进的互动故事。',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

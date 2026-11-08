@@ -1,273 +1,186 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Backpack, BookOpen, Check, ChevronRight, Download, Eye, Feather, Info, LockKeyhole, Maximize, MoonStar, MoreHorizontal, RotateCcw, X } from 'lucide-react';
-import NarrativeStage from './NarrativeStage';
+import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronRight, Download, Eye, Feather, Info, LockKeyhole, Maximize, MoreHorizontal, RotateCcw, Volume2, VolumeX, X } from 'lucide-react';
 import EndingTableau, { getEndingTableau } from './EndingTableau';
+import SixStoryStage from './SixStoryStage';
 import SceneEncounter from './SceneEncounter';
 import OppressionSequence from './OppressionSequence';
-import { getOppressionShots } from '@/lib/oppression-scenes';
-import { createInitialState, getNode, getChoices, choose, getEnding, validateBranchState, ENDINGS, NODES, ACT_TITLES, STAT_LABELS, type BranchState, type Stats } from '@/lib/branch-story';
-import { buildReadingBeats, getCompanionStatus, storyPresentationKey } from '@/lib/story-presentation';
-import { selectNarrativeStage } from '@/lib/narrative-stage-state';
+import { createInitialState, getNode, getChoices, choose, getEnding, validateBranchState, ENDINGS, type BranchState } from '@/lib/branch-story';
+import { storyPresentationKey } from '@/lib/story-presentation';
+import { getSixChapter, getSixShots, getSixStill } from '@/lib/six-story-presentation';
+import { createStoryAudio } from '@/lib/story-audio';
 import { isMinitool, canFullscreen, readLocal, writeLocal, readSession, writeSession, downloadStory, enterFullscreen } from '@/lib/game-runtime';
-import { endingGrowth, endingEcho } from '@/lib/ending-presentation';
-import { initialPlayPhase, readPlayPosition, type PlayPhase, type PlayPosition } from '@/lib/play-flow';
-import { restoreEndingCollections, serializeEndingStates } from '@/lib/ending-collection';
+import { initialPlayPhase, readPlayPosition, resolveSixPlayPhase, type PlayPhase, type PlayPosition } from '@/lib/play-flow';
+import { getArchivedEnding, restoreEndingCollections, restoreTenEndingArchive, serializeEndingStates } from '@/lib/ending-collection';
 
 type Frame = { state: BranchState; consequence: string; changes: string[]; action: string };
-type Panel = 'bag' | 'journal' | 'tale' | 'endings' | 'choices' | 'dreams' | 'menu' | 'about' | 'reset' | 'export' | null;
-type Phase = PlayPhase;
-type ReadingPosition = PlayPosition;
-const SAVE = 'sister-which-way.v3';
-// Earlier completions remain history and cannot unlock the revised five fates.
-const COLLECTION = 'sister-which-way.endings.r6';
-const ENDING_STATES = 'sister-which-way.ending-states.r6';
-const OLD_COLLECTION = 'sister-which-way.endings.r5';
-const OLD_ENDING_STATES = 'sister-which-way.ending-states.r5';
-const POSITION = 'sister-which-way.reading.v6';
-const SETTINGS = 'sister-which-way.preferences.v3';
+type Panel = 'journal' | 'endings' | 'menu' | 'about' | 'reset' | 'export' | null;
+const SAVE = 'sister-which-way.play.r7', COLLECTION = 'sister-which-way.endings.r7', ENDING_STATES = 'sister-which-way.ending-states.r7';
+const POSITION = 'sister-which-way.reading.r7', SETTINGS = 'sister-which-way.preferences.v3', SESSION = 'sister-entered.r7';
 const fresh = (): Frame => ({ state: createInitialState('short'), consequence: '', changes: [], action: '' });
-const SCENES: Record<string, string> = { home: '家中的房间', market: '旧城集市', workshop: '裁缝铺', courtyard: '石榴庭院', clinic: '街角诊所', checkpoint: '城门检查点', prison: '拘留所外院', road: '通向山口的路' };
-const ITEMS: Record<string, string> = { book: '父亲的书', ribbon: '姐妹的缎带', bread: '面饼', medicine: '药包', documents: '地址与旧纸', letter: '往来的信件', evidence: '父亲的身份线索', lantern: '油灯', caravan: '接应的约定', school: '庭院课堂' };
-const PANEL_NAMES: Record<NonNullable<Panel>, string> = { bag: '带在身边的', journal: '走过的这一程', tale: '姐姐讲过的童话', endings: '留下的故事', choices: '先想一想', dreams: '让故事做一个梦', menu: '停一会儿', about: '关于这个故事', reset: '重新走一条路', export: '带走这一程' };
+const PANEL_NAMES: Record<NonNullable<Panel>, string> = { journal: '走过的这一程', endings: '留下的故事', menu: '停一会儿', about: '关于这个故事', reset: '重新走一条路', export: '带走这一程' };
+const modeLabel = (mode?: string) => mode === 'dream' ? '梦境' : mode === 'future' ? '原创未来' : '现实';
 
 export default function SisterGame() {
   const [frames, setFrames] = useState<Frame[]>([fresh()]);
-  const [ready, setReady] = useState(false);
-  const [entered, setEntered] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [unlocked, setUnlocked] = useState<string[]>([]);
-  const [endingStates, setEndingStates] = useState<Record<string, BranchState>>({});
-  const [oldUnlocked, setOldUnlocked] = useState<string[]>([]);
-  const [oldEndingStates, setOldEndingStates] = useState<Record<string, BranchState>>({});
-  const [panel, setPanel] = useState<Panel>(null);
-  const [viewEnding, setViewEnding] = useState<string | null>(null);
-  const [position, setPosition] = useState<ReadingPosition | null>(null);
-  const [exportText, setExportText] = useState('');
-  const [notice, setNotice] = useState('');
-  const [systemReduced, setSystemReduced] = useState(false);
-  const [lessMotion, setLessMotion] = useState(false);
-  const [largeText, setLargeText] = useState(false);
-  const [quiet, setQuiet] = useState(false);
-  const [dramaPaused, setDramaPaused] = useState(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const storyRef = useRef<HTMLElement>(null);
-  const current = frames[frames.length - 1];
-  const state = current.state;
-  const key = storyPresentationKey(state);
-  const routeRef = useRef(key);
-  routeRef.current = key;
-  const node = getNode(state);
-  const choices = getChoices(state);
-  const ordinaryChoices = choices.filter(choice => !choice.id.startsWith('dream_'));
-  const dreamChoices = choices.filter(choice => choice.id.startsWith('dream_'));
-  const visibleChoices = state.storyRevision === 5 || state.nodeId === 'n30' ? choices : ordinaryChoices;
-  const ending = getEnding(state);
-  const tableau = state.storyRevision === 5 && ending ? getEndingTableau(state.endingId) : null;
-  const totalDecisions = state.storyRevision === 5 ? 7 : 8;
-  const dreamEnding = Boolean(state.endingId?.startsWith('dream_'));
-  const companion = getCompanionStatus(state);
-  const shots = getOppressionShots(state);
-  const recoveredPhase = position?.key === key ? position.phase === 'compose' ? 'choice' : position.phase : initialPlayPhase(state);
-  const phase = recoveredPhase === 'cinematic' && !shots.length ? 'explore' : recoveredPhase;
-  const beats = buildReadingBeats(state, current.consequence);
-  const beatIndex = position?.key === key ? Math.max(0, Math.min(position.index, (phase === 'cinematic' ? shots.length : beats.length) - 1)) : 0;
-  const dramaShot = ending ? undefined : phase === 'cinematic' ? shots[beatIndex] : state.storyRevision === 5 && state.nodeId === 'n21' ? undefined : shots.at(-1);
-  const visualScene = dramaShot?.scene || ending?.scene || node.scene;
-  const stage = selectNarrativeStage({ ...state, scene: visualScene, ending: state.endingId, dramaShot, phase, beatIndex });
-  const placeName = tableau?.place || dramaShot?.location || stage.locationName || SCENES[visualScene];
-  const beat = beats[beatIndex];
-  const fatherStatus = state.nodeId === 'n01' ? '与你一起在市场摆摊'
-    : state.nodeId === 'n02' ? (phase === 'reading' || phase === 'cinematic') && beatIndex < 3 ? '武装者闯进家中，正在把他带走' : '刚刚在全家人面前被抓走，押往拘留院'
-    : state.father === 'free' ? '已从监所出来，仍需要照护'
-    : state.father === 'located' ? '已进一步确认拘押信息，还没能带他回来'
-    : '被抓进拘留院后，尚未得到他的近况';
-  const inTale = entered && phase === 'reading' && beat?.kind === 'tale';
-  const sceneBeats = beats.filter(item => (item.kind === 'tale') === inTale);
-  const sceneBeatIndex = Math.max(0, sceneBeats.indexOf(beat));
-  const reduced = systemReduced || lessMotion;
-  const viewingPrevious = Boolean(viewEnding?.startsWith('old:'));
-  const viewedId = viewingPrevious ? viewEnding!.slice(4) : viewEnding;
+  const [ready, setReady] = useState(false), [entered, setEntered] = useState(false), [saved, setSaved] = useState(false);
+  const [unlocked, setUnlocked] = useState<string[]>([]), [endingStates, setEndingStates] = useState<Record<string, BranchState>>({});
+  const [oldUnlocked, setOldUnlocked] = useState<string[]>([]), [oldEndingStates, setOldEndingStates] = useState<Record<string, BranchState>>({});
+  const [oldProgress, setOldProgress] = useState(false), [panel, setPanel] = useState<Panel>(null), [viewEnding, setViewEnding] = useState<string | null>(null);
+  const [position, setPosition] = useState<PlayPosition | null>(null), [exportText, setExportText] = useState(''), [notice, setNotice] = useState('');
+  const [systemReduced, setSystemReduced] = useState(false), [lessMotion, setLessMotion] = useState(false), [largeText, setLargeText] = useState(false);
+  const [quiet, setQuiet] = useState(false), [paused, setPaused] = useState(false), [visible, setVisible] = useState(true), [sound, setSound] = useState(false);
+  const audioRef = useRef<ReturnType<typeof createStoryAudio> | null>(null), dialogRef = useRef<HTMLDialogElement>(null);
+  const current = frames[frames.length - 1], state = current.state, key = storyPresentationKey(state);
+  const routeRef = useRef(key); routeRef.current = key;
+  const node = getNode(state), ending = getEnding(state), shots = getSixShots(state);
+  const recoveredPhase = position?.key === key ? position.phase : initialPlayPhase(state);
+  const phase = resolveSixPlayPhase(recoveredPhase, Boolean(ending), shots.length);
+  const index = position?.key === key ? Math.max(0, Math.min(position.index, shots.length - 1)) : 0;
+  const activeShot = phase === 'cinematic' ? shots[index] : getSixStill(state);
+  const chapter = getSixChapter(state), tableau = getEndingTableau(state.endingId), reduced = systemReduced || lessMotion;
+  const viewingPrevious = Boolean(viewEnding?.startsWith('old:')), viewedId = viewingPrevious ? viewEnding!.slice(4) : viewEnding;
   const collectedId = viewedId && (viewingPrevious ? oldUnlocked : unlocked).includes(viewedId) ? viewedId : null;
   const collectedState = collectedId ? (viewingPrevious ? oldEndingStates : endingStates)[collectedId] : null;
-  const collectedEnding = collectedState ? getEnding(collectedState) : null;
-  const legacyEnding = collectedId && !collectedEnding ? ENDINGS.find(e => e.id === collectedId) : null;
+  const originalTenEnding = viewingPrevious && collectedId?.startsWith('legacy10:') ? getArchivedEnding(collectedId) : null;
+  const collectedEnding = originalTenEnding || (collectedState ? getEnding(collectedState) : viewingPrevious && collectedId ? getArchivedEnding(collectedId) : null);
 
   useEffect(() => {
+    const stored = (storageKey: string) => { try { return readLocal(storageKey); } catch { return null; } };
     try {
-      const raw = readLocal(SAVE);
+      const raw = stored(SAVE);
       if (raw) {
         const data = JSON.parse(raw);
-        if (!Array.isArray(data) || !data.length || data.length > 40) throw Error('save');
-        const parsed: Frame[] = data.map((f: Frame) => {
-          const valid = validateBranchState(f.state);
-          if (!valid || typeof f.consequence !== 'string' || typeof f.action !== 'string' || !Array.isArray(f.changes) || !f.changes.every(x => typeof x === 'string')) throw Error('save');
+        if (!Array.isArray(data) || !data.length || data.length > 4) throw Error('save');
+        const parsed: Frame[] = data.map((frame: Frame) => {
+          const valid = validateBranchState(frame.state);
+          if (!valid || valid.storyRevision !== 6 || valid.storyContentRevision !== 7) throw Error('revision');
           const last = valid.history.at(-1);
-          const originalLabel = f.state.history.at(-1)?.label;
-          return { state: valid, consequence: last?.consequence || '', action: f.action === originalLabel ? last?.label || '' : f.action.slice(0, 240), changes: f.changes.slice(0, 12) };
+          return { state: valid, consequence: last?.consequence || '', action: last?.label || '', changes: Array.isArray(frame.changes) ? frame.changes.filter(x => typeof x === 'string').slice(0, 12) : [] };
         });
         setFrames(parsed);
       }
-    } catch { setNotice('旧存档暂时没能读出来。这次可以继续游玩；请保留这一程，稍后重新进入再试。'); }
-    const stored = (storageKey: string) => { try { return readLocal(storageKey); } catch { return null; } };
-    const collections = restoreEndingCollections({ ids: stored(COLLECTION), states: stored(ENDING_STATES) }, { ids: stored(OLD_COLLECTION), states: stored(OLD_ENDING_STATES) });
+    } catch { setNotice('这一页暂时没有读出来。你可以从剪刀前重新开始；旧版进度仍保留。'); }
+    // Read the original main save without migrating or rewriting it. A completed
+    // old run is also a historical completion when its old collection is absent.
+    let oldSnapshot: BranchState | null = null;
+    const oldSave = stored('sister-which-way.v3');
+    try {
+      const oldFrames = JSON.parse(oldSave || 'null');
+      if (Array.isArray(oldFrames) && oldFrames.length) oldSnapshot = validateBranchState(oldFrames.at(-1)?.state);
+    } catch {}
+    const collections = restoreEndingCollections({ ids: stored(COLLECTION), states: stored(ENDING_STATES) }, [
+      { ids: stored('sister-which-way.endings.r6'), states: stored('sister-which-way.ending-states.r6'), revision: 'r5c6' },
+      { ids: stored('sister-which-way.endings.r5'), states: stored('sister-which-way.ending-states.r5'), revision: 'r5c0' },
+      { ids: stored('sister-which-way.endings.v3'), states: stored('sister-which-way.ending-states.v3'), revision: 'legacy' },
+      restoreTenEndingArchive(stored('sister-which-way.ten-ending-archive.v1')),
+      { ids: null, states: oldSnapshot?.endingId ? JSON.stringify({ completedMainSave: oldSnapshot }) : null },
+    ]);
     setUnlocked(collections.current.ids); setEndingStates(collections.current.states);
     setOldUnlocked(collections.previous.ids); setOldEndingStates(collections.previous.states);
+    setOldProgress(Boolean(oldSave) && !oldSnapshot?.endingId);
     try {
-      const stored = JSON.parse(readLocal(POSITION) || 'null');
-      const recoveredPosition = readPlayPosition(stored);
-      if (recoveredPosition) setPosition(recoveredPosition);
-      const preferences = JSON.parse(readLocal(SETTINGS) || '{}');
+      setPosition(readPlayPosition(JSON.parse(stored(POSITION) || 'null')));
+      const preferences = JSON.parse(stored(SETTINGS) || '{}');
       setLessMotion(preferences.lessMotion === true); setLargeText(preferences.largeText === true);
-      setEntered(readSession('sister-entered.v4') === 'yes');
+      setEntered(readSession(SESSION) === 'yes');
     } catch {}
     const query = matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setSystemReduced(query.matches);
-    update(); query.addEventListener('change', update);
+    const updateMotion = () => setSystemReduced(query.matches), updateVisibility = () => setVisible(!document.hidden && document.hasFocus());
+    const suspend = () => setVisible(false);
+    updateMotion(); updateVisibility(); query.addEventListener('change', updateMotion); document.addEventListener('visibilitychange', updateVisibility);
+    window.addEventListener('blur', suspend); window.addEventListener('focus', updateVisibility);
     setReady(true);
-    return () => {
-      query.removeEventListener('change', update);
-    };
+    return () => { query.removeEventListener('change', updateMotion); document.removeEventListener('visibilitychange', updateVisibility); window.removeEventListener('blur', suspend); window.removeEventListener('focus', updateVisibility); };
   }, []);
-
   useEffect(() => {
     if (!ready) return;
-    let active = true;
-    setSaved(false);
+    let active = true; setSaved(false);
     void writeLocal(SAVE, JSON.stringify(frames)).then(() => { if (active) setSaved(true); }).catch(() => { if (active) { setSaved(false); setNotice('进度暂时没能保存，请在手记里保留这一程。'); } });
-    if (state.endingId && state.storyContentRevision === 6) {
-      setUnlocked(ids => ids.includes(state.endingId!) ? ids : [...ids, state.endingId!]);
-      setEndingStates(previous => ({ ...previous, [state.endingId!]: state }));
-    } else if (state.endingId) {
-      setOldUnlocked(ids => ids.includes(state.endingId!) ? ids : [...ids, state.endingId!]);
-      setOldEndingStates(previous => previous[state.endingId!] ? previous : ({ ...previous, [state.endingId!]: state }));
-    }
     return () => { active = false; };
-  }, [frames, ready, state]);
-  useEffect(() => { if (!ready) return; let active = true; void Promise.all([writeLocal(COLLECTION, JSON.stringify(unlocked)), writeLocal(ENDING_STATES, serializeEndingStates(endingStates, oldEndingStates))]).catch(() => { if (active) setNotice('结局收藏暂时没能保存，请保留这一程。'); }); return () => { active = false; }; }, [unlocked, endingStates, oldEndingStates, ready]);
-  useEffect(() => { if (!ready) return; let active = true; void writeLocal(POSITION, JSON.stringify({ key, index: beatIndex, phase })).catch(() => { if (active) setNotice('阅读位置暂时没能保存；你仍可以继续。'); }); return () => { active = false; }; }, [ready, key, beatIndex, phase]);
-  useEffect(() => { if (!ready) return; let active = true; void writeLocal(SETTINGS, JSON.stringify({ lessMotion, largeText })).catch(() => { if (active) setNotice('阅读偏好暂时没能保存；这次调整仍然生效。'); }); return () => { active = false; }; }, [ready, lessMotion, largeText]);
-  useEffect(() => { document.title = `${ending?.title || node.title} · 姐姐，我该怎么走`; }, [node.title, ending?.title]);
+  }, [frames, ready]);
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (panel && dialog) {
-      if (!dialog.open && !dialog.hasAttribute('open')) {
-        if (typeof dialog.showModal === 'function') dialog.showModal();
-        else { dialog.setAttribute('open', ''); dialog.classList.add('dialog-fallback'); }
-      }
-      dialog.scrollTop = 0;
-      dialog.querySelector<HTMLButtonElement>('button')?.focus();
-    }
-    if (!panel && dialog && (dialog.open || dialog.hasAttribute('open'))) { if (typeof dialog.close === 'function') dialog.close(); else dialog.removeAttribute('open'); }
-  }, [panel, viewEnding]);
-  useEffect(() => { setDramaPaused(false); }, [key]);
+    if (!ready || phase !== 'ending' || !state.endingId) return;
+    setUnlocked(ids => ids.includes(state.endingId!) ? ids : [...ids, state.endingId!]);
+    setEndingStates(previous => previous[state.endingId!] === state ? previous : ({ ...previous, [state.endingId!]: state }));
+  }, [ready, phase, state]);
+  useEffect(() => { if (ready) void Promise.all([writeLocal(COLLECTION, JSON.stringify(unlocked)), writeLocal(ENDING_STATES, serializeEndingStates(endingStates, oldEndingStates))]).catch(() => setNotice('结局收藏暂时没能保存，请保留这一程。')); }, [unlocked, endingStates, oldEndingStates, ready]);
+  useEffect(() => { if (ready) void writeLocal(POSITION, JSON.stringify({ key, index, phase })).catch(() => setNotice('播放位置暂时没能保存。')); }, [ready, key, index, phase]);
+  useEffect(() => { if (ready) void writeLocal(SETTINGS, JSON.stringify({ lessMotion, largeText })).catch(() => undefined); }, [ready, lessMotion, largeText]);
+  useEffect(() => { document.title = `${phase === 'ending' ? ending?.title : chapter} · 姐姐，我该怎么走`; }, [chapter, ending?.title, phase]);
+  useEffect(() => { setPaused(false); }, [key]);
   useEffect(() => {
-    if (entered && !quiet && (phase === 'explore' || phase === 'choice' || phase === 'cinematic')) focusStory();
-  }, [entered, quiet, phase, key]);
+    const audio = audioRef.current; audio?.stop();
+    if (sound && entered && visible && !paused && !panel && !quiet && phase === 'cinematic' && activeShot?.cue) audio?.play(activeShot.cue);
+    return () => audio?.stop();
+  }, [sound, entered, visible, paused, panel, quiet, phase, activeShot?.id, activeShot?.cue]);
+  useEffect(() => () => { audioRef.current?.dispose(); audioRef.current = null; }, []);
+  useEffect(() => {
+    const dialog = dialogRef.current; if (!dialog) return;
+    if (panel && !dialog.open) {
+      if (typeof dialog.showModal === 'function') dialog.showModal(); else { dialog.setAttribute('open', ''); dialog.classList.add('dialog-fallback'); }
+      dialog.scrollTop = 0; dialog.querySelector<HTMLButtonElement>('button')?.focus();
+    } else if (!panel && dialog.hasAttribute('open')) { if (typeof dialog.close === 'function') dialog.close(); else dialog.removeAttribute('open'); }
+  }, [panel]);
 
-  function setPhase(next: Phase, index = beatIndex) { setPosition({ key, index, phase: next }); }
-  function focusStory() { requestAnimationFrame(() => {
-    const target = phase === 'cinematic' ? document.querySelector<HTMLElement>('.oppression-sequence') : storyRef.current?.hidden ? document.querySelector<HTMLElement>('.scene-encounter') : storyRef.current;
-    target?.focus({ preventScroll: true });
-  }); }
-  function enter() { setEntered(true); try { writeSession('sister-entered.v4', 'yes'); } catch {} focusStory(); }
+  function setPhase(next: PlayPhase, at = 0) { setPosition({ key, index: at, phase: next }); }
+  function finishSequence() { setPhase(ending ? 'ending' : 'explore'); }
   const advanceCinematic = useCallback(() => {
     if (routeRef.current !== key) return;
-    setPosition({ key, index: beatIndex < shots.length - 1 ? beatIndex + 1 : 0, phase: beatIndex < shots.length - 1 ? 'cinematic' : 'explore' });
-  }, [key, beatIndex, shots.length]);
-  function advance() {
-    if (phase !== 'reading') return;
-    if (beatIndex < beats.length - 1) setPhase('reading', beatIndex + 1);
-    else setPhase(ending ? 'ending' : 'explore');
-  }
+    const more = index < shots.length - 1;
+    setPosition({ key, index: more ? index + 1 : 0, phase: more ? 'cinematic' : state.endingId ? 'ending' : 'explore' });
+  }, [key, index, shots.length, state.endingId]);
   function commit(id: string) {
-    if (routeRef.current !== key) return;
-    const result = choose(state, id);
-    if (!result) { setNotice('这条路暂时走不通。看看下面的条件，再选一次。'); return; }
+    if (!ready || phase !== 'explore' || state.endingId || routeRef.current !== key) return;
+    const result = choose(state, id); if (!result) return;
     routeRef.current = storyPresentationKey(result.state);
-    const label = choices.find(c => c.id === id)?.label || '';
-    setFrames(old => [...old, { state: result.state, consequence: result.consequence, changes: result.changes, action: label }].slice(-40));
-    setPosition(null); setNotice(''); focusStory();
+    setFrames(old => [...old, { state: result.state, consequence: result.consequence, changes: result.changes, action: result.state.history.at(-1)?.label || '' }]);
+    setPosition(null); setNotice(''); setPaused(false);
   }
-  function undo() {
-    if (frames.length < 2) return;
-    setFrames(old => old.slice(0, -1)); setPosition(null); setPanel(null);
-    setNotice('已回到上一个决定，人物与物资也回到当时。'); focusStory();
-  }
-  function reset() {
-    setFrames([fresh()]); setPosition(null); setNotice(''); setPanel(null); setQuiet(false); focusStory();
+  function undo() { if (frames.length < 2) return; setFrames(old => old.slice(0, -1)); setPosition(null); setPanel(null); setPaused(false); setNotice('已回到上一个决定。'); }
+  function reset() { setFrames([fresh()]); setPosition(null); setNotice(''); setPanel(null); setQuiet(false); setPaused(false); }
+  function enter() { setEntered(true); try { writeSession(SESSION, 'yes'); } catch {} }
+  async function toggleSound() {
+    audioRef.current ??= createStoryAudio();
+    const enabled = await audioRef.current.setEnabled(!sound); setSound(enabled);
+    if (!sound && !enabled) setNotice('当前设备未能开启声音，字幕与游玩仍可正常继续。');
   }
   function exportStory() {
-    const text = ['# 姐姐，我该怎么走', '', '萨岚城 · 我的这一程', '', ...state.history.flatMap((h, i) => [`## ${i + 1}. ${NODES[h.nodeId]?.title || h.nodeId}`, `我选择：${h.label}`, '', h.consequence, '']), ...(ending ? [`## ${dreamEnding ? '梦境结局' : '结局'}：${ending.title}`, ending.summary, ...ending.paragraphs] : ['这一程，还没有走完。'])].join('\n');
-    if (isMinitool) { setExportText(text); setPanel('export'); }
-    else downloadStory(text);
+    const text = ['# 姐姐，我该怎么走', '', '0.6.0 · 我的这一程', '', ...state.history.flatMap((step, at) => [`## ${at + 1}. ${step.label}`, step.consequence, '']), ...(ending ? [`## ${ending.number} ${ending.title} · ${modeLabel(ending.mode)}`, ending.summary, ...ending.paragraphs] : ['这一程，还没有走完。'])].join('\n');
+    if (isMinitool) { setExportText(text); setPanel('export'); } else downloadStory(text);
   }
-  async function fullscreen() {
-    try { await enterFullscreen(); }
-    catch { setNotice('这个浏览器没有进入全屏；你仍可以继续阅读。'); }
-    setPanel(null);
-  }
+  async function fullscreen() { try { await enterFullscreen(); } catch { setNotice('当前浏览器没有进入全屏，仍可正常游玩。'); } setPanel(null); }
   useEffect(() => {
-    const handle = (e: KeyboardEvent) => {
-      if (!entered || panel || e.isComposing || e.keyCode === 229 || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === 'Escape') { setQuiet(false); return; }
-      if (quiet || (e.target instanceof HTMLElement && e.target.closest('button,a,input,textarea,select,[contenteditable="true"]'))) return;
-      if (phase === 'reading' && (e.key === ' ' || e.key === 'ArrowRight')) { e.preventDefault(); advance(); }
-      if (phase === 'cinematic' && e.key === ' ') { e.preventDefault(); setDramaPaused(value => !value); }
-      if (phase === 'cinematic' && e.key === 'ArrowRight') { e.preventDefault(); advanceCinematic(); }
-      if ((phase === 'choice' || phase === 'explore') && /^[1-3]$/.test(e.key)) { const option = visibleChoices[Number(e.key) - 1]; if (option?.enabled) { e.preventDefault(); commit(option.id); } }
-    };
-    document.addEventListener('keydown', handle);
-    return () => document.removeEventListener('keydown', handle);
+    function handleKey(event: KeyboardEvent) {
+      if (!entered || panel || quiet || event.repeat || event.isComposing || (event.target instanceof HTMLElement && /INPUT|TEXTAREA|BUTTON|SELECT/.test(event.target.tagName))) return;
+      if (phase === 'cinematic' && (event.code === 'Space' || event.key === 'ArrowRight')) { event.preventDefault(); if (event.code === 'Space') setPaused(value => !value); else advanceCinematic(); }
+      else if (phase === 'explore' && /^[123]$/.test(event.key)) { const choice = getChoices(state)[Number(event.key) - 1]; if (choice?.enabled) { event.preventDefault(); commit(choice.id); } }
+    }
+    window.addEventListener('keydown', handleKey); return () => window.removeEventListener('keydown', handleKey);
   });
 
-  return <main className={`immersive-game${tableau ? ' has-fate-tableau' : ''}${largeText ? ' is-large-text' : ''}${reduced ? ' is-reduced-motion' : ''}`}>
+  return <main className={`immersive-game six-edition${largeText ? ' is-large-text' : ''}${ending && phase === 'ending' ? ' has-fate-tableau' : ''}`}>
     <h1 className="sr-only">姐姐，我该怎么走</h1>
-    <div className="immersive-world" data-phase={!entered ? 'intro' : phase} data-quiet={quiet} data-realm={inTale ? 'tale' : dreamEnding ? 'dream' : 'real'} data-speaking={entered && phase === 'reading' ? beat?.actor : undefined}>
-      <>{tableau && state.endingId ? <EndingTableau key={state.endingId} endingId={state.endingId} reducedMotion={reduced}/> : <NarrativeStage storyRevision={state.storyRevision} dramaShot={dramaShot} scene={visualScene} outfit={state.outfit} sister={state.sister} father={state.father} scarf={state.scarf} stats={state.stats} flags={state.flags} nodeId={state.nodeId} beatIndex={beatIndex} phase={!entered ? 'intro' : phase} actionLabel={current.action} reducedMotion={reduced} ending={state.endingId} day={node.day} immersive />}</>
-      {inTale && <div className="tale-world" role="img" aria-label="童话里，一簇提灯的火苗走进红金色纸片森林。"><img className="tale-forest" src="/art/scene-forest.png" alt=""/><div className="tale-halo"/><img className="tale-traveler" src="/art/sister-v2/tale-flame.png" alt=""/><span className="tale-speck tale-speck--one"/><span className="tale-speck tale-speck--two"/><span className="tale-speck tale-speck--three"/></div>}
+    <div className="immersive-world" data-phase={!entered ? 'intro' : phase} data-quiet={quiet} data-realm={activeShot?.realm || (phase === 'ending' ? ending?.mode : 'reality')}>
+      {ending && phase === 'ending' ? <EndingTableau endingId={ending.id} reducedMotion={reduced}/> : activeShot && <SixStoryStage shot={activeShot} reducedMotion={reduced} paused={paused || !visible || Boolean(panel) || quiet || !entered}/>}
     </div>
-    {!ending && <div hidden={!entered || quiet || phase !== 'explore'}><SceneEncounter key={key} state={state} onChoose={commit} onRead={() => { setPhase('reading', 0); focusStory(); }} onDream={state.storyRevision !== 5 && dreamChoices.length ? () => setPanel('dreams') : undefined} onReplay={shots.length ? () => { setDramaPaused(false); setPhase('cinematic', 0); } : undefined} reducedMotion={reduced} /></div>}
-    {entered && !quiet && phase === 'cinematic' && <OppressionSequence key={key} shots={shots} index={beatIndex} paused={dramaPaused} suspended={Boolean(panel)} onTogglePause={() => setDramaPaused(value => !value)} onAdvance={advanceCinematic} onSkip={() => setPhase('explore', 0)} />}
-    {!entered ? <section className="story-intro" aria-label="故事封面">
-      <div className="intro-copy"><span className="eyebrow">一纸童话 · 姐妹的生存手记</span><p className="intro-title">姐姐，<br/>我该怎么走<span>？</span></p><p className="intro-subtitle">当世界不肯让路，<br/>我们还可以把故事讲下去。</p>
-      <button className="begin-button" disabled={!ready} onClick={enter}>{state.history.length ? '继续这一程' : '走进故事'}<ArrowRight size={20}/></button>
-      <button className="text-button intro-about" onClick={() => setPanel('about')}>关于这个故事</button></div>
-      <span className="intro-footer">{state.edition === 'short' ? `${totalDecisions} 次关键决定 · 没有倒计时` : '无需赶路 · 你可以随时停下'}</span>
-    </section> : quiet ? <button className="return-story glass-button" onClick={() => { setQuiet(false); focusStory(); }}><BookOpen size={17}/>继续故事</button> : <>
-      <header className="story-hud">
-        <div className="place-caption"><span>{inTale ? '童话 · 她们正在讲述' : dreamEnding ? '梦境 · 她想象的未来' : <>{dramaShot || tableau ? placeName : <>第 {node.day} 日 <i/> {placeName}</>}</>}</span><p>{inTale ? '火苗走过的路' : dreamEnding ? '另一种明天' : state.edition === 'short' ? ending ? '五种命运 · 这一程已落定' : `短篇 · 第 ${Math.min(state.history.length + 1, totalDecisions)} / ${totalDecisions} 幕` : ACT_TITLES[node.act - 1]}</p></div>
-        <nav aria-label="故事工具"><button aria-label="行囊" onClick={() => setPanel('bag')}><Backpack size={20}/><span>行囊</span></button><button aria-label="手记" onClick={() => setPanel('journal')}><BookOpen size={20}/><span>手记</span></button><button aria-label="更多：阅读设置与重新开始" onClick={() => setPanel('menu')}><MoreHorizontal size={24}/><span>更多</span></button></nav>
-      </header>
-      <section className={`story-dialogue story-dialogue--${phase}`} hidden={phase === 'explore' || phase === 'cinematic'} ref={storyRef} tabIndex={-1} aria-label="当前故事">
-        {phase === 'reading' && <>
-          <div className="dialogue-meta"><span className={`speaker speaker--${beat?.kind}`}><i/>{beat?.speaker || '努拉'}</span><span className="dialogue-progress" aria-label={`这一幕第${sceneBeatIndex + 1}句，共${sceneBeats.length}句`}>{sceneBeats.map((item, index) => <i key={item.id} className={index === sceneBeatIndex ? 'is-current' : index < sceneBeatIndex ? 'is-read' : ''}/>)}</span></div>
-          <p key={beat?.id} className="spoken-line" aria-live="polite" aria-atomic="true">{beat?.text}</p>
-          <div className="dialogue-actions"><div><button className="icon-button" aria-label="上一句" disabled={beatIndex === 0} onClick={() => setPhase('reading', beatIndex - 1)}><ArrowLeft size={16}/></button><button className="text-button" onClick={() => setPhase(ending ? 'ending' : 'explore')}>{ending ? '查看结局' : '在场景里行动'}</button><button className="text-button subtitle-journal" onClick={() => setPanel('journal')}>读手记</button></div><button className="continue-button" onClick={advance}>{beatIndex < beats.length - 1 ? '继续' : ending ? '收好这一程' : '动手试试'}<ChevronRight size={17}/></button></div>
-        </>}
-        {phase === 'choice' && !ending && <>
-          <div className="dialogue-meta"><h2>姐姐，我该怎么走？</h2><div className="choice-return"><button className="text-button" onClick={() => setPhase('explore')}>回到场景</button><button className="icon-button" aria-label="重读这一页" onClick={() => setPhase('reading', 0)}><BookOpen size={17}/></button></div></div>
-          <ol className="story-choices">{visibleChoices.map((choice, i) => <li key={choice.id}><button disabled={!ready || !choice.enabled} onClick={() => commit(choice.id)}><span className="choice-index">{choice.enabled ? `0${i + 1}` : <LockKeyhole size={14}/>}</span><span><strong>{choice.label}</strong><small>{!choice.enabled ? choice.reason : null}</small></span>{choice.enabled && <ArrowRight className="choice-arrow" size={18}/>}</button></li>)}</ol><div className="choice-tools"><button className="text-button" onClick={() => setPanel('choices')}><Info size={15}/>先想一想</button>{state.storyRevision !== 5 && state.nodeId !== 'n30' && dreamChoices.length > 0 && <button className="text-button dream-entry" onClick={() => setPanel('dreams')}><MoonStar size={15}/>做一个梦</button>}</div>
-        </>}
-        {phase === 'ending' && ending && <div className="ending-scene"><span className="eyebrow">{dreamEnding ? '成年童话 · 她们续写的未来' : '你们走到了这里'} · {ending.number}</span><h2>{ending.title}</h2><p className="ending-growth">{endingGrowth(state)}</p>{tableau ? <p className="ending-fate">{tableau.fate}</p> : <><div className="ending-vignette" aria-label="最后一幕">{beats.slice(0, 2).map(line => <p key={line.id}>{line.text}</p>)}</div><p className="ending-echo">{endingEcho(state)}</p><p className="ending-cost">{ending.cost}</p></>}<div className="ending-actions"><button className="continue-button" onClick={exportStory}><Download size={16}/>带走这一程</button><button className="text-button" onClick={() => setPanel('reset')}>再走一条路<ArrowRight size={16}/></button></div><button className="text-button" onClick={() => setPanel('journal')}>在手记里读完结尾<BookOpen size={15}/></button></div>}
-        <p className="decision-feedback" id="decision-feedback" role="status">{notice}</p>
-      </section>
-      <footer className="story-bottomline"><span>{saved ? <Check size={12}/> : <Feather size={12}/>} {saved ? '这一页，已替你留好' : ready ? '这一页暂未保存' : '正在翻开故事'}</span><span>姐姐，我该怎么走</span></footer>
+    {!entered ? <section className="story-intro" aria-label="故事封面"><div className="intro-copy"><span className="eyebrow">一纸童话 · 姐妹的生存手记</span><p className="intro-title">姐姐，<br/>我该怎么走<span>？</span></p><p className="intro-subtitle">门外没有为她留路。<br/>姐姐拿着剪刀，等她回答。</p><button className="begin-button" disabled={!ready} onClick={enter}>{state.history.length ? '继续这一程' : '走进故事'}<ArrowRight size={20}/></button><button className="text-button intro-about" onClick={() => setPanel('about')}>关于这个故事</button></div><span className="intro-footer">六条命运 · 每一次选择，直接走向下一幕</span></section> : quiet ? <button className="return-story glass-button" onClick={() => setQuiet(false)}><BookOpen size={17}/>继续故事</button> : <>
+      <header className="story-hud"><div className="place-caption"><span>{phase === 'ending' ? modeLabel(ending?.mode) : activeShot?.realm === 'dream' ? '梦中的故事' : activeShot?.realm === 'future' ? '多年以后 · 原创未来' : '萨岚城 · 姐妹的手记'}</span><p>{chapter}</p></div><nav aria-label="故事工具"><button className="sound-toggle" aria-label={sound ? '关闭声音' : '开启声音'} aria-pressed={sound} onClick={toggleSound}>{sound ? <Volume2 size={19}/> : <VolumeX size={19}/>}<span>{sound ? '声音开' : '声音关'}</span></button><button aria-label="手记" onClick={() => setPanel('journal')}><BookOpen size={20}/><span>手记</span></button><button aria-label="更多：阅读设置与重新开始" onClick={() => setPanel('menu')}><MoreHorizontal size={24}/><span>更多</span></button></nav></header>
+      {phase === 'explore' && !ending && <SceneEncounter key={key} state={state} onChoose={commit} onRead={() => setPanel('journal')} onReplay={() => { setPaused(false); setPhase('cinematic'); }} reducedMotion={reduced}/>}
+      {phase === 'cinematic' && <OppressionSequence key={key} shots={shots} index={index} paused={paused} suspended={Boolean(panel) || quiet || !visible} onTogglePause={() => setPaused(value => !value)} onAdvance={advanceCinematic} onSkip={finishSequence}/>}
+      {phase === 'ending' && ending && <section className="story-dialogue story-dialogue--ending" tabIndex={-1} aria-label="当前故事"><div className="ending-scene"><span className="eyebrow">{modeLabel(ending.mode)} · 终幕 {ending.number}</span><h2>{ending.title}</h2><p className="ending-growth">{ending.summary}</p><p className="ending-fate">{tableau?.fate}</p><div className="ending-actions"><button className="continue-button" onClick={() => setPanel('reset')}>再走一条路<ArrowRight size={16}/></button><button className="text-button" onClick={() => { setPaused(false); setPhase('cinematic'); }}><RotateCcw size={14}/>重看结尾</button></div><button className="text-button" onClick={() => setPanel('journal')}>读完这一程<BookOpen size={15}/></button></div></section>}
+      <footer className="story-bottomline"><span role="status">{saved ? <Check size={12}/> : <Feather size={12}/>} {notice || (saved ? '这一页，已替你留好' : ready ? '正在留存这一页' : '正在翻开故事')}</span></footer>
     </>}
-    <dialog ref={dialogRef} className={`story-sheet${panel === 'reset' ? ' story-sheet--small' : ''}`} role="dialog" aria-modal={Boolean(panel)} aria-labelledby="sheet-title" onCancel={() => setPanel(null)} onClose={() => setPanel(null)} onKeyDown={event => { if (event.key === 'Escape' && typeof event.currentTarget.showModal !== 'function') { event.preventDefault(); setPanel(null); } }} onClick={e => { if (e.target === e.currentTarget) { const rect = e.currentTarget.getBoundingClientRect(); if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) setPanel(null); } }}>
+    <dialog ref={dialogRef} className={`story-sheet${panel === 'reset' ? ' story-sheet--small' : ''}`} role="dialog" aria-modal={Boolean(panel)} aria-labelledby="sheet-title" onCancel={() => setPanel(null)} onClose={() => setPanel(null)}>
       <header className="sheet-header"><div><span className="eyebrow">姐姐，我该怎么走</span><h2 id="sheet-title">{panel ? PANEL_NAMES[panel] : ''}</h2></div><button className="icon-button" aria-label="合上，回到故事" onClick={() => setPanel(null)}><X size={21}/></button></header>
       <div className="sheet-content">
-        {panel === 'bag' && <><div className="companion-note"><span className="eyebrow">姐姐 · 玛莉安</span><p>{companion.label}</p></div><dl className="people-status"><div><dt>你的名字</dt><dd>{state.flags.includes('aliasAatish') ? '家人叫你努拉；在外你叫阿提什，意为火焰。' : '努拉'}</dd></div><div><dt>母亲</dt><dd>{state.flags.includes('motherHurt') ? '寻父途中受了伤，仍在恢复。' : '在家照顾幼弟，也在为一家人的生计忧心。'}</dd></div><div><dt>幼弟 · 萨米</dt><dd>三岁，需要家人的陪伴、食物和照看。</dd></div><div><dt>你此刻的衣着</dt><dd>{state.outfit === 'cloak' ? '绿色头巾、长衫与宽裤' : state.outfit === 'worker' ? '浅灰小帽、灰色男式长衫与宽裤' : state.flags.includes('disguise') ? '浅灰小帽、男孩装束与出行布袋' : '长衫、宽裤与出行布袋'}</dd></div><div><dt>父亲</dt><dd>{fatherStatus}</dd></div></dl><h3>行囊与约定</h3><ul className="inventory">{Object.entries(ITEMS).filter(([id]) => state.flags.includes(id)).map(([id, label]) => <li key={id}><span/>{label}</li>)}</ul><details className="supply-details"><summary>看看家里的状况</summary><dl className="supply-grid">{(Object.keys(STAT_LABELS) as (keyof Stats)[]).map(stat => <div key={stat}><dt>{STAT_LABELS[stat]}</dt><dd>{state.stats[stat]}<small> / 10</small></dd><meter min="0" max="10" value={state.stats[stat]} aria-label={STAT_LABELS[stat]}/></div>)}</dl><p className="muted">这些数值记录这一程的消耗与处境。后续走向也取决于你做过的决定和留下的约定。</p></details>{current.changes.length > 0 && <><h3>刚刚发生的变化</h3><ul className="change-list">{current.changes.map((change, i) => <li key={i}>{change}</li>)}</ul></>}</>}
-        {panel === 'journal' && <><div className="sheet-links"><button className="text-button" onClick={() => setPanel('tale')}><Feather size={16}/>姐姐的童话</button><button className="text-button" onClick={() => { setViewEnding(null); setPanel('endings'); }}>留下的结局 {unlocked.length} / {ENDINGS.length}<ArrowRight size={15}/></button></div><article className="journal-current"><span className="eyebrow">现在 · {placeName}</span><h3>{ending?.title || node.title}</h3>{(ending ? [ending.summary, ...ending.paragraphs] : node.paragraphs).map((p, i) => <p key={i}>{p}</p>)}{!ending && <blockquote>{companion.speaker}：「{node.sisterLine}」</blockquote>}</article><h3>你做过的决定</h3>{state.history.length ? <ol className="journey-list">{state.history.map((step, i) => <li key={`${i}-${step.nodeId}`}><span>{String(i + 1).padStart(2, '0')}</span><div><h4>{step.label}</h4><p>{step.consequence}</p></div></li>)}</ol> : <p className="muted">这一页还没有落笔。第一个决定，就在门外。</p>}<button className="sheet-action" onClick={exportStory}><Download size={17}/>导出我的故事<ArrowRight size={16}/></button></>}
-        {panel === 'choices' && <><p className="muted">先看清每条路的代价。这里不会替你作决定。</p><ul className="choice-considerations">{visibleChoices.map((choice, i) => <li key={choice.id}><span className="eyebrow">0{i + 1}</span><h3>{choice.label}</h3><p>{choice.detail}</p>{!choice.enabled && <p className="muted">暂时走不通：{choice.reason}</p>}</li>)}</ul><button className="sheet-action" onClick={() => setPanel(null)}>回去做决定<ArrowRight size={16}/></button></>}
-        {panel === 'dreams' && <><p className="dream-preface">这是阿提什讲给自己的未来。现实还在门外，梦里，她可以先为自己和别的女孩开一扇门。</p><ul className="dream-options">{dreamChoices.map(choice => <li key={choice.id}><button disabled={!choice.enabled} onClick={() => { setPanel(null); commit(choice.id); }}><MoonStar size={22}/><span><strong>{choice.label}</strong><small>{choice.detail}</small></span><ArrowRight size={17}/></button></li>)}</ul><p className="muted">梦境是原创愿景，不是历史事件，也不会改写现实中家人的伤势与去向。</p></>}
-        {panel === 'tale'   && <><p className="tale-preface">现实里没有无敌的人。可在自己讲述的故事里，她仍然有一个不能被夺走的名字。</p><blockquote className="tale-quote">{node.tale}</blockquote><p className="muted">童话会陪着这一程变化。它不能取消现实的代价，却让你们记得为什么继续。</p><button className="text-button" onClick={() => setPanel('journal')}><ArrowLeft size={15}/>回到手记</button></>}
-        {panel === 'endings' && <>{collectedEnding ? <article className="collected-ending"><button className="text-button" onClick={() => setViewEnding(null)}><ArrowLeft size={15}/>所有结局</button>{viewingPrevious ? <span className="eyebrow">旧版 · 历史记录</span> : collectedId?.startsWith('dream_') && <span className="eyebrow">梦境 · 她选择想象的未来</span>}<h3>{collectedEnding.title}</h3><p className="ending-lead">{collectedEnding.summary}</p>{collectedEnding.paragraphs.map((p, i) => <p key={i}>{p}</p>)}<p className="muted">{viewingPrevious ? '这是此前完成的故事，保留原有经历，不计入新版五种命运。' : '这是你抵达这一结局时，家人与故事的真实状态。'}</p></article> : legacyEnding ? <><button className="text-button" onClick={() => setViewEnding(null)}><ArrowLeft size={15}/>所有结局</button><span className="eyebrow">旧版 · 历史记录</span><h3>{legacyEnding.title}</h3><p>这份旧记录保留了结局名称，没有当时的家庭状态。它不会计入新版五种命运。</p></> : <><p className="muted">这里收下本次调整后的五种命运。旧版记录单独保留，不计入新版完成数。未走过的终幕不会提前揭开。</p><ol className="ending-collection">{ENDINGS.map((e, i) => <li key={e.id}><button disabled={!unlocked.includes(e.id)} onClick={() => setViewEnding(e.id)}><span>{String(i + 1).padStart(2, '0')}</span><strong>{unlocked.includes(e.id) ? `${e.id.startsWith('dream_') ? '梦境 · ' : ''}${endingStates[e.id] ? getEnding(endingStates[e.id])?.title || e.title : e.title}` : '还没有走到的地方'}</strong>{unlocked.includes(e.id) ? <ChevronRight size={18}/> : <LockKeyhole size={15}/>}</button></li>)}</ol>{oldUnlocked.length > 0 && <details className="historical-endings"><summary>旧版 · 历史结局 {oldUnlocked.length}</summary><p className="muted">此前走过的路仍保留在这里，不会替你完成这次调整后的选择。</p><ol className="ending-collection">{oldUnlocked.map(id => <li key={id}><button onClick={() => setViewEnding(`old:${id}`)}><span>旧版</span><strong>{ENDINGS.find(item => item.id === id)?.title || '此前的故事'}</strong><ChevronRight size={18}/></button></li>)}</ol></details>}</>}</>}
-        {panel === 'export' && <><p>这里是你的完整故事。可以选中文字，保留这一次的经历。</p><textarea className="story-export-text" aria-label="这一程的完整故事" value={exportText} readOnly rows={14} onFocus={event => event.currentTarget.select()}/></>}
-        {panel === 'menu' && <><div className="menu-actions"><button disabled={frames.length < 2} onClick={undo}><RotateCcw size={19}/><span>回到上一个决定</span><ChevronRight size={16}/></button><button onClick={() => { setPanel(null); setQuiet(true); }}><Eye size={19}/><span>静静看一会儿</span><ChevronRight size={16}/></button>{canFullscreen && <button onClick={fullscreen}><Maximize size={19}/><span>切换全屏</span><ChevronRight size={16}/></button>}<button onClick={() => setPanel('about')}><Info size={19}/><span>故事背景与玩法</span><ChevronRight size={16}/></button><button onClick={() => setPanel('reset')}><Feather size={19}/><span>重新开始 · 7 幕短篇</span><ChevronRight size={16}/></button></div><h3>按自己的节奏读</h3><label className="setting-row"><span>较大的故事文字</span><input type="checkbox" checked={largeText} onChange={e => setLargeText(e.target.checked)}/></label><label className="setting-row"><span>减少画面运动{systemReduced && <small>系统设置已开启</small>}</span><input type="checkbox" checked={reduced} disabled={systemReduced} onChange={e => setLessMotion(e.target.checked)}/></label><p className="muted keyboard-help">演出用空格暂停，→ 看下一镜；正文用空格 / → 继续；分支可按 1、2、3。没有倒计时，也不会自动替你选择。</p></>}
-        {panel === 'about' && <><p className="about-lead">人需要故事，才能把今天走到明天。</p><p>这是一个受《养家的人》启发的原创分支故事。努拉、玛莉安与萨岚城为虚构；服饰与生活限制以 2001 年前后、塔利班统治下的阿富汗为具体参照。不同地区、家庭与场合并不相同，故事中的命令不能代表整个伊斯兰世界。</p><p>你会经历匮乏、盘查、失散和家人间的争执。选择有代价，善意也未必立刻得到回报。你可以随时停下，再回来陪她们走一段。</p><h3>怎样继续</h3><p>关键冲突会用短镜头演出，能暂停、跳过和重看。演出之后，单选一个行动就直接进入不同路径；不需要整理物件、选择衣服或计算工钱。你也能随时听对白，完整背景与经历留在手记里。新故事用 7 次关键决定走到结尾，跑腿与查证合并为过场；5 种结局中，2 种是清楚标识的愿望梦境。旧进度仍可继续，重新开始即进入短篇。</p><p>行囊里能查看物资与家人的状况，手记保留完整剧情和决定。进度会自动保存在当前设备；“更多”中可以撤回上一个决定。</p>{isMinitool ? <p className="muted">影片背景参考 GKIDS《养家之人》，历史参考 Human Rights Watch 2001 年阿富汗报告。完整资料来源见项目说明。</p> : <div className="source-links"><a href="https://gkids.com/films/the-breadwinner/" target="_blank" rel="noreferrer">影片背景 · GKIDS<ArrowRight size={14}/></a><a href="https://www.hrw.org/reports/2001/afghan3/afgwrd1001-05.htm" target="_blank" rel="noreferrer">历史参考 · HRW 2001 年报告<ArrowRight size={14}/></a></div>}</>}
-        {panel === 'reset' && <><p>新的短篇从父女摆摊的集市开始，7 次关键决定即可走到结尾。当前这一程会被替换，已经收好的结局仍会保留。</p><p className="muted">如果想留住当前经历，可以先把它带走。</p><button className="sheet-action" onClick={exportStory}><Download size={17}/>导出当前故事<ArrowRight size={16}/></button><div className="reset-actions"><button className="text-button" onClick={() => setPanel(null)}>留在这一页</button><button className="continue-button" onClick={reset}>重新开始<ArrowRight size={17}/></button></div></>}
+        {panel === 'journal' && <><div className="sheet-links"><button className="text-button" onClick={() => { setViewEnding(null); setPanel('endings'); }}>留下的结局 {unlocked.length} / 6<ArrowRight size={15}/></button><button className="text-button" onClick={exportStory}><Download size={15}/>带走这一程</button></div><article className="journal-current"><span className="eyebrow">{ending ? `${modeLabel(ending.mode)} · ${ending.number}` : chapter}</span><h3>{ending?.title || node.title}</h3>{(ending ? [ending.summary, ...ending.paragraphs] : node.paragraphs).map((paragraph, at) => <p key={at}>{paragraph}</p>)}{!ending && <blockquote>{node.sisterLine}</blockquote>}{node.tale && <><h3>她们讲的故事</h3><p>{node.tale}</p></>}</article><h3>你做过的决定</h3>{state.history.length ? <ol className="journey-list">{state.history.map((step, at) => <li key={`${at}-${step.nodeId}`}><span>{String(at + 1).padStart(2, '0')}</span><div><h4>{step.label}</h4><p>{step.consequence}</p></div></li>)}</ol> : <p className="muted">姐姐握着剪刀，正在等你的第一个回答。</p>}</>}
+        {panel === 'endings' && <>{collectedEnding ? <article className="collected-ending"><button className="text-button" onClick={() => setViewEnding(null)}><ArrowLeft size={15}/>所有结局</button><span className="eyebrow">{viewingPrevious ? `历史记录 · ${collectedState?.storyRevision === 5 || collectedId?.startsWith('r5') ? '旧五结局版' : collectedId?.startsWith('legacy10:') ? '旧十结局版' : '早期版本'}` : modeLabel(collectedEnding.mode)} · {collectedEnding.number}</span><h3>{collectedEnding.title}</h3><p className="ending-lead">{collectedEnding.summary}</p>{collectedEnding.paragraphs.map((paragraph, at) => <p key={at}>{paragraph}</p>)}{viewingPrevious && <p className="muted">保留当时版本的原标题、编号与正文，不计入新版 6 / 6。</p>}</article> : <><p className="muted">每条命运都来自你实际做过的选择。未走过的终幕会留待亲眼看见。</p><ol className="ending-collection">{ENDINGS.map(item => <li key={item.id}><button disabled={!unlocked.includes(item.id)} onClick={() => setViewEnding(item.id)}><span>{item.number}</span><strong>{unlocked.includes(item.id) ? item.title : '还没有走到的地方'}</strong>{unlocked.includes(item.id) ? <ChevronRight size={18}/> : <LockKeyhole size={15}/>}</button></li>)}</ol>{oldUnlocked.length > 0 && <details className="historical-endings"><summary>历史版本 · {oldUnlocked.length} 条记录</summary><ol className="ending-collection">{oldUnlocked.map(id => { const archived = (id.startsWith('legacy10:') ? getArchivedEnding(id) : null) || (oldEndingStates[id] ? getEnding(oldEndingStates[id]) : getArchivedEnding(id)); return <li key={id}><button onClick={() => setViewEnding(`old:${id}`)}><span className="historical-number">旧版 {archived?.number}</span><strong>{archived?.title || '此前的故事'}</strong><ChevronRight size={18}/></button></li>; })}</ol></details>}{oldProgress && <p className="muted historical-progress">旧版进行中的进度仍原样留在设备上。新版从剪刀开场，不会把旧路线算成这六个结局。</p>}</>}</>}
+        {panel === 'export' && <><p>这一程的完整记录，可以选中文字留存。</p><pre className="story-export-text">{exportText}</pre></>}
+        {panel === 'menu' && <><div className="menu-actions"><button disabled={frames.length < 2} onClick={undo}><RotateCcw size={19}/><span>回到上一个决定</span><ChevronRight size={16}/></button><button onClick={() => { setPanel(null); setQuiet(true); }}><Eye size={19}/><span>静静看一会儿</span><ChevronRight size={16}/></button>{canFullscreen && <button onClick={fullscreen}><Maximize size={19}/><span>切换全屏</span><ChevronRight size={16}/></button>}<button onClick={() => setPanel('about')}><Info size={19}/><span>故事背景与玩法</span><ChevronRight size={16}/></button><button onClick={() => setPanel('reset')}><Feather size={19}/><span>从剪刀前重新开始</span><ChevronRight size={16}/></button></div><h3>按自己的节奏看</h3><label className="setting-row"><span>较大的字幕</span><input type="checkbox" checked={largeText} onChange={event => setLargeText(event.target.checked)}/></label><label className="setting-row"><span>减少画面运动{systemReduced && <small>系统设置已开启</small>}</span><input type="checkbox" checked={reduced} disabled={systemReduced} onChange={event => setLessMotion(event.target.checked)}/></label><p className="muted keyboard-help">空格暂停／继续，→ 看下一镜；分支可按 1、2、3。切到后台会暂停。跳过演出只会抵达已选路径的下一幕或终幕。</p></>}
+        {panel === 'about' && <><p className="about-lead">人需要故事，才能把今天走到明天。</p><p>这是受《养家之人》启发、按新故事图创作的分支游戏。努拉与萨岚城是虚构；生活环境具体参照 2001 年前后、塔利班统治下的阿富汗。故事中的禁令与施暴者不能代表整个伊斯兰世界。</p><p>父亲已经在全家眼前被捕。最后一点粮食旁，姐姐拿着剪刀等你回答。每条路线有两到三个关键选择；每次单选直接进入后续情节，其他冲突用短镜头自动演出，可暂停、跳过和重看。</p><p>六条命运包含饥饿、强迫婚姻、战争征用与暴力。05 是明确标识的未醒梦境；06 是女主醒来后，经过多年学习、互助与组织守望的原创未来。它们都不是影片实际结局的复述。</p><p>声音由你主动开启，关闭声音也有完整字幕。进度保存在当前设备，手记可查看完整故事与历史版本。</p>{!isMinitool && <div className="source-links"><a href="https://gkids.com/films/the-breadwinner/" target="_blank" rel="noreferrer">影片背景 · GKIDS<ArrowRight size={14}/></a><a href="https://www.hrw.org/reports/2001/afghan3/afgwrd1001-05.htm" target="_blank" rel="noreferrer">历史参考 · HRW 2001<ArrowRight size={14}/></a></div>}</>}
+        {panel === 'reset' && <><p>回到最后一点粮食旁，姐姐还拿着剪刀。当前这一程会被替换，已经抵达的结局与旧版记录会保留。</p><button className="sheet-action" onClick={exportStory}><Download size={17}/>先带走当前故事<ArrowRight size={16}/></button><div className="reset-actions"><button className="text-button" onClick={() => setPanel(null)}>留在这一页</button><button className="continue-button" onClick={reset}>重新开始<ArrowRight size={17}/></button></div></>}
       </div>
     </dialog>
   </main>;

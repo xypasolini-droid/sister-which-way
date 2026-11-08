@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { ENDINGS, choose, createInitialState, getChoices, getEnding, getNode, validateBranchState, type BranchState } from './branch-story';
+import { REVISION_FIVE_ENDINGS as ENDINGS, choose, createInitialState, createRevisionFiveState, getChoices, getEnding, getNode, validateBranchState, type BranchState } from './branch-story';
 import { getSceneEncounter } from './scene-encounter';
 import { getSceneDialogue } from './scene-dialogue';
 import { getCompanionStatus, getHeroDisplayName } from './story-presentation';
 import { SHORT_ENDING_TEST_ROUTES } from './story-test-routes';
 
-function play(route: string[], initial = createInitialState('short')) {
+function play(route: string[], initial = createRevisionFiveState()) {
   return route.reduce((state, action) => {
     const result = choose(state, action);
     if (!result) throw new Error(`${state.nodeId}/${action}`);
@@ -14,7 +14,7 @@ function play(route: string[], initial = createInitialState('short')) {
 }
 function explore() {
   const states: BranchState[] = [], terminal: BranchState[] = [];
-  const pending = [createInitialState('short')];
+  const pending = [createRevisionFiveState()];
   while (pending.length) {
     const state = pending.pop()!;
     states.push(state);
@@ -36,7 +36,7 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(counts).toEqual({ reunited: 96, caravan: 192, lantern: 288, dream_guardian: 96, dream_commons: 96 });
   });
   it('starts with a child’s immediate response, never asking her to identify or record her persecutor', () => {
-    const state = createInitialState('short');
+    const state = createRevisionFiveState();
     const node = getNode(state), encounter = getSceneEncounter(state);
     expect(node.title).toBe(encounter.title);
     expect(encounter.points.map(point => point.label)).toEqual(getChoices(state).map(choice => choice.label));
@@ -221,7 +221,7 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(validateBranchState({...state, edition:undefined})).toBeNull();
   });
   it('keeps completed old stories explicitly archived rather than pretending the new mountain story happened', () => {
-    const initial = createInitialState('short'); delete initial.storyRevision; delete initial.storyContentRevision;
+    const initial = createRevisionFiveState(); delete initial.storyRevision; delete initial.storyContentRevision;
     const old = play(['work','sew','buy','pact','care','rush','school','live'], initial);
     expect(old.storyRevision).toBeUndefined();
     const restored = validateBranchState(old)!;
@@ -232,7 +232,7 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(getEnding(restored)!.paragraphs.join('')).not.toContain('秘密山路');
   });
   it('does not reinterpret an old wage-taking action as consenting to physical confrontation', () => {
-    const initial = createInitialState('short'); delete initial.storyRevision; delete initial.storyContentRevision;
+    const initial = createRevisionFiveState(); delete initial.storyRevision; delete initial.storyContentRevision;
     const old = play(['neighbor','sew','buy','hide','wage'], initial);
     expect(old.history).toHaveLength(5);
     const restored = validateBranchState(old)!;
@@ -242,7 +242,7 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(restored.flags).not.toContain('protectedSomeone');
   });
   it('migrates active old short saves without consenting to newly changed late choices', () => {
-    const initial = createInitialState('short'); delete initial.storyRevision; delete initial.storyContentRevision;
+    const initial = createRevisionFiveState(); delete initial.storyRevision; delete initial.storyContentRevision;
     const early = play(['work','sew'], initial);
     const migratedEarly = validateBranchState(early)!;
     expect(migratedEarly.nodeId).toBe('n01');
@@ -257,7 +257,7 @@ describe('seven decisions and five genuinely different fates', () => {
     expect(getChoices(migratedLate).some(choice=>choice.enabled)).toBe(true);
   });
   it('authenticates and preserves completed 0.5.0 revision-five fates without counting them as current content', () => {
-    const initial = createInitialState('short'); delete initial.storyContentRevision;
+    const initial = createRevisionFiveState(); delete initial.storyContentRevision;
     for (const route of [
       ['work','sew','buy','truth','courier','plan','release'],
       ['work','sew','buy','pact','care','find','register'],
@@ -276,7 +276,7 @@ describe('seven decisions and five genuinely different fates', () => {
     }
   });
   it('never treats an old unprepared north-gate choice as consent to the new multi-day preparation', () => {
-    const initial = createInitialState('short'); delete initial.storyContentRevision;
+    const initial = createRevisionFiveState(); delete initial.storyContentRevision;
     const old = play(['work','cut','buy','pact','secret','plan'], initial);
     expect(getChoices(old).find(choice => choice.id === 'release')!.enabled).toBe(false);
     const restored = validateBranchState(old)!;

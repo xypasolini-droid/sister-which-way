@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { choose, createInitialState, getEnding, type BranchState } from './branch-story';
-import { ENDINGS, getStayEndingPresentation, projectEnding } from './ending-content';
+import { choose, createInitialState, createRevisionFiveState, getEnding, type BranchState } from './branch-story';
+import { ENDINGS, getStayEndingPresentation, projectEnding } from './revision-five-ending-content';
 import { SHORT_ENDING_TEST_ROUTES } from './story-test-routes';
-const play = (id:string) => SHORT_ENDING_TEST_ROUTES[id].reduce((state, choiceId) => choose(state,choiceId)!.state,createInitialState('short'));
+const play = (id:string) => SHORT_ENDING_TEST_ROUTES[id].reduce((state, choiceId) => choose(state,choiceId)!.state,createRevisionFiveState());
 const text = (id:string) => {const e=getEnding(play(id))!;return `${e.summary}${e.paragraphs.join('')}${e.cost}`;};
 
 describe('five fixed original final scenes',()=>{
