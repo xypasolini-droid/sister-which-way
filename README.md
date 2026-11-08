@@ -14,6 +14,8 @@
 
 **[直接打开0.6.0游戏](https://xypasolini-droid.github.io/sister-which-way/)**，无需安装或配置模型账户。公开试玩页使用与小红书ZIP相同的静态产物；进度保存在当前浏览器，不同设备和网址之间不会自动同步。
 
+下载发布包：[0.6.0小红书离线ZIP](https://github.com/xypasolini-droid/sister-which-way/releases/tag/v0.6.0)（8.08 MB），或查看[完整验收记录](docs/design/QA-v060.md)。
+
 也可下载源码，在本机运行：
 
 ```sh
