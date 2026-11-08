@@ -8,7 +8,7 @@
 
 彩色手绘场景搭配黑白半透明磨砂界面。主画面每镜保留一到两句短字幕，完整叙事放在手记里。声音默认关闭；玩家可主动开启本地合成音效，不影响字幕与选择。剧情包含饥饿、强迫婚姻、儿童被征用与暴力，画面避免血腥特写。
 
-![0.6.0 实际网页：姐姐拿着剪刀，等待第一个选择](docs/images/opening-v060-desktop.png)
+![0.6.0 公开试玩实拍：姐姐拿着剪刀，等待第一个选择](docs/images/public-opening-v060-desktop.png)
 
 ## 运行与试玩
 
@@ -121,6 +121,8 @@ npm run check:minitool
 ```
 
 生成 `dist/姐姐，我该怎么走-小红书-0.6.0.zip`、`dist/minitool-audit.json` 与 `.md`。素材收集穷举六条合法路线，覆盖分叉前与结局后的所有镜头。打包保持原尺寸；已有WebP按字节复制，PNG转码检查尺寸、透明通道和图像误差。未用素材、电影、外部字体、模型服务与网络请求不进入离线包。超过10,000,000字节会阻止交付。
+
+17幅素材的用途、两幅复用关系与影片局部参考范围见[素材记录](public/art/sister-v6/README.md)。
 
 更换PNG原稿后可运行 `node scripts/encode-six-story-art.mjs --apply`，逐图寻找满足38.1 dB门槛的WebP编码，生成 `public/art/sister-v6/encoding-audit.json`。它不缩图；必要时提高质量或使用近无损／无损编码。ZIP构建还会独立将预制WebP与PNG原稿比较，门槛为38 dB、尺寸不变、透明通道一致。PSNR是编码误差指标，不等同主观画质认证；WebP有损编码不能称为全包无损。
 

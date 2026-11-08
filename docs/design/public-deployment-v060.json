@@ -1,0 +1,109 @@
+{
+  "version": "0.6.0",
+  "url": "https://xypasolini-droid.github.io/sister-which-way/",
+  "checkedAt": "2026-11-08T14:25:38.668503+00:00",
+  "filesMatched": 20,
+  "extraPagesFile": ".nojekyll",
+  "files": [
+    {
+      "path": "app.js",
+      "bytes": 494933,
+      "sha256": "dc2e9913aeea1d20fc5261ca8ba73ea94d0fa1f720f57d4d2e394be70aec1daf"
+    },
+    {
+      "path": "assets/art/sister-v6/end-conscripted.webp",
+      "bytes": 468098,
+      "sha256": "3da45787c0ccff80d29ec477a6057d8ce6ea1c47915d7ceae55b6755d55488b6"
+    },
+    {
+      "path": "assets/art/sister-v6/end-family_escape.webp",
+      "bytes": 369114,
+      "sha256": "52a525aba4f98090881637101d168498f40dbd23165efc9c6ddd2f3d8ceef73e"
+    },
+    {
+      "path": "assets/art/sister-v6/end-guardian_future.webp",
+      "bytes": 587316,
+      "sha256": "d7dd36dffa9b14244123f7eb24e3251405c2dde0551003db8a88e7b47e73801e"
+    },
+    {
+      "path": "assets/art/sister-v6/end-no_smoke.webp",
+      "bytes": 214654,
+      "sha256": "4654c12654080619f36c2201ed55820b4f4bb60c017b875339ef1331458d9d46"
+    },
+    {
+      "path": "assets/art/sister-v6/end-sister_married.webp",
+      "bytes": 408612,
+      "sha256": "99eb54888ee27036e809d81573224294492fde9f3b6612307a8829d8e7d0863e"
+    },
+    {
+      "path": "assets/art/sister-v6/end-unwaking_spring.webp",
+      "bytes": 958550,
+      "sha256": "d3b2bb4f3244217cc51b698c2eb871e78f4044bbb38a1df96fc87ba583174010"
+    },
+    {
+      "path": "assets/art/sister-v6/growth-learning.webp",
+      "bytes": 625998,
+      "sha256": "bdb2d4f6a1bf13234ae6ec01aead864ae24dccf4fb7f2f34f41d805cd4da1d03"
+    },
+    {
+      "path": "assets/art/sister-v6/opening-scissors.webp",
+      "bytes": 381146,
+      "sha256": "538a6f874bde5326cc9abfbeca2b50ae43425ac6e9e702c480ed376729d04f3a"
+    },
+    {
+      "path": "assets/art/sister-v6/rescue-awake.webp",
+      "bytes": 187750,
+      "sha256": "8bb2839e0e6107fd8615d4610de7b77ddde361f74b9b3214188b955ed465abeb"
+    },
+    {
+      "path": "assets/art/sister-v6/street-assault.webp",
+      "bytes": 396604,
+      "sha256": "f6a73973b759b0cc0d1f5ace87d3f2a2b51dba7c9a69a20d9a0f01b6993a6f20"
+    },
+    {
+      "path": "assets/art/sister-v6/tale-elephant.webp",
+      "bytes": 513346,
+      "sha256": "6ed950f9331a514fc7faeacee916fca03bfc07b5b8c07cbd2162018b4a765fac"
+    },
+    {
+      "path": "assets/art/sister-v6/tale-journey.webp",
+      "bytes": 719820,
+      "sha256": "70d384e8da9012c9f8ca73e44566b64ccd1d194601bb392490c152e75f221890"
+    },
+    {
+      "path": "assets/art/sister-v6/tale-village.webp",
+      "bytes": 668608,
+      "sha256": "e6a1ac741930323a0670ef03c29ae7d70010e7b161eb6f5669655ec5dc61645d"
+    },
+    {
+      "path": "assets/art/sister-v6/unconscious-rescue.webp",
+      "bytes": 401442,
+      "sha256": "3a2cf9eca3ed25fcc0ad8b2454ffc7c9931159639b624dfef3ceb5072e3740f8"
+    },
+    {
+      "path": "assets/art/sister-v6/war-street.webp",
+      "bytes": 348486,
+      "sha256": "03dd4009b4b94b7d52e2ad8c6a90915238a3ab095e67a1334e17de1a233a8d16"
+    },
+    {
+      "path": "assets/art/sister-v6/war-together.webp",
+      "bytes": 174298,
+      "sha256": "faed79ed8475ca3d4926cf3ffcb9db21022b12fb6731da6d72c4a7e7ebda46ed"
+    },
+    {
+      "path": "assets/art/sister-v6/work-street.webp",
+      "bytes": 476214,
+      "sha256": "3fc23a61b5eee8437c141e2cfd516d46d786360914632cc4895a0b476603e4a2"
+    },
+    {
+      "path": "index.html",
+      "bytes": 391,
+      "sha256": "b9736751d66cfced5b4bd606f54f62898b95628fb03121737554f4f2035ce387"
+    },
+    {
+      "path": "style.css",
+      "bytes": 50240,
+      "sha256": "f29183acfc961926aaf56b25575601be5a3c1032004a0033959e18eb3c5236d8"
+    }
+  ]
+}
