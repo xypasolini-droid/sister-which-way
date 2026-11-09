@@ -12,7 +12,7 @@ import { storyPresentationKey } from '@/lib/story-presentation';
 import { getSevenChapter, getSevenShots, getSevenStill } from '@/lib/seven-story-presentation';
 import { createStoryAudio } from '@/lib/story-audio';
 import { isMinitool, canFullscreen, readLocal, writeLocal, readSession, writeSession, downloadStory, enterFullscreen } from '@/lib/game-runtime';
-import { initialPlayPhase, readPlayPosition, resolveStoryPlayPhase, type PlayPhase, type PlayPosition } from '@/lib/play-flow';
+import { initialPlayPhase, readPlayPosition, restoreStoryPlayback, type PlayPhase, type PlayPosition } from '@/lib/play-flow';
 import { getArchivedEnding, restoreEndingCollections, restoreTenEndingArchive, serializeEndingStates } from '@/lib/ending-collection';
 
 type Frame = { state: BranchState; consequence: string; changes: string[]; action: string };
@@ -36,10 +36,9 @@ export default function SisterGame() {
   const current = frames[frames.length - 1], state = current.state, key = storyPresentationKey(state);
   const routeRef = useRef(key); routeRef.current = key;
   const node = getNode(state), ending = getEnding(state), shots = getSevenShots(state);
-  const recoveredPhase = position?.key === key ? position.phase : initialPlayPhase(state);
-  const phase = resolveStoryPlayPhase(recoveredPhase, Boolean(ending), shots.length);
-  const index = position?.key === key ? Math.max(0, Math.min(position.index, shots.length - 1)) : 0;
+  const { phase, index } = restoreStoryPlayback(key, position, initialPlayPhase(state), Boolean(ending), shots);
   const activeShot = phase === 'cinematic' ? shots[index] : getSevenStill(state);
+  const shotId = phase === 'cinematic' ? activeShot?.id : undefined;
   const nextShot = !entered ? shots[0] : phase === 'cinematic' ? shots[index + 1] ?? getSevenStill(state) : undefined;
   const chapter = getSevenChapter(state), reduced = systemReduced || lessMotion;
   const viewingPrevious = Boolean(viewEnding?.startsWith('old:')), viewedId = viewingPrevious ? viewEnding!.slice(4) : viewEnding;
@@ -97,12 +96,10 @@ export default function SisterGame() {
       setEntered(readSession(SESSION) === 'yes');
     } catch {}
     const query = matchMedia('(prefers-reduced-motion: reduce)');
-    const updateMotion = () => setSystemReduced(query.matches), updateVisibility = () => setVisible(!document.hidden && document.hasFocus());
-    const suspend = () => setVisible(false);
+    const updateMotion = () => setSystemReduced(query.matches), updateVisibility = () => setVisible(!document.hidden);
     updateMotion(); updateVisibility(); query.addEventListener('change', updateMotion); document.addEventListener('visibilitychange', updateVisibility);
-    window.addEventListener('blur', suspend); window.addEventListener('focus', updateVisibility);
     setReady(true);
-    return () => { query.removeEventListener('change', updateMotion); document.removeEventListener('visibilitychange', updateVisibility); window.removeEventListener('blur', suspend); window.removeEventListener('focus', updateVisibility); };
+    return () => { query.removeEventListener('change', updateMotion); document.removeEventListener('visibilitychange', updateVisibility); };
   }, []);
   useEffect(() => {
     if (!ready) return;
@@ -116,7 +113,7 @@ export default function SisterGame() {
     setEndingStates(previous => previous[state.endingId!] === state ? previous : ({ ...previous, [state.endingId!]: state }));
   }, [ready, phase, state]);
   useEffect(() => { if (ready) void Promise.all([writeLocal(COLLECTION, JSON.stringify(unlocked)), writeLocal(ENDING_STATES, serializeEndingStates(endingStates, oldEndingStates))]).catch(() => setNotice('结局收藏暂时没能保存，请保留这一程。')); }, [unlocked, endingStates, oldEndingStates, ready]);
-  useEffect(() => { if (ready) void writeLocal(POSITION, JSON.stringify({ key, index, phase })).catch(() => setNotice('播放位置暂时没能保存。')); }, [ready, key, index, phase]);
+  useEffect(() => { if (ready) void writeLocal(POSITION, JSON.stringify({ key, index, phase, shotId })).catch(() => setNotice('播放位置暂时没能保存。')); }, [ready, key, index, phase, shotId]);
   useEffect(() => { if (ready) void writeLocal(SETTINGS, JSON.stringify({ lessMotion, largeText })).catch(() => undefined); }, [ready, lessMotion, largeText]);
   useEffect(() => { document.title = `${phase === 'ending' ? ending?.title : chapter} · 姐姐，我该怎么走`; }, [chapter, ending?.title, phase]);
   useEffect(() => { setPaused(false); }, [key]);
@@ -134,13 +131,16 @@ export default function SisterGame() {
     } else if (!panel && dialog.hasAttribute('open')) { if (typeof dialog.close === 'function') dialog.close(); else dialog.removeAttribute('open'); }
   }, [panel]);
 
-  function setPhase(next: PlayPhase, at = 0) { setPosition({ key, index: at, phase: next }); }
+  function setPhase(next: PlayPhase) { setPosition({ key, index: 0, phase: next, shotId: next === 'cinematic' ? shots[0]?.id : undefined }); }
   function finishSequence() { setPhase(ending ? 'ending' : 'explore'); }
   const advanceCinematic = useCallback(() => {
-    if (routeRef.current !== key) return;
-    const more = index < shots.length - 1;
-    setPosition({ key, index: more ? index + 1 : 0, phase: more ? 'cinematic' : state.endingId ? 'ending' : 'explore' });
-  }, [key, index, shots.length, state.endingId]);
+    if (routeRef.current !== key || phase !== 'cinematic') return;
+    const nextShotId = shots[index + 1]?.id;
+    // A timer already queued when the player advances or skips must not act again.
+    setPosition(previous => previous !== position ? previous : nextShotId
+      ? { key, index: index + 1, phase: 'cinematic', shotId: nextShotId }
+      : { key, index: 0, phase: state.endingId ? 'ending' : 'explore' });
+  }, [key, index, phase, position, shots, state.endingId]);
   function commit(id: string) {
     if (!ready || phase !== 'explore' || state.endingId || routeRef.current !== key) return;
     const result = choose(state, id); if (!result) return;
@@ -157,7 +157,7 @@ export default function SisterGame() {
     if (!sound && !enabled) setNotice('当前设备未能开启声音，字幕与游玩仍可正常继续。');
   }
   function exportStory() {
-    const text = ['# 姐姐，我该怎么走', '', '0.7.0 · 我的这一程', '', ...state.history.flatMap((step, at) => [`## ${at + 1}. ${step.label}`, step.consequence, '']), ...(ending ? [`## ${ending.number} ${ending.title} · ${modeLabel(ending.mode)}`, ending.summary, ...ending.paragraphs] : ['这一程，还没有走完。'])].join('\n');
+    const text = ['# 姐姐，我该怎么走', '', '0.7.1 · 我的这一程', '', ...state.history.flatMap((step, at) => [`## ${at + 1}. ${step.label}`, step.consequence, '']), ...(ending ? [`## ${ending.number} ${ending.title} · ${modeLabel(ending.mode)}`, ending.summary, ...ending.paragraphs] : ['这一程，还没有走完。'])].join('\n');
     if (isMinitool) { setExportText(text); setPanel('export'); } else downloadStory(text);
   }
   async function fullscreen() { try { await enterFullscreen(); } catch { setNotice('当前浏览器没有进入全屏，仍可正常游玩。'); } setPanel(null); }
@@ -178,7 +178,7 @@ export default function SisterGame() {
     {!entered ? <section className="story-intro" aria-label="故事封面"><div className="intro-copy"><span className="eyebrow">一纸童话 · 姐妹的生存手记</span><p className="intro-title">姐姐，<br/>我该怎么走<span>？</span></p><p className="intro-subtitle">最后一点粮食还在。<br/>今天，我先守住什么？</p><button className="begin-button" disabled={!ready} onClick={enter}>{state.history.length ? '继续这一程' : '走进故事'}<ArrowRight size={20}/></button><button className="text-button intro-about" onClick={() => setPanel('about')}>关于这个故事</button></div><span className="intro-footer">两次选择 · 六条命运</span></section> : quiet ? <button className="return-story glass-button" onClick={() => setQuiet(false)}><BookOpen size={17}/>继续故事</button> : <>
       <header className="story-hud"><div className="place-caption"><span>{phase === 'ending' ? modeLabel(ending?.mode) : activeShot?.realm === 'dream' ? '梦中的故事' : activeShot?.realm === 'future' ? '多年以后 · 原创未来' : '萨岚城 · 姐妹的手记'}</span><p>{chapter}</p></div><nav aria-label="故事工具"><button className="sound-toggle" aria-label={sound ? '关闭声音' : '开启声音'} aria-pressed={sound} onClick={toggleSound}>{sound ? <Volume2 size={19}/> : <VolumeX size={19}/>}<span>{sound ? '声音开' : '声音关'}</span></button><button aria-label="手记" onClick={() => setPanel('journal')}><BookOpen size={20}/><span>手记</span></button><button aria-label="更多：阅读设置与重新开始" onClick={() => setPanel('menu')}><MoreHorizontal size={24}/><span>更多</span></button></nav></header>
       {phase === 'explore' && !ending && <SceneEncounter key={key} state={state} onChoose={commit} onRead={() => setPanel('journal')} onReplay={() => { setPaused(false); setPhase('cinematic'); }} reducedMotion={reduced}/>}
-      {phase === 'cinematic' && <OppressionSequence key={key} shots={shots} index={index} paused={paused} suspended={Boolean(panel) || quiet || !visible} onTogglePause={() => setPaused(value => !value)} onAdvance={advanceCinematic} onSkip={finishSequence}/>}
+      {phase === 'cinematic' && <OppressionSequence key={key} shots={shots} index={index} paused={paused} suspended={Boolean(panel) || quiet || !visible} exitLabel={ending ? '查看结局' : state.history.length ? '现在做第 2 次选择' : '回到第 1 次选择'} onTogglePause={() => setPaused(value => !value)} onAdvance={advanceCinematic} onSkip={finishSequence}/>}
       {phase === 'ending' && ending && <section className="story-dialogue story-dialogue--ending" tabIndex={-1} aria-label="当前故事"><div className="ending-scene"><span className="eyebrow">{modeLabel(ending.mode)} · 终幕 {ending.number}</span><h2>{ending.title}</h2><p className="ending-growth">{ending.summary}</p><p className="ending-fate">{ending.cost}</p><div className="ending-actions"><button className="continue-button" onClick={() => setPanel('reset')}>再走一条路<ArrowRight size={16}/></button><button className="text-button" onClick={() => { setPaused(false); setPhase('cinematic'); }}><RotateCcw size={14}/>重看结尾</button></div><button className="text-button" onClick={() => setPanel('journal')}>读完这一程<BookOpen size={15}/></button></div></section>}
       <footer className="story-bottomline"><span role="status">{saved ? <Check size={12}/> : <Feather size={12}/>} {notice || (saved ? '这一页，已替你留好' : ready ? '正在留存这一页' : '正在翻开故事')}</span></footer>
     </>}

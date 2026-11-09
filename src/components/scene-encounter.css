@@ -3,6 +3,7 @@
 .encounter-dock{position:absolute;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(840px,calc(100% - 64px));padding:12px 20px 8px;border:1px solid var(--hairline);border-radius:10px;background:var(--glass);backdrop-filter:blur(22px) saturate(0);-webkit-backdrop-filter:blur(22px) saturate(0);box-shadow:0 12px 40px #0003;pointer-events:auto;max-height:36dvh;overflow:auto;scrollbar-width:thin;overscroll-behavior:contain}
 .encounter-heading{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .encounter-heading>p{font:400 13px/1.65 var(--serif);color:#d3d1cb;margin:0;text-wrap:pretty;max-width:42em}
+.encounter-step{margin:0 0 3px;font:600 11px/1.5 var(--sans);letter-spacing:.08em;color:#f2f0e9}
 .encounter-tool{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 8px;font:12px/1.5 var(--sans);color:#cac8c1;border-radius:4px;white-space:nowrap}
 .encounter-heading>.encounter-tool{margin-block:-4px}
 .encounter-branches{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}

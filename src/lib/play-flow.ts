@@ -4,7 +4,7 @@ import { getSixShots } from './six-story-presentation';
 import { getSevenShots } from './seven-story-presentation';
 
 export type PlayPhase = 'cinematic' | 'explore' | 'reading' | 'choice' | 'compose' | 'ending';
-export type PlayPosition = { key: string; index: number; phase: PlayPhase };
+export type PlayPosition = { key: string; index: number; phase: PlayPhase; shotId?: string };
 
 /** The six-ending editions have an automatic performance, a fork, and a final panel.
  * The committed fate survives both replay and obsolete/corrupt reading phases. */
@@ -13,8 +13,18 @@ export function resolveStoryPlayPhase(recovered: PlayPhase, hasEnding: boolean, 
 }
 export { resolveStoryPlayPhase as resolveSixPlayPhase };
 
-/** These two events must establish what happened before the player handles the aftermath. */
+/** A numeric cursor from 0.7.0 cannot point into revised dialogue safely. */
+export function restoreStoryPlayback(key: string, position: PlayPosition | null, fallback: PlayPhase, hasEnding: boolean, shots: readonly { id: string }[]) {
+  const saved = position?.key === key ? position : null;
+  const savedIndex = saved?.phase === 'cinematic' && saved.shotId ? shots.findIndex(shot => shot.id === saved.shotId) : -1;
+  const recovered = saved && (saved.phase !== 'cinematic' || savedIndex >= 0) ? saved.phase : fallback;
+  const phase = resolveStoryPlayPhase(recovered, hasEnding, shots.length);
+  return { phase, index: phase === 'cinematic' ? Math.max(0, savedIndex) : 0 };
+}
+
+/** Open on the first decision. Choices with consequences start their performance. */
 export function initialPlayPhase(state: Pick<BranchState, 'nodeId' | 'endingId' | 'edition'> & Partial<Pick<BranchState, 'flags' | 'storyRevision'>>): PlayPhase {
+  if (state.storyRevision === 7 && state.nodeId === 'v7-opening') return 'explore';
   if (state.storyRevision === 6 || state.storyRevision === 7) {
     const shots = state.storyRevision === 7 ? getSevenShots(state) : getSixShots(state);
     return resolveStoryPlayPhase('cinematic', Boolean(state.endingId), shots.length);
@@ -30,5 +40,6 @@ export function readPlayPosition(value: unknown): PlayPosition | null {
   const position = value as Partial<PlayPosition>;
   if (typeof position.key !== 'string' || position.key.length > 12000 || !Number.isInteger(position.index) || position.index! < 0 || position.index! > 20) return null;
   if (!['cinematic', 'explore', 'reading', 'choice', 'compose', 'ending'].includes(position.phase as string)) return null;
-  return { key: position.key, index: position.index!, phase: position.phase! };
+  const { key, index, phase, shotId } = position;
+  return { key, index: index!, phase: phase!, ...(typeof shotId === 'string' && /^[a-z0-9-]{1,80}$/.test(shotId) ? { shotId } : {}) };
 }
