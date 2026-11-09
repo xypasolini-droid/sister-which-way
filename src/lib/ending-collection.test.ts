@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { choose, createInitialState, createRevisionFiveState, LEGACY_NODES, type BranchState } from './branch-story';
+import { choose, createInitialState, createRevisionFiveState, getEnding, LEGACY_NODES, type BranchState } from './branch-story';
 import { getArchivedEnding, restoreEndingCollections, restoreTenEndingArchive, serializeEndingStates } from './ending-collection';
+import { createSixState, SIX_ENDING_ROUTES } from './six-ending-story';
 
 const empty = { ids: null, states: null };
 import { LEGACY_ENDING_TEST_ROUTES } from './story-test-routes';
@@ -15,15 +16,15 @@ function completion(previous = false): BranchState {
   return state;
 }
 function currentCompletion(): BranchState {
-  return ['cut_hair', 'home'].reduce((state, id) => choose(state, id)!.state, createInitialState('short'));
+  return ['take_bread', 'run_home'].reduce((state, id) => choose(state, id)!.state, createInitialState('short'));
 }
 const stored = (state: BranchState) => ({ ids: JSON.stringify([state.endingId]), states: JSON.stringify({ [state.endingId!]: state }) });
 
-describe('revision 7 and historical ending collections', () => {
-  it('counts only authenticated content-seven completions toward the six new endings', () => {
+describe('content revision 8 and historical ending collections', () => {
+  it('counts only authenticated content-eight completions toward the six new endings', () => {
     const result = restoreEndingCollections(stored(currentCompletion()), [stored(completion()), stored(completion(true))]);
-    expect(result.current.ids).toEqual(['family_escape']);
-    expect(result.current.states.family_escape.storyContentRevision).toBe(7);
+    expect(result.current.ids).toEqual(['four_in_the_back']);
+    expect(result.current.states.four_in_the_back.storyContentRevision).toBe(8);
     expect(result.previous.ids).toEqual(['r5c6:reunited', 'r5c0:reunited']);
     expect(result.previous.states['r5c6:reunited'].storyContentRevision).toBe(6);
     expect(result.previous.states['r5c0:reunited'].storyContentRevision).toBeUndefined();
@@ -37,11 +38,11 @@ describe('revision 7 and historical ending collections', () => {
   });
   it('recovers genuinely played current snapshots from a misplaced collection key', () => {
     const result = restoreEndingCollections(empty, stored(currentCompletion()));
-    expect(result.current.ids).toEqual(['family_escape']);
+    expect(result.current.ids).toEqual(['four_in_the_back']);
     expect(result.previous.ids).toEqual([]);
   });
   it('preserves version-qualified name-only records with original identity and numbers', () => {
-    const result = restoreEndingCollections({ ids: '["family_escape"]', states: '{}' }, [
+    const result = restoreEndingCollections({ ids: '["four_in_the_back"]', states: '{}' }, [
       { ids: '["dream_guardian","caravan"]', states: '{}', revision: 'r5c6' },
       { ids: '["caravan","waiting"]', states: '{}', revision: 'legacy' },
     ]);
@@ -56,18 +57,18 @@ describe('revision 7 and historical ending collections', () => {
   it('does not mutate source records or count malformed snapshots', () => {
     const source = stored(completion(true));
     const before = JSON.stringify(source);
-    const result = restoreEndingCollections({ ids: '["family_escape"]', states: '{"family_escape":{"storyContentRevision":7,"endingId":"family_escape"}}' }, source);
+    const result = restoreEndingCollections({ ids: '["four_in_the_back"]', states: '{"four_in_the_back":{"storyContentRevision":8,"endingId":"four_in_the_back"}}' }, source);
     expect(result.current.ids).toEqual([]);
     expect(JSON.stringify(source)).toBe(before);
     expect(restoreEndingCollections({ ids: 'broken', states: 'broken' }, empty).current.ids).toEqual([]);
   });
   it('keeps both old revisions with the same ID alongside a new completion after reloading', () => {
     const latest = currentCompletion(), r6 = completion(), r5 = completion(true);
-    const states = serializeEndingStates({ family_escape: latest }, { 'r5c6:reunited': r6, 'r5c0:reunited': r5 });
-    const result = restoreEndingCollections({ ids: '["family_escape"]', states });
-    expect(result.current.ids).toEqual(['family_escape']);
+    const states = serializeEndingStates({ four_in_the_back: latest }, { 'r5c6:reunited': r6, 'r5c0:reunited': r5 });
+    const result = restoreEndingCollections({ ids: '["four_in_the_back"]', states });
+    expect(result.current.ids).toEqual(['four_in_the_back']);
     expect(result.previous.ids).toEqual(['r5c6:reunited', 'r5c0:reunited']);
-    expect(result.current.states.family_escape.storyContentRevision).toBe(7);
+    expect(result.current.states.four_in_the_back.storyContentRevision).toBe(8);
     expect(result.previous.states['r5c6:reunited'].storyContentRevision).toBe(6);
     expect(result.previous.states['r5c0:reunited'].storyContentRevision).toBeUndefined();
   });
@@ -75,6 +76,42 @@ describe('revision 7 and historical ending collections', () => {
     const result = restoreEndingCollections(empty, { ids: '["r5c6:dream_guardian","legacy:waiting"]', states: '{}' });
     expect(result.previous.ids).toEqual(['r5c6:dream_guardian', 'legacy:waiting']);
     expect(getArchivedEnding('family_escape')).toBeNull();
+  });
+  it('retains all six 0.6.0 completions, exact prose and numbering after r8 serialization', () => {
+    const old = Object.entries(SIX_ENDING_ROUTES).map(([id, actions]) => {
+      const state = actions.reduce((state, action) => choose(state, action)!.state, createSixState());
+      return [id, state] as const;
+    });
+    const source = {
+      revision: 'r6c7' as const,
+      ids: JSON.stringify(old.map(([id]) => id)),
+      states: JSON.stringify(Object.fromEntries(old)),
+    };
+    const first = restoreEndingCollections(stored(currentCompletion()), source);
+    const second = restoreEndingCollections({
+      ids: JSON.stringify(first.current.ids),
+      states: serializeEndingStates(first.current.states, first.previous.states),
+    });
+    expect(second).toEqual(first);
+    expect(second.current.ids).toEqual(['four_in_the_back']);
+    expect(second.previous.ids).toEqual(old.map(([id]) => `r6c7:${id}`));
+    for (const [id, state] of old) {
+      const archived = getArchivedEnding(`r6c7:${id}`);
+      expect(archived).toEqual(getEnding(state));
+      expect(second.previous.states[`r6c7:${id}`]).toEqual(state);
+    }
+    expect(getArchivedEnding('r6c7:family_escape')).toMatchObject({ number: '04', title: '离城的四个人' });
+    expect(getArchivedEnding('r6c7:guardian_future')).toMatchObject({ number: '06', title: '守护之地' });
+  });
+  it('keeps ID-only 0.6.0 archives and never counts them or unfinished runs as new completions', () => {
+    const unfinished = choose(createSixState(), 'cut_hair')!.state;
+    const result = restoreEndingCollections({
+      ids: '["family_escape","four_in_the_back"]',
+      states: JSON.stringify({ family_escape: unfinished }),
+    }, { ids: '["family_escape","four_in_the_back"]', states: '{}', revision: 'r6c7' });
+    expect(result.current.ids).toEqual([]);
+    expect(result.previous.ids).toEqual(['r6c7:family_escape']);
+    expect(result.previous.states).toEqual({});
   });
 });
 
@@ -90,7 +127,7 @@ describe('the real pre-consolidation ten-ending archive', () => {
     expect(getArchivedEnding('legacy10:dream_guardian')).toMatchObject({ title: '守护之地', number: '09', dream: true });
     expect(getArchivedEnding('legacy10:letters')?.paragraphs[0]).toBe('第一封信写今天吃了什么、姐姐住在哪里、萨米又问了什么。你没有用一场准时团圆填掉尚未知道的地方。');
   });
-  it('preserves authenticated original coda IDs and reused dream numbers across r7 serialization', () => {
+  it('preserves authenticated original coda IDs and reused dream numbers across r8 serialization', () => {
     let dream = createInitialState();
     for (const id of LEGACY_ENDING_TEST_ROUTES.dream_guardian) dream = choose(dream, id)!.state;
     let before = createInitialState();

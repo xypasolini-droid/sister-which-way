@@ -14,19 +14,21 @@ function sdkMock(values = new Map<string, string>()) {
 afterEach(() => { vi.useRealTimers(); });
 
 describe('minitool persistence', () => {
-  it('keeps r7 progress independent from every historical save namespace', async () => {
+  it('keeps r8 progress independent from every historical save namespace', async () => {
     const old = 'sister-which-way.v3';
     const oldEndings = 'sister-which-way.endings.r6';
-    const values = new Map([[old, 'unfinished-old-story'], [oldEndings, '["dream_guardian"]']]);
+    const lastEndings = 'sister-which-way.endings.r7';
+    const values = new Map([[old, 'unfinished-old-story'], [oldEndings, '["dream_guardian"]'], [lastEndings, '["family_escape"]']]);
     const native = sdkMock(values);
     const runtime = createMinitoolRuntime({ xhs: { launchOptions: { miniToolEnv: { buildVersion: 9490000 } }, miniTool: native } });
     await runtime.prepareRuntime();
-    await runtime.writeLocal('sister-which-way.play.r7', 'new-scissors-opening');
-    await runtime.writeLocal('sister-which-way.endings.r7', '["family_escape"]');
+    await runtime.writeLocal('sister-which-way.play.r8', 'new-three-way-opening');
+    await runtime.writeLocal('sister-which-way.endings.r8', '["four_in_the_back"]');
     expect(values.get(old)).toBe('unfinished-old-story');
     expect(values.get(oldEndings)).toBe('["dream_guardian"]');
-    expect(PROGRESS_KEYS).toContain('sister-which-way.reading.r7');
-    expect(PROGRESS_KEYS).toContain('sister-which-way.ending-states.r7');
+    expect(values.get(lastEndings)).toBe('["family_escape"]');
+    expect(PROGRESS_KEYS).toContain('sister-which-way.reading.r8');
+    expect(PROGRESS_KEYS).toContain('sister-which-way.ending-states.r8');
     expect(runtime.readLocal(old)).toBe('unfinished-old-story');
   });
   it('hydrates every current and historical progress key from the native SDK before synchronous reads', async () => {

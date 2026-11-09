@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { choose, createInitialState, createRevisionFiveState, ENDINGS, getChoices, getEnding, getNode, validateBranchState, type BranchState } from './branch-story';
-import { SIX_ENDING_IDS, SIX_ENDING_ROUTES } from './six-ending-story';
+import { choose, createRevisionFiveState, getChoices, getEnding, getNode, validateBranchState, type BranchState } from './branch-story';
+import { REVISION_SIX_ENDINGS as ENDINGS } from './ending-content';
+import { createSixState, SIX_ENDING_IDS, SIX_ENDING_ROUTES } from './six-ending-story';
 import { endingEcho, endingGrowth } from './ending-presentation';
 
 function play(route: string[]): BranchState {
@@ -8,10 +9,10 @@ function play(route: string[]): BranchState {
     const next = choose(state, id);
     if (!next) throw Error(`Unavailable six-ending action ${state.nodeId}/${id}`);
     return next.state;
-  }, createInitialState('short'));
+  }, createSixState());
 }
 function explore() {
-  const pending = [createInitialState('short')], forks = new Map<string, string[]>(), terminal: BranchState[] = [];
+  const pending = [createSixState()], forks = new Map<string, string[]>(), terminal: BranchState[] = [];
   while (pending.length) {
     const state = pending.pop()!;
     if (state.endingId) { terminal.push(state); continue; }
@@ -28,7 +29,7 @@ function explore() {
 
 describe('0.6.0 literal six-ending graph', () => {
   it('starts at the scissors with the arrest already known and no old facts imported', () => {
-    const state = createInitialState('short');
+    const state = createSixState();
     expect(state).toMatchObject({ storyRevision: 6, storyContentRevision: 7, version: 3, nodeId: 'v6-opening', father: 'missing', endingId: null, history: [] });
     expect(getNode(state).paragraphs.join('')).toContain('父亲是当着全家人的面被抓走的');
     expect(state.flags).toContain('fatherArrested');
@@ -88,7 +89,7 @@ describe('0.6.0 literal six-ending graph', () => {
     expect(play(SIX_ENDING_ROUTES.guardian_future).flags).not.toContain('heroUnconscious');
   });
   it('keeps result, source state and content immutable and deterministic', () => {
-    const source = createInitialState('short'), before = structuredClone(source);
+    const source = createSixState(), before = structuredClone(source);
     const a = choose(source, 'cut_hair')!, b = choose(source, 'cut_hair')!;
     expect(a).toEqual(b);
     expect(source).toEqual(before);
@@ -108,10 +109,10 @@ describe('0.6.0 literal six-ending graph', () => {
       { ...done, stats: { ...done.stats, trust: 10 } },
       { ...done, history: [...done.history, { nodeId: 'v6-end', choiceId: 'wake' }] },
     ]) expect(validateBranchState(forged)).toBeNull();
-    expect(choose(createInitialState('short'), 'work')).toBeNull();
-    expect(choose(createInitialState('short'), 'home')).toBeNull();
+    expect(choose(createSixState(), 'work')).toBeNull();
+    expect(choose(createSixState(), 'home')).toBeNull();
   });
-  it('preserves the earlier five-ending story separately instead of mapping its 04 onto the new 04', () => {
+  it('preserves the earlier five-ending story separately from the 0.6.0 ending with the same number', () => {
     let old = createRevisionFiveState();
     for (const id of ['mother','cut','buy','hide','ledger','rush','father']) old = choose(old, id)!.state;
     expect(old).toMatchObject({ storyRevision: 5, storyContentRevision: 6, endingId: 'dream_guardian' });

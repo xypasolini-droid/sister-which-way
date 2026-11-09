@@ -1,4 +1,5 @@
 import { SIX_NODES, SIX_ENDING_IDS, createSixState, getSixNode, type SixEndingId } from './six-ending-story';
+import { SEVEN_NODES, SEVEN_ENDING_IDS, createSevenState, getSevenNode, type SevenEndingId } from './seven-ending-story';
 import { getShortNode, getShortFate } from './short-story';
 import { getLegacyShortNode } from './legacy-short-story';
 import { getShortNode as getPreviousRevisionFiveNode } from './legacy-short-story-r5';
@@ -13,8 +14,8 @@ export type BranchState = {
   sister: 'beside' | 'apart' | 'injured'; father: 'missing' | 'located' | 'free';
   endingId: string | null; history: StoryHistory[];
   edition?: 'short';
-  storyRevision?: 5 | 6;
-  storyContentRevision?: 6 | 7;
+  storyRevision?: 5 | 6 | 7;
+  storyContentRevision?: 6 | 7 | 8;
 };
 export type StoryState = BranchState;
 type Requirement = { stat?: keyof Stats; min?: number; max?: number; flag?: string; absent?: string; reason: string };
@@ -25,7 +26,8 @@ type Effect = {
 export type StoryChoice = {
   id: string; label: string; detail: string; hint: string; keywords: string[];
   next: string; consequence: string; effect?: Effect; requires?: Requirement[];
-  finish?: 'road' | 'pages' | 'wait' | 'dream_guardian' | 'dream_commons' | SixEndingId;
+  finish?: 'road' | 'pages' | 'wait' | 'dream_guardian' | 'dream_commons' | SixEndingId | SevenEndingId;
+  qualities?: ('勇敢' | '智慧' | '善良')[];
 };
 export type StoryNode = {
   id: string; title: string; chapter?: string; act: number; day: number; scene: SceneId;
@@ -370,19 +372,19 @@ export const LEGACY_NODES: Record<string, StoryNode> = {
   },
 };
 
-export const NODES: Record<string, StoryNode> = { ...LEGACY_NODES, ...SIX_NODES };
+export const NODES: Record<string, StoryNode> = { ...LEGACY_NODES, ...SIX_NODES, ...SEVEN_NODES };
 export const NODE_COUNT = 30;
 export const STAT_LABELS: Record<keyof Stats, string> = { food: '口粮', coins: '零钱', trust: '姐妹信任', hope: '心气', exposure: '被注意程度', health: '家人身体' };
 export const ACT_TITLES = ['门后的家', '街上的名字', '分岔的路', '写给明天'];
 export { ENDINGS } from './ending-content';
-import { ENDINGS as ENDING_CONTENT, projectEnding } from './ending-content';
+import { ENDINGS as ENDING_CONTENT, REVISION_SIX_ENDINGS, projectEnding } from './ending-content';
 import { ENDINGS as REVISION_FIVE_ENDINGS, projectEnding as projectRevisionFiveEnding } from './revision-five-ending-content';
 export { REVISION_FIVE_ENDINGS };
 import { ENDINGS as LEGACY_ENDINGS, projectEnding as projectLegacyEnding } from './legacy-ending-content';
 import { ENDINGS as LEGACY_TEN_ENDINGS } from './legacy-ten-ending-content';
 
 export function createInitialState(edition?: 'short'): BranchState {
-  return edition === 'short' ? createSixState() : createState(edition);
+  return edition === 'short' ? createSevenState() : createState(edition);
 }
 export function createRevisionFiveState(): BranchState { return createState('short', true); }
 function createState(edition?: 'short', current = false): BranchState {
@@ -394,6 +396,7 @@ export const SISTER_OFFSTAGE_NODES = new Set(['n01', 'n03', 'n04', 'n07', 'n08',
 
 /** The full journal remembers facts; the screen dialogue is separately authored. */
 export function getNode(state: BranchState): StoryNode {
+  if (state.storyRevision === 7) return getSevenNode(state);
   if (state.storyRevision === 6) return getSixNode(state);
   const original = NODES[state.nodeId] ?? NODES.n01;
   const node = { ...original, paragraphs: [...original.paragraphs], choices: original.choices.map(choice => ({ ...choice })) };
@@ -502,7 +505,7 @@ export function mapLegacyEndingId(id: string): string | null {
 
 /** The consequence is kept in the journal; current facts are never overwritten. */
 function consequenceFor(state: BranchState, choice: StoryChoice): string {
-  if (state.storyRevision === 5 || state.storyRevision === 6) return choice.consequence;
+  if (state.storyRevision === 5 || state.storyRevision === 6 || state.storyRevision === 7) return choice.consequence;
   if (state.nodeId === 'n20' && choice.id === 'submit' && !has(state, 'guardBond')) return has(state, 'guardKnown')
     ? '阿明认出替他读信的孩子。接下来几次往来，你陪他练写妻子哈拉的名字，也慢慢说起父亲。他把你的另纸姓名收好，让你换岗时再来问；他仍没有保证能救人。'
     : '阿明请你读信。妻子哈拉乘坐的巴士触雷、重伤后去世，他沉默着，又请你念她的名字。你把信还给他。接下来的几次往来，你陪他认字，后来才另纸写下父亲的姓名。他让你换岗时再来问，仍没有保证能救人。';
@@ -541,8 +544,9 @@ function chooseWithHistory(state: BranchState, choiceId: string, replayLegacy = 
   if (effect.father && effect.father !== state.father) changes.push(effect.father === 'free' ? '父亲回到身边' : effect.father === 'missing' ? '父亲被带走' : '得知父亲去向');
   const consequence = consequenceFor(state, choice);
   next.history.push({ nodeId: state.nodeId, choiceId: choice.id, label: choice.label, consequence });
-  if (next.storyRevision === 6 && choice.finish && SIX_ENDING_IDS.includes(choice.finish as SixEndingId)) {
-    next.endingId = choice.finish;
+  if (next.storyRevision === 6 || next.storyRevision === 7) {
+    const endingIds: readonly string[] = next.storyRevision === 7 ? SEVEN_ENDING_IDS : SIX_ENDING_IDS;
+    if (choice.finish && endingIds.includes(choice.finish)) next.endingId = choice.finish;
   } else if (next.storyRevision === 5 && next.nodeId === 'n30') {
     // The action already chosen is the ending. Never insert an eighth "next" click.
     next.endingId = getShortFate(next);
@@ -554,8 +558,9 @@ function chooseWithHistory(state: BranchState, choiceId: string, replayLegacy = 
 export function choose(state: BranchState, choiceId: string) { return chooseWithHistory(state, choiceId); }
 
 export function getEnding(state: BranchState): Ending | null {
-  if (state.storyRevision === 6) {
-    const ending = ENDING_CONTENT.find(item => item.id === state.endingId);
+  if (state.storyRevision === 6 || state.storyRevision === 7) {
+    const endings = state.storyRevision === 7 ? ENDING_CONTENT : REVISION_SIX_ENDINGS;
+    const ending = endings.find(item => item.id === state.endingId);
     return ending ? projectEnding(state, ending) : null;
   }
   if (state.storyRevision !== 5 && state.endingId) {
@@ -570,9 +575,10 @@ export function getEnding(state: BranchState): Ending | null {
   return ending ? projectRevisionFiveEnding(state, ending) : null;
 }
 
-/** Historical IDs are resolved within their version, never through the new six. */
+/** Historical IDs resolve to the original edition's ending text. */
 export function getHistoricalEnding(id: string, revision: string | number = 'r5c6'): Ending | null {
-  const content = String(revision) === 'legacy10' ? LEGACY_TEN_ENDINGS
+  const content = String(revision) === 'r6c7' ? REVISION_SIX_ENDINGS
+    : String(revision) === 'legacy10' ? LEGACY_TEN_ENDINGS
     : String(revision).includes('legacy') || String(revision) === '0' ? LEGACY_ENDINGS : REVISION_FIVE_ENDINGS;
   const base = content.find(ending => ending.id === id) ?? (content === LEGACY_ENDINGS ? LEGACY_TEN_ENDINGS.find(ending => ending.id === id) : undefined);
   return base ? { ...base, paragraphs: [...base.paragraphs] } : null;
@@ -607,10 +613,11 @@ export function validateBranchState(raw: unknown): BranchState | null {
   const input = raw as Partial<BranchState>;
   if (input.version !== 3 || !Array.isArray(input.history) || input.history.length > 35 || typeof input.nodeId !== 'string') return null;
   if (input.edition !== undefined && input.edition !== 'short') return null;
-  if (input.storyRevision !== undefined && (![5, 6].includes(input.storyRevision) || input.edition !== 'short')) return null;
-  if (input.storyRevision === 6) {
-    if (input.storyContentRevision !== 7 || input.history.length > 3) return null;
-    let current = createSixState();
+  if (input.storyRevision !== undefined && (![5, 6, 7].includes(input.storyRevision) || input.edition !== 'short')) return null;
+  if (input.storyRevision === 6 || input.storyRevision === 7) {
+    const currentEdition = input.storyRevision === 7;
+    if (input.storyContentRevision !== (currentEdition ? 8 : 7) || input.history.length > (currentEdition ? 2 : 3)) return null;
+    let current = currentEdition ? createSevenState() : createSixState();
     for (const entry of input.history) {
       if (!entry || typeof entry !== 'object' || entry.nodeId !== current.nodeId || typeof entry.choiceId !== 'string') return null;
       const result = chooseWithHistory(current, entry.choiceId);

@@ -1,0 +1,126 @@
+{
+  "generator": "OpenAI built-in imagegen",
+  "sourcePolicy": "Only original project artwork was passed to imagegen. Film frame references were checked locally and are not included in these assets.",
+  "localFilmChecks": [
+    "00:24:00, 00:24:40, 00:25:10 — indoor and market costume references",
+    "00:29:20, 00:31:50 — cropped hair and soft cap",
+    "01:20:00, 01:22:30 — late folktale color and boy costume"
+  ],
+  "assets": [
+    {
+      "file": "nura-cutting.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v2/hero-cloak.png",
+        "public/art/sister-v6/opening-scissors.webp"
+      ],
+      "prompt": "Create a single full-body 2D game sprite on genuinely TRANSPARENT alpha background, portrait canvas, no floor, no backdrop, no borders, no text. Match the existing Nura character precisely. Identity reference 1 is the standing young girl with dark forest green shawl and muted pale gray khaki long tunic and brown baggy trousers; reference 2 uses her braided seated figure on the far right as a matching seated silhouette. Draw ONLY Nura, age twelve, in close three-quarter profile facing left, kneeling on both folded legs in a modest indoors pose with the green shawl lowered around shoulders. Her left hand holds the thick black braid away from her neck and her own RIGHT hand uses small dull iron dressmaker's scissors to snip the end of HER OWN braid, at chest level visibly far from face and skin. Both arms are connected naturally to her torso and both hands visibly perform the action. Calm focused eyes on the braid. Keep sleeves long and hair braid visibly distinct. All limbs and feet are in-frame with spare transparent margin. Hand-painted textured 2D adventure game art with tidy muted color blocks, restrained realistic anatomy, strong distinct silhouette like reference, same facial features and color palette. Dim warm directional lamp light from right. No other person, furniture, rug, floor, injuries, blood, multiple scissors, loose disconnected limbs, shiny CGI, outlines of original frames or lettering."
+    },
+    {
+      "file": "truck-plate.png",
+      "transparentBackground": false,
+      "referenceAssets": [
+        "public/art/sister-v4/end-caravan.webp"
+      ],
+      "prompt": "Edit this reference into a clean 16:9 animated video game background plate. Preserve exact open-air weathered wood backed cargo truck, sides and near rear planks, mountains, low sand-toned mud homes and dusk Kabul-era terrain, painterly layered paper collage. Remove all four passengers, every human silhouette, and any driver, replacing each with the clean landscape or truck structure that would be behind them. The cargo bed is fully open above its low rails with visible sky, no canopy, no bus, no windows behind cab. Bed rail should still occupy low foreground x0 to 70%, y58 to 74% of canvas, with visible bed interior above and behind it. Keep frame perspective, horizon, tightly composed open truck on lower left with road curving right, dusty warm palette. Output clean background for separately compositing individual transparent character actors. Absolutely no people, text, watermark or graphics."
+    },
+    {
+      "file": "sulayman.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v6/tale-village.webp"
+      ],
+      "prompt": "Create a single isolated transparent PNG sprite of the illustrated boy Sulayman from the center of the reference scene. Preserve tan skin, dark short curly hair, cream Afghan cap, tan ivory tunic and loose trousers, brown waistcoat and shoes. Full head to boots, neutral profile 3/4 toward viewer right, standing with one step and a small tied sack of seeds grasped, attentive and worried. Stylized textured layered cut-paper folktale illustration, exact palette of the reference character without the surrounding red landscape. Small breathing room around tight vertical figure. True transparent alpha outside sprite, no ground, shadow, scenery, border, writing, facial caricature or extra figures."
+    },
+    {
+      "file": "elephant.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v6/tale-elephant.webp"
+      ],
+      "prompt": "Extract as a separate game actor with true transparent background: the large charcoal-purple folk tale elephant king from the reference. Full profile facing left, trunk and both tusks clearly readable, quiet kneeling pose, crimped triangles in paper ears, grainy folded ink cut-paper rendering, red eye, subtle rust cast light. Frame only the one elephant, remove the boy, sky and all hills, glowing ground and props. Keep entire silhouette including full trunk and rear feet with small transparent margins. True alpha and no baseline ground or cast shadow."
+    },
+    {
+      "file": "nura-fallen.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v6/unconscious-rescue.webp",
+        "public/art/sister-v2/hero-worker.png"
+      ],
+      "prompt": "Draw only the fallen child Nura from the near ground in the first reference as a transparent individual game sprite. Follow identity in second reference for dark cropped hair and tan skin, simple warm taupe Afghan boy long tunic, loose trousers and scuffed shoes. Entire body visible, horizontal pose lying on right side with head to viewer left, knees loosely bent, body pointing right. Her cap fell off; eyes clearly closed, one cheek resting gently on folded forearm, lips closed. Non-graphic, at most dust and a faint bruise, no blood, no weapon or fighting. Hand-cut layered paper and canvas grain like reference; no separate shadow or ground whatsoever, no other person, no scenery. Use a wide near-cropped native frame around the full body, true alpha around silhouette."
+    },
+    {
+      "file": "ali.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v6/end-unwaking_spring.webp"
+      ],
+      "prompt": "Cut-paper illustrated game character: isolate the teenage boy Ali from the reference, the black-haired teenage boy sitting second from the right immediately next to the gray-bearded father. Full body cross-legged seated, slightly turned left toward his little sister, relaxed gentle smile, teenage proportions (visibly much older than the small child), curly dark hair without cap as in reference, dusty beige Afghan long tunic and loose shalwar, visible simple sandals. Pose hands naturally relaxed on knees. Maintain painterly paper collage and tan skin, softly warm reflected color. Transparent alpha, no extra people, tray, furniture, background or shadow. Tight figure in frame, full head and feet visible."
+    },
+    {
+      "file": "lantern-courtyard.png",
+      "transparentBackground": false,
+      "referenceAssets": [
+        "public/art/sister/courtyard.png"
+      ],
+      "prompt": "Create a new empty 16:9 environment art plate from the reference style for an original small Afghan mountain village literacy courtyard at dusk. The architecture remains simple textured mud brick, quiet mature pomegranate tree and limestone floor, quiet indigo blue dusk with warm amber lantern light spilling through an OPEN turquoise wooden door on left-middle and broad clear stone floor in the central foreground, no people. Low wooden learning table with two small blank slates and folded papers to the far right, distant mountains above courtyard wall, modest place run by neighbors. There must be a broad center lane for independently layered characters to be added. Hand-painted grain and hand-cut paper relief of the reference, warm lamp pool on floor, windows within clay walls. No soldiers, weapons, flags, uniforms, crowds, text, watermark, visible modern technology."
+    },
+    {
+      "file": "adult-layla.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v2/friend-worker.png",
+        "public/art/sister-v3/adult-builder.png"
+      ],
+      "prompt": "Illustrate a full-body transparent character sprite for Layla, grown many years after the game. First image is her childhood identity reference: keep her amber-olive skin, sharp gentle eyes and nose, dark hair now mostly covered. Second is style and adult scale reference only: this is a visibly different woman. She is dressed in a muted slate-blue matte Afghan shawl and simple warm brown long tunic over loose trousers and plain flat shoes, no uniform. Candid welcoming stance, looking and reaching one hand to viewer left, the other hand carries a loose blank slate for teaching. Textured layered painterly paper collage, facial expressions recognizable, natural hands. Transparent alpha outside full body including feet, no scenery, no ground shadow, no weapon, no text, no additional person."
+    },
+    {
+      "file": "well-plate.png",
+      "transparentBackground": false,
+      "referenceAssets": [
+        "public/art/sister/courtyard.png"
+      ],
+      "prompt": "Edit as a clean game environment background with no people. Reframe the existing quiet mud-brick Afghan courtyard so the central left focus is a low worn round stone water well, a small rough wooden bucket and rope resting on its lip, no pulley tower. Open courtyard ground right and front for character actors; turquoise closed plank gate on right, pomegranate foliage and mountains in background, original textured paper illustration palette. 16:9 landscape. No people, silhouettes, readable lettering, weapon, vehicles or borders."
+    },
+    {
+      "file": "nura-reaching.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v2/hero-worker.png"
+      ],
+      "prompt": "Produce an alternate full-body true transparent animation sprite of exactly the character in this reference. Keep her short hair, tan skin, soft cream cap, taupe boy disguise with long Afghan tunic and loose trousers, small shoes and the original hand-painted layered paper style. Shift pose to a step towards viewer right and extend her right arm straight down and out toward viewer right, fingers open as if reaching to grab a friend's hand. Three-quarter view, anxious eyes looking at the friend. Important full extended hand visible, both feet and cap visible, tight framing. Single individual separated with real alpha. No second actor, object, background, ground, text or cast shadow."
+    },
+    {
+      "file": "layla-reaching.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v2/friend-worker.png"
+      ],
+      "prompt": "Produce an alternate full-body true transparent animation sprite of exactly Layla in this reference. Keep tan skin, dark curls, dark brown Afghan cap and dust grey loose long Afghan tunic and trousers, shoes and the original hand-painted layered paper style. Shift pose to a step towards viewer left and extend her left arm straight down and out toward viewer left, fingers open as if reaching to grab a friend's hand. Three-quarter view, anxious eyes. Important full extended hand visible, both feet and cap visible, tight framing. Single person with real alpha. No second actor, background, ground, text or cast shadow."
+    },
+    {
+      "file": "dream-table-plate.png",
+      "transparentBackground": false,
+      "referenceAssets": [
+        "public/art/sister-v6/end-unwaking_spring.webp"
+      ],
+      "prompt": "Make a people-free clean 16:9 game environment plate from this reference. Keep a warm sunny Afghan village orchard with flowering branches, earthen homes, glowing crop terraces, and bright woven rugs spread in foreground. Remove all six people entirely, replacing them with background or carpets. A small festive oval brass food tray with flatbread and fruit remains centered at bottom foreground, top edge about 82 percent down picture, with clear free space behind it to place separate full-body characters. Keep original beautifully textured paper collage folk tale aesthetic and spring daylight. Absolutely no people or tiny figures anywhere, no limbs, no text."
+    },
+    {
+      "file": "layla-bareheaded.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v2/friend-worker.png"
+      ],
+      "prompt": "Small change to existing full-body transparent paper game sprite Layla. Exactly same 12-year-old olive-skinned child, gray Afghan male disguise long tunic and loose pants, same face and pose; remove her soft cap entirely and reveal her short wavy dark hair. Her arms carry a small plain folded paper against chest, standing in a 3/4 profile towards viewer right. Single entire body, true alpha outside including between legs and around fingers, flat game animation lighting. No hat, shadow, background, words, weapons, or any second character."
+    },
+    {
+      "file": "helper-neighbor.png",
+      "transparentBackground": true,
+      "referenceAssets": [
+        "public/art/sister-v3/adult-builder.png"
+      ],
+      "prompt": "Draw an independent full-body character sprite of an older civilian Afghan neighbor woman, based on the same textured cut-paper game style as reference, clearly a different adult. Rounded sun-weathered face, brown skin, dark eyes, simple ochre-brown warm shawl snug over hair, muted dark clay-red long tunic over loose khaki trousers, worn shoes. In 3/4 view facing toward viewer left, she holds folded light tan cloth low in both hands as if ready to help. Natural open expression, cloth edge visible, recognizable head-to-foot shape. Tight single body with true transparent alpha around it, no scenery, text, shadow, wall, border, soldier, weapons or second person."
+    }
+  ]
+}

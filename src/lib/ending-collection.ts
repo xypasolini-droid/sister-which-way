@@ -1,18 +1,20 @@
 import { getHistoricalEnding, validateBranchState, type BranchState, type Ending } from './branch-story';
 
-type HistoricalRevision = 'r5c6' | 'r5c0' | 'legacy' | 'legacy10';
+type HistoricalRevision = 'r6c7' | 'r5c6' | 'r5c0' | 'legacy' | 'legacy10';
 export type StoredCollection = { ids: string | null; states: string | null; revision?: HistoricalRevision };
 export type EndingCollection = { ids: string[]; states: Record<string, BranchState> };
+const archivedKey = /^(r6c7|r5c6|r5c0|legacy|legacy10):(.+)$/;
 function parse(value: string | null): unknown { try { return value ? JSON.parse(value) : null; } catch { return null; } }
 
 function historicalRevision(state: BranchState): HistoricalRevision {
+  if (state.storyRevision === 6) return 'r6c7';
   return state.storyRevision === 5 ? state.storyContentRevision === 6 ? 'r5c6' : 'r5c0' : 'legacy';
 }
 export function historicalCollectionKey(state: BranchState): string | null {
-  return state.endingId ? `${historicalRevision(state)}:${state.endingId}` : null;
+  return state.endingId && state.storyRevision !== 7 ? `${historicalRevision(state)}:${state.endingId}` : null;
 }
 export function getArchivedEnding(key: string): Ending | null {
-  const match = /^(r5c6|r5c0|legacy|legacy10):(.+)$/.exec(key);
+  const match = archivedKey.exec(key);
   return match ? getHistoricalEnding(match[2], match[1]) : null;
 }
 
@@ -28,7 +30,7 @@ export function restoreTenEndingArchive(value: string | null): StoredCollection 
   };
 }
 
-/** Only authenticated revision-7 snapshots unlock the six new endings.
+/** Only authenticated content-revision-8 snapshots unlock the current endings.
  * Earlier editions keep both their version and original ending identity. */
 export function restoreEndingCollections(current: StoredCollection, previous: StoredCollection | StoredCollection[] = []): { current: EndingCollection; previous: EndingCollection } {
   const latest: EndingCollection = { ids: [], states: {} };
@@ -41,7 +43,7 @@ export function restoreEndingCollections(current: StoredCollection, previous: St
       let snapshot = validateBranchState(value);
       if (!snapshot?.endingId) continue;
       const originalId = value && typeof value === 'object' && 'endingId' in value ? (value as { endingId: unknown }).endingId : null;
-      // The explicit ten-ending archive, including a serialized copy in r7,
+      // The explicit ten-ending archive, including a serialized copy in later saves,
       // owns its original IDs. Authentication may canonicalize a former coda,
       // but its archive number and text must not become a later five-ending ID.
       const savedRef = /^(?:old:)?legacy10:(.+)$/.exec(storedKey);
@@ -49,7 +51,7 @@ export function restoreEndingCollections(current: StoredCollection, previous: St
       const isTen = typeof tenId === 'string' && tenId === originalId && Boolean(getHistoricalEnding(tenId, 'legacy10'));
       if (isTen) snapshot = { ...snapshot, endingId: tenId };
       authenticatedIds.add(snapshot.endingId!);
-      const isLatest = snapshot.storyRevision === 6 && snapshot.storyContentRevision === 7;
+      const isLatest = snapshot.storyRevision === 7 && snapshot.storyContentRevision === 8;
       const collection = isLatest ? latest : archived;
       const key = isLatest ? snapshot.endingId! : isTen ? `legacy10:${tenId}` : historicalCollectionKey(snapshot)!;
       if (!collection.states[key]) collection.states[key] = snapshot;
@@ -57,9 +59,9 @@ export function restoreEndingCollections(current: StoredCollection, previous: St
     }
     if (allowNameOnly && Array.isArray(ids)) for (const id of ids) {
       if (typeof id !== 'string' || authenticatedIds.has(id)) continue;
-      // Serialized archives already have a version. A pre-r7 source supplies its
-      // own version for its earlier ID-only records; do not guess a new fate.
-      const key = /^(r5c6|r5c0|legacy|legacy10):/.test(id) ? id : `${source.revision ?? 'legacy'}:${id}`;
+      // Serialized archives already have a version. Older sources supply their
+      // own version for earlier ID-only records.
+      const key = archivedKey.test(id) ? id : `${source.revision ?? 'legacy'}:${id}`;
       if (getArchivedEnding(key) && !archived.ids.includes(key)) archived.ids.push(key);
     }
   }

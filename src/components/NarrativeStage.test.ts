@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import NarrativeStage, { describeNarrativeChange, type NarrativeStageProps } from './NarrativeStage';
 import { createInitialState, getNode, type BranchState } from '../lib/branch-story';
-function props(patch:Partial<BranchState>):NarrativeStageProps{const state={...createInitialState(),...patch};return {...state,scene:getNode(state).scene,ending:state.endingId,reducedMotion:true};}
+function props(patch:Partial<Omit<BranchState,'storyRevision'>>):NarrativeStageProps{const state={...createInitialState(),...patch,storyRevision:undefined};return {...state,scene:getNode(state).scene,ending:state.endingId,reducedMotion:true};}
 describe('stage announcements follow the cast actually on camera',()=>{
  it('describes the mother on the prison journey instead of an offstage sister moving closer',()=>{
   const before=props({nodeId:'n02'}),next=props({nodeId:'n03',stats:{...before.stats,trust:8}});

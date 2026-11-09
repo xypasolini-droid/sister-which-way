@@ -1,6 +1,6 @@
 export const isMinitool = true;
 export const canFullscreen = false;
-export const PROGRESS_KEYS = ['sister-which-way.play.r7', 'sister-which-way.reading.r7', 'sister-which-way.endings.r7', 'sister-which-way.ending-states.r7', 'sister-which-way.preferences.v3', 'sister-which-way.v3', 'sister-which-way.endings.r6', 'sister-which-way.ending-states.r6', 'sister-which-way.reading.v6', 'sister-which-way.ten-ending-archive.v1', 'sister-which-way.endings.v3', 'sister-which-way.ending-states.v3', 'sister-which-way.endings.r5', 'sister-which-way.ending-states.r5'] as const;
+export const PROGRESS_KEYS = ['sister-which-way.play.r8', 'sister-which-way.reading.r8', 'sister-which-way.endings.r8', 'sister-which-way.ending-states.r8', 'sister-which-way.play.r7', 'sister-which-way.reading.r7', 'sister-which-way.endings.r7', 'sister-which-way.ending-states.r7', 'sister-which-way.preferences.v3', 'sister-which-way.v3', 'sister-which-way.endings.r6', 'sister-which-way.ending-states.r6', 'sister-which-way.reading.v6', 'sister-which-way.ten-ending-archive.v1', 'sister-which-way.endings.v3', 'sister-which-way.ending-states.v3', 'sister-which-way.endings.r5', 'sister-which-way.ending-states.r5'] as const;
 type LaunchOptions = { miniToolEnv?: { buildVersion?: number | string } };
 type Rectangle = { top: number; right: number; bottom: number; left: number };
 type WindowInfo = { windowWidth?: number; windowHeight?: number; safeArea?: Rectangle; menuButtons?: Record<string, Rectangle | null> };

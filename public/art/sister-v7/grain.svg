@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="126" viewBox="0 0 112 126">
+  <defs><linearGradient id="jute" x2="1" y2=".24"><stop stop-color="#755b36"/><stop offset=".5" stop-color="#ba9760"/><stop offset="1" stop-color="#846b47"/></linearGradient><pattern id="weave" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 1h7M1 0v7" stroke="#e0c18b" opacity=".12"/></pattern></defs>
+  <path id="bag" d="M29 8q16 8 44-2l-6 19q19 14 26 32c8 20 17 47 2 56-19 11-60 10-80-2C1 99 18 66 20 55q5-19 23-30Z" fill="url(#jute)" stroke="#5c482f" stroke-width="2"/>
+  <use href="#bag" fill="url(#weave)"/>
+  <path d="M34 27q20 8 39-1M35 31q19 7 39-2M68 30q7 8 13 5m-9-5q6-1 11-8M29 52q-10 33-6 53m54-60q14 19 15 49" fill="none" stroke="#6b5436" stroke-width="2"/>
+</svg>

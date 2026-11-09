@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { choose, createInitialState, type BranchState } from '../lib/branch-story';
+import { choose, type BranchState } from '../lib/branch-story';
+import { createSixState } from '../lib/six-ending-story';
 import { getSixShots, getSixStill, SIX_ART } from '../lib/six-story-presentation';
 import { initialPlayPhase, readPlayPosition, resolveSixPlayPhase, type PlayPhase } from '../lib/play-flow';
 vi.mock('@/lib/six-story-presentation', () => import('../lib/six-story-presentation'));
@@ -11,7 +12,7 @@ const routes = {
   conscripted: ['cut_hair', 'flee'], family_escape: ['cut_hair', 'home'],
   unwaking_spring: ['cut_hair', 'friend', 'dream'], guardian_future: ['cut_hair', 'friend', 'wake'],
 };
-const play = (route: string[]) => route.reduce((state, action) => choose(state, action)!.state, createInitialState('short'));
+const play = (route: string[]) => route.reduce((state, action) => choose(state, action)!.state, createSixState());
 
 describe('short automatic revision-7 performance', () => {
   it('keeps every final choice committed while its result plays before the terminal panel', () => {
@@ -50,7 +51,7 @@ describe('short automatic revision-7 performance', () => {
     expect(future.find(shot => shot.id === 'adult-leader')!.caption).toContain('多年');
   });
   it('uses a complete composed scene, with no popup character stack', () => {
-    const shot = getSixShots(createInitialState('short'))[0];
+    const shot = getSixShots(createSixState())[0];
     const html = renderToStaticMarkup(<SixStoryStage shot={shot} reducedMotion paused/>);
     expect(html).toContain('six-story-stage--still');
     expect(html).toContain('data-paused="true"');
@@ -68,7 +69,7 @@ describe('short automatic revision-7 performance', () => {
   });
   it('keeps natural full-route viewing under five minutes without fake choices', () => {
     for (const route of Object.values(routes)) {
-      let state: BranchState = createInitialState('short'), duration = 0;
+      let state: BranchState = createSixState(), duration = 0;
       for (const action of route) { duration += getSixShots(state).reduce((total, shot) => total + shot.durationMs, 0); state = choose(state, action)!.state; }
       duration += getSixShots(state).reduce((total, shot) => total + shot.durationMs, 0);
       expect(duration).toBeLessThan(300000);

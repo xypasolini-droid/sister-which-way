@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { LEGACY_NODES as NODES, choose, createInitialState, createRevisionFiveState, getChoices, getNode, type BranchState } from '../lib/branch-story';
+import { createSixState } from '../lib/six-ending-story';
 import { NODE_TEST_ROUTES, SHORT_ENDING_TEST_ROUTES } from '../lib/story-test-routes';
 vi.mock('@/lib/branch-story', () => import('../lib/branch-story'));
 vi.mock('@/lib/scene-encounter', () => import('../lib/scene-encounter'));
@@ -99,9 +100,12 @@ describe('revision 5 uses decisive actions rather than an ending menu', () => {
   });
 });
 
-describe('revision 6 has exactly the choices in the approved story graph', () => {
-  it('renders nine enabled actions at four forks, with no input or extra dream menu', () => {
-    const pending = [createInitialState('short')], seen = new Set<string>();
+describe('six-ending editions offer direct actions at each fork', () => {
+  it.each([
+    { edition: '0.6.0', start: createSixState, forks: ['v6-marriage', 'v6-opening', 'v6-voices', 'v6-war'] },
+    { edition: '0.7.0', start: () => createInitialState('short'), forks: ['v7-home', 'v7-market', 'v7-opening', 'v7-street'] },
+  ])('renders nine enabled actions at four $edition forks without extra controls', ({ start, forks }) => {
+    const pending = [start()], seen = new Set<string>();
     let total = 0;
     while (pending.length) {
       const state = pending.pop()!;
@@ -114,10 +118,11 @@ describe('revision 6 has exactly the choices in the approved story graph', () =>
       expect(html).toContain('读手记');
       for (const option of options) {
         expect(html).toContain(`<strong>${escape(option.label)}</strong>`);
+        if (state.storyRevision === 7) expect(html).toContain(`<small class="encounter-qualities">${option.qualities?.join(' · ')}</small>`);
         pending.push(choose(state, option.id)!.state);
       }
     }
-    expect([...seen].sort()).toEqual(['v6-marriage', 'v6-opening', 'v6-voices', 'v6-war']);
+    expect([...seen].sort()).toEqual(forks);
     expect(total).toBe(9);
   });
 });

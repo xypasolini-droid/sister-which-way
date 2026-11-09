@@ -9,12 +9,12 @@ await fs.mkdir(directory, { recursive: true });
 await fs.mkdir(cache, { recursive: true });
 const bundle = path.join(cache, 'story-doc-data.cjs');
 await build({ stdin: { contents: `
-import { createInitialState, choose, getEnding } from './src/lib/branch-story';
-import { SIX_NODES, SIX_ENDING_ROUTES } from './src/lib/six-ending-story';
+import { choose, getEnding } from './src/lib/branch-story';
+import { createSixState, SIX_NODES, SIX_ENDING_ROUTES } from './src/lib/six-ending-story';
 import { getSixShots } from './src/lib/six-story-presentation';
 export const decisions = Object.values(SIX_NODES).filter(node => node.choices.length);
 export const routes = Object.entries(SIX_ENDING_ROUTES).map(([id, choices]) => {
- let state = createInitialState('short'); let shots = [...getSixShots(state)];
+ let state = createSixState(); let shots = [...getSixShots(state)];
  for (const choice of choices) { state = choose(state, choice)!.state; shots.push(...getSixShots(state)); }
  const ending = getEnding(state)!;
  return { id, number: ending.number, title: ending.title, mode: ending.mode, choices, durationMs: shots.reduce((sum, shot) => sum + shot.durationMs, 0), shots: shots.map(s => ({ id: s.id, art: s.art, durationMs: s.durationMs })) };
@@ -71,5 +71,5 @@ const edges = connections.map(([from,to,label=''],i)=>`<mxCell id="edge-${i}" va
 await fs.writeFile(path.join(directory,'姐姐我该怎么走-v060.drawio'),`<mxfile host="app.diagrams.net"><diagram id="story-v060" name="0.6.0 六条命运"><mxGraphModel dx="1800" dy="1800" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1900" pageHeight="1850"><root><mxCell id="0"/><mxCell id="1" parent="0"/>${vertices}${edges}</root></mxGraphModel></diagram></mxfile>\n`);
 const table = routes.map(r => `| ${r.number} ${r.title} | ${r.choices.join(' → ')} | ${r.mode} | ${Math.round(r.durationMs / 1000)}秒 |`).join('\n');
 await fs.writeFile(path.join(directory,'决策树-v060.md'),`# 0.6.0 六条命运\n\n以用户新图为依据。四处分叉、九个选项、六条完整路线，每局两至三次决定。下表时长为镜头总和，不含玩家思考、暂停与重看。\n\n| 终幕 | 稳定行动 ID | 表现类型 | 自动镜头时长 |\n| --- | --- | --- | --- |\n${table}\n\n\`reality\` 为现实分支，\`dream\` 为未醒的梦，\`future\` 为醒来后的原创未来。05与06的现实家人去向未知。\n\n## 可编辑文件\n\n- [draw.io图](姐姐我该怎么走-v060.drawio)：使用 diagrams.net 打开，逐个修改节点、连线与标签。\n- [Mermaid源文件](姐姐我该怎么走-v060.mmd)：纯文本编辑。\n- [完整JSON](decision-tree-v060.json)：包含分叉、正文、行动和六条路线镜头索引。\n\n图与JSON是导出稿。游戏实际规则在 \`src/lib/six-ending-story.ts\`，镜头在 \`src/lib/six-story-presentation.ts\`；调整完运行 \`node scripts/generate-six-story-docs.mjs\` 重新导出。历史0.5.1图保留原文件名，不代表当前玩法。\n\n\`\`\`mermaid\n${mmd}\`\`\`\n`);
-await fs.writeFile(path.join(repo,'docs/design/STORY-FLOW.md'),`# 0.6.0 故事流程\n\n新版已替换历史五结局、七次选择的限制。见[六路线决策树与编辑文件](decision-tree/决策树-v060.md)。[0.5.1流程历史快照](STORY-FLOW-v051-history.md)仅用于版本研究。\n\n\`\`\`mermaid\n${mmd}\`\`\`\n`);
+await fs.writeFile(path.join(repo,'docs/design/STORY-FLOW-v060-history.md'),`# 0.6.0 故事流程\n\n新版已替换历史五结局、七次选择的限制。见[六路线决策树与编辑文件](decision-tree/决策树-v060.md)。[0.5.1流程历史快照](STORY-FLOW-v051-history.md)仅用于版本研究。\n\n\`\`\`mermaid\n${mmd}\`\`\`\n`);
 console.log(JSON.stringify({ routes: routes.length, options: decisions.reduce((sum,n)=>sum+n.choices.length,0), files: 5, directory }));

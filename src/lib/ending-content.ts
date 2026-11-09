@@ -1,7 +1,8 @@
 import type { BranchState, Ending } from './branch-story';
+export { SEVEN_ENDINGS as ENDINGS } from './seven-ending-content';
 
-/** Revision 6 has six literal fates. Original future and dream are explicit. */
-export const ENDINGS: Ending[] = [
+/** Frozen 0.6.0 text and numbering for historical saves. */
+export const REVISION_SIX_ENDINGS: Ending[] = [
   {
     id: 'no_smoke', number: '01', title: '没有升起的炊烟', chapter: '最后一扇门', scene: 'home', mode: 'reality',
     summary: '家当卖尽，求援的门一扇扇关上。没有足够的粮食，母亲、姐姐、你和幼弟相继死于饥饿。父亲仍在监狱里。',

@@ -1,9 +1,10 @@
-import type { BranchState } from './branch-story';
+import { getEnding, type BranchState } from './branch-story';
 import { getDreamEndingPresentation, getStayEndingPresentation } from './revision-five-ending-content';
 import { getDreamEndingPresentation as legacyDream, getStayEndingPresentation as legacyStay } from './legacy-ending-content';
 
 /** Each fixed ending has a different life, not a title variant underneath a category. */
 export function endingGrowth(state: BranchState): string {
+  if (state.storyRevision === 7) return getEnding(state)?.summary ?? '';
   if (state.storyRevision === 6) return ({
     no_smoke: '她想守住姐姐，封锁生活的禁令却让一家人的未来停在了饥饿之中。',
     sister_married: '从依靠姐姐的孩子，成长为记得自己的生存由谁付出代价的人。',
@@ -22,6 +23,7 @@ export function endingGrowth(state: BranchState): string {
   }
 }
 export function endingEcho(state: BranchState): string {
+  if (state.storyRevision === 7) return state.endingId ? state.history.at(-1)?.consequence ?? '' : '';
   if (state.storyRevision === 6) return ({
     no_smoke: '放下剪刀后求援失败；你们拒绝婚事，援助始终没有到来。',
     sister_married: '放下剪刀后求援失败；家人的恳求使姐姐在生存压力下离开家门。',

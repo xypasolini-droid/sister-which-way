@@ -19,7 +19,7 @@ for (const url of manifest.paths) {
   await fs.mkdir(path.dirname(target),{recursive:true});
   const beforeHash=createHash('sha256').update(bytes).digest('hex');
   if (png) {
-    const quality=Number(process.env.MINITOOL_IMAGE_QUALITY||95);
+    const quality=Number(process.env.MINITOOL_IMAGE_QUALITY||85);
     const cached=path.join(cache,beforeHash+'-q'+quality+'.webp');
     try { await fs.access(cached); } catch { await sharp(bytes).webp({quality,alphaQuality:100,effort:6,smartSubsample:true}).toFile(cached); }
     const before=await sharp(bytes).ensureAlpha().raw().toBuffer({resolveWithObject:true});
@@ -40,16 +40,17 @@ for (const url of manifest.paths) {
     let selected=cached,encoding='high-quality WebP (lossy RGB, lossless alpha)',metrics=await compare(cached),selectedQuality=quality;
     // Escalate quality for fine saturated details; no image may fail this
     // conservative composited-error gate merely to fit the archive budget.
-    for(const higher of [98,100]){
+    for(const higher of [90,93,96,98,100].filter(candidate=>candidate>quality)){
       if(metrics.alphaExact&&(metrics.alphaCompositedPsnrDb===null||metrics.alphaCompositedPsnrDb>=38))break;
       selected=path.join(cache,beforeHash+'-q'+higher+'.webp');
       try{await fs.access(selected);}catch{await sharp(bytes).webp({quality:higher,alphaQuality:100,effort:6,smartSubsample:true}).toFile(selected);}
       metrics=await compare(selected);selectedQuality=higher;
     }
-    if(!metrics.alphaExact||(metrics.alphaCompositedPsnrDb!==null&&metrics.alphaCompositedPsnrDb<38)){
-      selected=path.join(cache,beforeHash+'-near60.webp');
-      try{await fs.access(selected);}catch{await sharp(bytes).webp({nearLossless:true,quality:60,effort:6}).toFile(selected);}
-      metrics=await compare(selected);encoding='near-lossless WebP';selectedQuality=60;
+    for(const nearQuality of [25,40,60]){
+      if(metrics.alphaExact&&(metrics.alphaCompositedPsnrDb===null||metrics.alphaCompositedPsnrDb>=38))break;
+      selected=path.join(cache,beforeHash+'-near'+nearQuality+'.webp');
+      try{await fs.access(selected);}catch{await sharp(bytes).webp({nearLossless:true,quality:nearQuality,effort:6}).toFile(selected);}
+      metrics=await compare(selected);encoding='near-lossless WebP';selectedQuality=nearQuality;
     }
     if(!metrics.alphaExact||(metrics.alphaCompositedPsnrDb!==null&&metrics.alphaCompositedPsnrDb<38)){
       selected=path.join(cache,beforeHash+'.webp');
